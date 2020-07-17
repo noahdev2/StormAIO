@@ -238,7 +238,7 @@ namespace MightyAio.Champions
             }
 
             if (Wativce()) return;
-            if (Player.InFountain() && Player.ManaPercent <= 99 && Player.HealthPercent <= 99) return;
+            if (Player.InFountain() && (Player.ManaPercent <= 95 || Player.HealthPercent <= 95)) return;
             var allies = GameObjects.AllyHeroes.Where(x => x.IsValid && !x.IsDead && !x.IsMe).ToList();
             if (!allies.Any()) return;
             foreach (var ally in allies.OrderByDescending(
