@@ -139,7 +139,7 @@ namespace MightyAio.Champions
 
         private void AIBaseClientOnOnProcessSpellCast(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
         {
-            var myally = GameObjects.AllyHeroes.FirstOrDefault(x => x.IsValid && x.HasBuff("YuumiWAttach"));
+            var myally = GameObjects.AllyHeroes.FirstOrDefault(x => x.IsValid && x.HasBuff("YuumiWAlly"));
             if (myally == null) return;
             if (sender is AITurretClient && args.Target == myally && E.IsReady()) E.Cast();
         }
@@ -291,7 +291,7 @@ namespace MightyAio.Champions
             if (target == null) return;
             if (!R.IsReady() || !_menu["R"].GetValue<MenuSliderButton>("R").Enabled)
                 return;
-            var a = _menu["R"].GetValue<MenuSliderButton>("R").Value == 1
+            var a = _menu["R"].GetValue<MenuSliderButton>("R").ActiveValue == 1
                 ? -1
                 : _menu["R"].GetValue<MenuSliderButton>("R").Value - 1;
             if (R.IsInRange(target) && !target.HasBuffOfType(BuffType.SpellShield))
