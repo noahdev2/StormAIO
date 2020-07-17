@@ -228,7 +228,7 @@ namespace MightyAio.Champions
             }
 
             if (Wativce()) return;
-            if (Player.InShop() && Player.ManaPercent <= 95 && Player.HealthPercent <= 95) return;
+            if (Player.InFountain() && Player.ManaPercent <= 99 && Player.HealthPercent <= 99) return;
             var allies = GameObjects.AllyHeroes.Where(x => x.IsValid && !x.IsDead && !x.IsMe).ToList();
             if (!allies.Any()) return;
             foreach (var ally in allies.OrderByDescending(
@@ -269,9 +269,9 @@ namespace MightyAio.Champions
 
         private static void CastE()
         {
-            if (!E.IsReady() || !Wativce() || Myally() == null ||
+            if (!E.IsReady() || !Wativce() ||
                 !_menu["E"].GetValue<MenuSliderButton>("E").Enabled) return;
-            if (Myally().HealthPercent <= _menu["E"].GetValue<MenuSliderButton>("E").Value) E.Cast();
+            if (Myally().HealthPercent <= _menu["E"].GetValue<MenuSliderButton>("E").ActiveValue) E.Cast();
         }
 
 
