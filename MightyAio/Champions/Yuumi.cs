@@ -1,6 +1,5 @@
 ﻿﻿using System;
-using System.Drawing;
-using System.Linq;
+ using System.Linq;
 using System.Windows.Forms;
 using EnsoulSharp;
 using EnsoulSharp.SDK;
@@ -24,7 +23,6 @@ namespace MightyAio.Champions
         private static int _mykills = 0 + Player.ChampionsKilled;
         private static int[] _spellLevels;
         private static Font Berlinfont;
-        private static bool autoplay = false;
         #endregion
 
         #region Menu

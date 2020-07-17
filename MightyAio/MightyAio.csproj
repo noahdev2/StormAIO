@@ -63,18 +63,17 @@
     <Compile Include="Champions\Jinx.cs" />
     <Compile Include="Champions\Lillia.cs" />
     <Compile Include="Champions\Lucain.cs" />
-    <Compile Include="Champions\Program.cs" />
     <Compile Include="Champions\Riven.cs" />
     <Compile Include="Champions\Senna.cs" />
     <Compile Include="Champions\Shen.cs" />
     <Compile Include="Champions\Skarner.cs" />
     <Compile Include="Champions\Udyr.cs" />
-    <Compile Include="Champions\Voilbear.cs" />
     <Compile Include="Champions\Volibear.cs" />
     <Compile Include="Champions\Yorick.cs" />
     <Compile Include="Champions\Yuumi.cs" />
     <Compile Include="Champions\Zac.cs" />
     <Compile Include="Champions\Zoe.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
