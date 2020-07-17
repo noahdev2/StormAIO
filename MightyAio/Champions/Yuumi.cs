@@ -221,7 +221,7 @@ namespace MightyAio.Champions
         {
             if (Wativce())
             { 
-                if (!Myally().IsRecalling()) return;
+                if (Myally().IsRecalling()) return;
                 if (_menu["Q"].GetValue<MenuBool>("QA")) CastQ();
                  CastE();
                  CastR();
