@@ -38,7 +38,8 @@ namespace MightyAio.Champions
             _menu.Add(qMenu);
             var eMenu = new Menu("E", "E")
             {
-                new MenuSliderButton("E", "Use E || Only when my ally is below", 50)
+                new MenuBool("E","Use E"),
+                new MenuSlider("EM", "Use E || Only when my ally is below", 50)
             };
             _menu.Add(eMenu);
             var rMenu = new Menu("R", "R")
@@ -117,6 +118,15 @@ namespace MightyAio.Champions
             Drawing.OnDraw += Drawing_OnDraw;
             AIBaseClient.OnProcessSpellCast += AIBaseClientOnOnProcessSpellCast;
             Orbwalker.OnAction += OrbwalkerOnOnAction;
+            AIBaseClient.OnBuffGain += AIBaseClientOnOnBuffGain;
+        }
+
+        private void AIBaseClientOnOnBuffGain(AIBaseClient sender, AIBaseClientBuffGainEventArgs args)
+        {
+            // if (sender.IsAlly)
+            // {
+            //     Game.Print(args.Buff.Name);
+            // }
         }
 
         private void OrbwalkerOnOnAction(object sender, OrbwalkerActionArgs args)
@@ -270,8 +280,8 @@ namespace MightyAio.Champions
         private static void CastE()
         {
             if (!E.IsReady() || !Wativce() ||
-                !_menu["E"].GetValue<MenuSliderButton>("E").Enabled) return;
-            if (Myally().HealthPercent <= _menu["E"].GetValue<MenuSliderButton>("E").ActiveValue) E.Cast();
+                !_menu["E"].GetValue<MenuBool>("E")) return;
+            if (Myally().HealthPercent <= _menu["E"].GetValue<MenuSlider>("EM").Value) E.Cast();
         }
 
 
@@ -359,7 +369,7 @@ namespace MightyAio.Champions
 
         private static AIHeroClient Myally()
         {
-            return GameObjects.AllyHeroes.FirstOrDefault(x => x.IsValid && x.HasBuff("YuumiWAttach"));
+            return GameObjects.AllyHeroes.FirstOrDefault(x => x.IsValid && x.HasBuff("YuumiWAlly"));
         }
 
         #endregion
