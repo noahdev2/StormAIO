@@ -51,6 +51,15 @@ namespace MightyAio
                     case "Skarner":
                         var Skarner = new Skarner();
                         break;
+                    case "Akali":
+                        var Akali = new Akali();
+                        break;
+                    case "Yuumi":
+                        var Yuumi = new Yuumi();
+                        break;
+                    case "Yorick":
+                        var Yorick = new Yorick();
+                        break;
                    
                 }
             }
