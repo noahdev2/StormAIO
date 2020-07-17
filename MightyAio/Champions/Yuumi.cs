@@ -1,5 +1,5 @@
-﻿﻿using System;
- using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows.Forms;
 using EnsoulSharp;
 using EnsoulSharp.SDK;
@@ -8,7 +8,6 @@ using EnsoulSharp.SDK.Prediction;
 using SharpDX;
 using SharpDX.Direct3D9;
 using Color = System.Drawing.Color;
-using Font = SharpDX.Direct3D9.Font;
 using Menu = EnsoulSharp.SDK.MenuUI.Menu;
 
 namespace MightyAio.Champions
@@ -23,6 +22,7 @@ namespace MightyAio.Champions
         private static int _mykills = 0 + Player.ChampionsKilled;
         private static int[] _spellLevels;
         private static Font Berlinfont;
+
         #endregion
 
         #region Menu
@@ -38,7 +38,7 @@ namespace MightyAio.Champions
             _menu.Add(qMenu);
             var eMenu = new Menu("E", "E")
             {
-                new MenuBool("E","Use E"),
+                new MenuBool("E", "Use E"),
                 new MenuSlider("EM", "Use E || Only when my ally is below", 50)
             };
             _menu.Add(eMenu);
@@ -50,7 +50,7 @@ namespace MightyAio.Champions
 
             var miscMenu = new Menu("Misc", "Misc")
             {
-                new MenuKeyBind("AP", "Auto Play", Keys.M,KeyBindType.Toggle),
+                new MenuKeyBind("AP", "Auto Play", Keys.M, KeyBindType.Toggle),
                 new MenuBool("UseSkin", "Use Skin Changer"),
                 new MenuSlider("setskin", "set skin", 13, 0, 55),
                 new MenuBool("autolevel", "Auto Level")
@@ -94,7 +94,6 @@ namespace MightyAio.Champions
 
         public Yuumi()
         {
-            
             _spellLevels = new[] {1, 3, 3, 1, 3, 4, 3, 1, 3, 1, 4, 1, 1, 2, 2, 4, 2, 2};
             Q = new Spell(SpellSlot.Q, 1150f);
             Q.SetSkillshot(0f, 35f, 1000f, true, SkillshotType.Line);
@@ -230,11 +229,11 @@ namespace MightyAio.Champions
         private static void AutoPlay()
         {
             if (Wativce())
-            { 
+            {
                 if (Myally().IsRecalling()) return;
                 if (_menu["Q"].GetValue<MenuBool>("QA")) CastQ();
-                 CastE();
-                 CastR();
+                CastE();
+                CastR();
             }
 
             if (Wativce()) return;
@@ -305,7 +304,7 @@ namespace MightyAio.Champions
 
         private static bool Wativce()
         {
-            var a = GameObjects.AllyHeroes.Where(x => x.IsValid && x.HasBuff("YuumiWAttach")).ToList();
+            var a = GameObjects.AllyHeroes.Where(x => x.IsValid && x.HasBuff("YuumiWAlly")).ToList();
             if (a.Any()) return true;
             return false;
         }
@@ -362,6 +361,7 @@ namespace MightyAio.Champions
                     break;
             }
         }
+
         private static void DrawText(Font aFont, string aText, int aPosX, int aPosY, ColorBGRA aColor)
         {
             aFont.DrawText(null, aText, aPosX, aPosY, aColor);
