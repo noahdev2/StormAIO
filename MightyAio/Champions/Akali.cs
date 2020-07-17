@@ -313,7 +313,7 @@ namespace MightyAio.Champions
              if (_menu["W"].GetValue<MenuBool>("WC") && Player.Mana < _menu["W"].GetValue<MenuSlider>("WU").Value) CastW(target);
             if (_menu["E"].GetValue<MenuBool>("E1") )  CastE(target);
             if (!_items.GetValue<MenuSliderButton>("UG").Enabled) return;
-            if (_items.GetValue<MenuSliderButton>("UG").Value < target.HealthPercent) return;
+            if (_items.GetValue<MenuSliderButton>("UG").ActiveValue < target.HealthPercent) return;
             if (Player.CanUseItem((int) ItemId.Hextech_Gunblade) &&
                 target.Distance(Player) <= 700 ) Player.UseItem(3146, target);
             if (Player.CanUseItem((int) ItemId.Bilgewater_Cutlass) && target.Distance(Player) <= 550 ) 
@@ -330,7 +330,7 @@ namespace MightyAio.Champions
         private static void LaneClear()
         {
         if (!_menu["LaneClear"].GetValue<MenuSliderButton>("Q").Enabled ||
-            Player.Mana < _menu["LaneClear"].GetValue<MenuSliderButton>("Q").Value) return;
+            Player.Mana < _menu["LaneClear"].GetValue<MenuSliderButton>("Q").ActiveValue) return;
             var minons = GameObjects.GetMinions(Player.Position, Q.Range)
                 .Where(x => x.IsValid && !x.IsDead ).ToList();
             if (minons.Any())

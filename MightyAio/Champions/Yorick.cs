@@ -331,7 +331,7 @@ namespace MightyAio.Champions
         private static void LaneClear()
         {
         if (!_menu["LaneClear"].GetValue<MenuSliderButton>("Q").Enabled ||
-            Player.ManaPercent < _menu["LaneClear"].GetValue<MenuSliderButton>("Q").Value) return;
+            Player.ManaPercent < _menu["LaneClear"].GetValue<MenuSliderButton>("Q").ActiveValue) return;
             var minons = GameObjects.GetMinions(Player.Position, Player.GetRealAutoAttackRange()+ 50)
                 .Where(x => x.IsValid && !x.IsDead ).ToList();
             if (minons.Any())
