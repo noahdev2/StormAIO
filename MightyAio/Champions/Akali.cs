@@ -56,14 +56,16 @@ namespace MightyAio.Champions
             _menu.Add(eMenu);
             var rMenu = new Menu("R", "R")
             {
-                new MenuBool("R", "Use R first"),
-                new MenuBool("R2", "Use R second"),
+                new MenuBool("R3", "Use R  in combo "),
+                new MenuBool("R", "Use first R  in combo "),
+                new MenuBool("R2", "Use second R in combo  "),
             };
             _menu.Add(rMenu);
 
             var laneClearMenu = new Menu("LaneClear", "LaneClear")
             {
-                new MenuSliderButton("Q", "Q || Only Use when Energy >",90,0,200),
+                new MenuBool("Q","Use Q"),
+                new MenuSlider("QE", "Only Use when Energy >",90,0,200),
             };
             _menu.Add(laneClearMenu);
             var killSteal = new Menu("KS", "KillSteal")
@@ -128,7 +130,7 @@ namespace MightyAio.Champions
             W = new Spell(SpellSlot.W, 250) {Delay = 0.3f};
             W.SetSkillshot(0.3f, 350f, 1200f, false, SkillshotType.Circle);
             E = new Spell(SpellSlot.E, 825);
-            E.SetSkillshot(0.4f, 70f, 1200, true, SkillshotType.Line);  
+            E.SetSkillshot(0.25f, 70f, 1200, true, SkillshotType.Line);  
             E3 = new Spell(SpellSlot.E, 825);
             E3.SetSkillshot(0.4f, 70f, 1200, false, SkillshotType.Line);
             E2 = new Spell(SpellSlot.E, 25000) {Delay = 0.125f};
@@ -304,14 +306,15 @@ namespace MightyAio.Champions
 
         private static void Combo()
         {
+            var R3 = _menu["R"].GetValue<MenuBool>("R3");
             if (_menu["E"].GetValue<MenuBool>("E2")) CastE2();
             var target = TargetSelector.GetTarget(E.Range);
             if (target == null) return;
-            if (_menu["R"].GetValue<MenuBool>("R")) CastR(target);
-            if (_menu["R"].GetValue<MenuBool>("R2")) CastR2(target);
-            if (_menu["Q"].GetValue<MenuBool>("QC") ) { CastQ(target); }
+            if (_menu["R"].GetValue<MenuBool>("R") && R3) CastR();
+            if (_menu["R"].GetValue<MenuBool>("R2") && R3) CastR2();
+            if (_menu["Q"].GetValue<MenuBool>("QC") ) { CastQ(); }
              if (_menu["W"].GetValue<MenuBool>("WC") && Player.Mana < _menu["W"].GetValue<MenuSlider>("WU").Value) CastW(target);
-            if (_menu["E"].GetValue<MenuBool>("E1") )  CastE(target);
+            if (_menu["E"].GetValue<MenuBool>("E1") )  CastE();
             if (!_items.GetValue<MenuSliderButton>("UG").Enabled) return;
             if (_items.GetValue<MenuSliderButton>("UG").ActiveValue < target.HealthPercent) return;
             if (Player.CanUseItem((int) ItemId.Hextech_Gunblade) &&
@@ -324,13 +327,13 @@ namespace MightyAio.Champions
         {
             var target = TargetSelector.GetTarget(Q.Range);
             if (target == null) return;
-            if (_menu["Q"].GetValue<MenuBool>("QH") ) { CastQ(target); }
+            if (_menu["Q"].GetValue<MenuBool>("QH") ) { CastQ(); }
         }
 
         private static void LaneClear()
         {
-        if (!_menu["LaneClear"].GetValue<MenuSliderButton>("Q").Enabled ||
-            Player.Mana < _menu["LaneClear"].GetValue<MenuSliderButton>("Q").ActiveValue) return;
+        if (!_menu["LaneClear"].GetValue<MenuBool>("Q").Enabled ||
+            Player.Mana <= _menu["LaneClear"].GetValue<MenuSlider>("QE").Value) return;
             var minons = GameObjects.GetMinions(Player.Position, Q.Range)
                 .Where(x => x.IsValid && !x.IsDead ).ToList();
             if (minons.Any())
@@ -338,7 +341,7 @@ namespace MightyAio.Champions
                 foreach (var minon in minons)
                 {
                     var Lane = Q.GetCircularFarmLocation(minons);
-                    if (Lane.Position.IsValid() && Lane.MinionsHit >= 2)
+                    if (Lane.Position.IsValid() && Lane.MinionsHit >= 1)
                     {
                         Q.Cast(Lane.Position);
                         return;
@@ -352,8 +355,10 @@ namespace MightyAio.Champions
 
         #region Spell Functions
 
-        private static void CastQ(AIHeroClient target)
+        private static void CastQ()
         {
+            var target = TargetSelector.GetTarget(Q.Range);
+            if (target == null) return;
             if (!Q.IsReady() || target.DistanceToPlayer() > Q.Range || Player.IsDashing() )
                 return;
             Q.Cast(target);
@@ -367,8 +372,10 @@ namespace MightyAio.Champions
             W.Cast(Player.Position);
         }
 
-        private static void CastE(AIHeroClient target)
+        private static void CastE()
         {
+            var target = TargetSelector.GetTarget(E.Range);
+            if (target == null) return;
             if (!E.IsReady() || !HasfirstE || Player.IsDashing()) return;
             if (!target.IsMoving || target.IsWindingUp)
             {
@@ -390,14 +397,18 @@ namespace MightyAio.Champions
             E2.Cast(target);
         }
 
-        private static void CastR(AIHeroClient target)
+        private static void CastR()
         {
+            var target = TargetSelector.GetTarget(R.Range);
+            if (target == null) return;
             if (!R.IsReady() || !HasfirstR)
              return;
             if (R.IsInRange(target) && !target.HasBuffOfType(BuffType.SpellShield)) R.Cast(target);
         }
-        private static void CastR2(AIHeroClient target)
+        private static void CastR2()
         {
+            var target = TargetSelector.GetTarget(R2.Range);
+            if (target == null) return;
             if (!R.IsReady() || !HasRecastR || !R2.IsInRange(target))
                 return;
             if (!target.IsMoving || target.IsWindingUp)
@@ -426,24 +437,24 @@ namespace MightyAio.Champions
             if (target == null) return;
             if (target.Health < Q.GetDamage(target) && !target.IsInvulnerable  && _menu["KS"].GetValue<MenuBool>("Q"))
             {
-                CastQ(target);
+                CastQ();
             }
             if (target.Health + target.AllShield < Edmg(target) && !target.IsInvulnerable && !target.HasBuffOfType(BuffType.SpellShield) && _menu["KS"].GetValue<MenuBool>("E1"))
             {
-               CastE(target);
+               CastE();
             }
           
             if (target.Health + target.AllShield < bothRdmg(target,0) && !target.IsInvulnerable  && _menu["KS"].GetValue<MenuBool>("R1"))
             {
-                CastR(target);
+                CastR();
             }
             if (target.Health + target.AllShield < bothRdmg(target,1) && !target.IsInvulnerable  && _menu["KS"].GetValue<MenuBool>("R2"))
             {
-                CastR2(target);
+                CastR2();
             }
             if (target.Health + target.AllShield < bothRdmg(target,1) && !target.IsInvulnerable  && _menu["KS"].GetValue<MenuBool>("R2"))
             {
-                CastR2(target);
+                CastR2();
             }
             var gunbladedmg = Player.CalculateMagicDamage(target, 170 + 4.588 * Player.Level + Player.TotalMagicalDamage * 0.3);
             if (Player.CanUseItem((int) ItemId.Hextech_Gunblade) &&

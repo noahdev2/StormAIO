@@ -117,24 +117,14 @@ namespace MightyAio.Champions
             Drawing.OnDraw += Drawing_OnDraw;
             AIBaseClient.OnProcessSpellCast += AIBaseClientOnOnProcessSpellCast;
             Orbwalker.OnAction += OrbwalkerOnOnAction;
-            AIBaseClient.OnBuffGain += AIBaseClientOnOnBuffGain;
         }
 
-        private void AIBaseClientOnOnBuffGain(AIBaseClient sender, AIBaseClientBuffGainEventArgs args)
-        {
-            // if (sender.IsAlly)
-            // {
-            //     Game.Print(args.Buff.Name);
-            // }
-        }
-
+        #endregion
+        
         private void OrbwalkerOnOnAction(object sender, OrbwalkerActionArgs args)
         {
             if (Wativce()) args.Process = false;
         }
-
-        #endregion
-
 
         private void AIBaseClientOnOnProcessSpellCast(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
         {
