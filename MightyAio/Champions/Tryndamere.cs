@@ -159,9 +159,33 @@ namespace MightyAio.Champions
                         _w.Cast();
             };
             Interrupter.OnInterrupterSpell += (sender, args) => { };
+            AIBaseClient.OnBuffGain += AIBaseClientOnOnBuffGain;
         }
 
-     
+        private void AIBaseClientOnOnBuffGain(AIBaseClient sender, AIBaseClientBuffGainEventArgs args)
+        {
+            if (sender.IsMe && args.Buff.Name == "UndyingRage")
+            {
+                if (!_menu["R"].GetValue<MenuBool>("RS")) return;
+                var dir = Resource1._1;
+                var dir2 = Resource1._2;
+                var dir3 = Resource1._3;
+                var dir4 = Resource1._4;
+                var dir5 = Resource1._5;
+                var dir6 = Resource1._6;
+                var random = new Random();
+                var num = random.Next(6);
+                
+                if (lastsound == num)  num = random.Next(6);
+                var alldir = new[] { dir, dir2, dir3, dir4,dir5,dir6};
+                //   int num = random.Next(a);
+                sounds = new SoundPlayer(alldir[num]);
+                sounds.Load();
+                sounds.Play();
+                lastsound = num;
+            }
+        }
+
 
         private void SpellbookOnOnCastSpell(Spellbook sender, SpellbookCastSpellEventArgs args)
         {
@@ -199,24 +223,6 @@ namespace MightyAio.Champions
             if (sender.IsMe && args.Slot == SpellSlot.R)
             {
                 lastskin = _menu["Misc"].GetValue<MenuSlider>("setskin").Value;
-                if (!_menu["R"].GetValue<MenuBool>("RS")) return;
-                var dir = Resource1._1;
-                var dir2 = Resource1._2;
-                var dir3 = Resource1._3;
-                var dir4 = Resource1._4;
-                var dir5 = Resource1._5;
-                var dir6 = Resource1._6;
-                var random = new Random();
-               var num = random.Next(6);
-                
-                if (lastsound == num)  num = random.Next(6);
-                var alldir = new[] { dir, dir2, dir3, dir4,dir5,dir6};
-                //   int num = random.Next(a);
-                sounds = new SoundPlayer(alldir[num]);
-                sounds.Load();
-                sounds.Play();
-                lastsound = num;
-
             }
             if (sender.IsMe && args.Slot == SpellSlot.E)
             {
@@ -236,12 +242,12 @@ namespace MightyAio.Champions
             }
             
             if (!_r.IsReady() || args.Target == null ||
-                Player.HealthPercent >= RH) return;
-            if (sender is AIHeroClient && args.Target.IsMe )
+                Player.HealthPercent >= RH || !args.Target.IsMe) return;
+            if (sender is AIHeroClient )
             {
                 _r.Cast();
             }
-            if (sender.IsMinion || sender.IsMonster && args.Target.IsMe)
+            if (sender.IsMinion || sender.IsMonster)
             {
                 var dmg = sender.GetAutoAttackDamage(Player);
                 if (dmg >= Player.Health)
