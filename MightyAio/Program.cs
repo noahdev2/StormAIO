@@ -2,7 +2,7 @@
 using EnsoulSharp;
 using MightyAio.Champions;
 
-namespace MightyAio
+ namespace MightyAio
 {
     internal static class Program
     {
@@ -59,6 +59,9 @@ namespace MightyAio
                         break;
                     case "Yorick":
                         var Yorick = new Yorick();
+                        break;
+                    case "Tryndamere":
+                        var Tryndamere = new Tryndamere();
                         break;
                    
                 }
