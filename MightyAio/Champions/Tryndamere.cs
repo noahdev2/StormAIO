@@ -116,7 +116,7 @@ namespace MightyAio.Champions
             {
                 new MenuBool("DrawW", "Draw W", false),
                 new MenuBool("DrawE", "Draw E"),
-                new MenuBool("Drawkillabeabilities", "Draw kill abe abilities")
+                new MenuBool("Drawkillabeabilities", "Draw kill able abilities")
             };
             _menu.Add(drawMenu);
 
@@ -278,11 +278,11 @@ namespace MightyAio.Champions
                         (int) Drawing.WorldToScreen(enemyVisible.Position)[1] + 10, SharpDX.Color.White);
             }
             if (UseE)
-                DrawText(_berlinfont, "E under turent is on",
+                DrawText(_berlinfont, "E under turret is on",
                     (int) Drawing.WorldToScreen(Player.Position)[0] - 58,
                     (int) Drawing.WorldToScreen(Player.Position)[1] + 30, SharpDX.Color.White);
             if (!UseE)
-                DrawText(_berlinfont, "E under turent is off",
+                DrawText(_berlinfont, "E under turret is off",
                     (int) Drawing.WorldToScreen(Player.Position)[0] - 58,
                     (int) Drawing.WorldToScreen(Player.Position)[1] + 30, SharpDX.Color.White);
         }
