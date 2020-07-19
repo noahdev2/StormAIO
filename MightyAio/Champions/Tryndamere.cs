@@ -62,7 +62,7 @@ namespace MightyAio.Champions
                 new MenuBool("EH", "Use E in Harass"),
                 new MenuSlider("ECC", "only E when crit chance is higher", 0),
                 new MenuKeyBind("FEEL", "Feel Key", Keys.Z, KeyBindType.Press),
-                new MenuBool("EF", "Use E in feel")
+                new MenuBool("EF", "Use E To Feel")
             };
             _menu.Add(eMenu);
             var rMenu = new Menu("R", "R")
