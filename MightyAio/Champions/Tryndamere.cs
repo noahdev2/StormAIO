@@ -60,7 +60,7 @@ namespace MightyAio.Champions
                 new MenuKeyBind("ET", "Use E under Turrent", Keys.T, KeyBindType.Toggle),
                 new MenuBool("EC", "Use E in Combo"),
                 new MenuBool("EH", "Use E in Harass"),
-                new MenuSlider("ECC", "only E when crit chance is higher", 10),
+                new MenuSlider("ECC", "only E when crit chance is higher", 0),
                 new MenuKeyBind("FEEL", "Feel Key", Keys.Z, KeyBindType.Press),
                 new MenuBool("EF", "Use E in feel")
             };
@@ -68,7 +68,7 @@ namespace MightyAio.Champions
             var rMenu = new Menu("R", "R")
             {
                 new MenuBool("R", "Auto R"),
-                new MenuSlider("RH", "Auto R || When ur health is below %", 20),
+                new MenuSlider("RH", "Auto R || When ur health is below %", 23),
                 new MenuBool("RS", "R sound"),
             };
             _menu.Add(rMenu);
@@ -373,7 +373,7 @@ namespace MightyAio.Champions
         private static void Combo()
         {
             if (_menu["E"].GetValue<MenuBool>("EC") &&
-            _menu["E"].GetValue<MenuSlider>("ECC").Value < Player.Crit * 100)  CastE();
+            _menu["E"].GetValue<MenuSlider>("ECC").Value <= Player.Crit * 100)  CastE();
             if (_menu["W"].GetValue<MenuBool>("WC")) CastW();
         }
 
@@ -381,7 +381,7 @@ namespace MightyAio.Champions
         {
             if (_menu["W"].GetValue<MenuBool>("WH")) CastW();
             if (_menu["E"].GetValue<MenuBool>("EH") &&
-                _menu["E"].GetValue<MenuSlider>("ECC").Value < Player.Crit * 100)  CastE();
+                _menu["E"].GetValue<MenuSlider>("ECC").Value <= Player.Crit * 100)  CastE();
         }
 
         private static void LaneClear()
