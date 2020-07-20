@@ -189,15 +189,7 @@ namespace MightyAio.Champions
 
         private void SpellbookOnOnCastSpell(Spellbook sender, SpellbookCastSpellEventArgs args)
         {
-            if (_r.IsReady() && args.Target != null && args.Slot == SpellSlot.R && args.Target.IsMe &&
-                sender.Owner.IsEnemy && sender.Owner is AIHeroClient)
-            {
-               var dmg= ((AIHeroClient) sender.Owner).GetSpellDamage(Player, args.Slot);
-               if (dmg * 1.5 >= Player.Health)
-               {
-                   _r.Cast();
-               }
-            } 
+            
             if (!_r.IsReady() || args.Target == null ||
                 Player.HealthPercent >= RH) return;
             if (sender.Owner.IsEnemy   && args.Target != null && args.Target.IsMe)

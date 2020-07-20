@@ -351,17 +351,13 @@ namespace MightyAio.Champions
         {
             if (!_q.IsReady() || target.HasBuffOfType(BuffType.SpellShield))
                 return;
-            if (!target.IsMoving || target.IsWindingUp || !target.CanMove)
-            {
-                _q.Cast(target);
-                return;
-            }
-            var t = SpellPrediction.GetPrediction(target, 1.125f).CastPosition;
+            var t = SpellPrediction.GetPrediction(target, (float) 0.625);
+            if (t.Hitchance < HitChance.High) return;
             var x = target.MoveSpeed;
             var y = x * 850 / 1000;
             var pos = target.Position;
-            if (target.Distance(t) <= y) pos = t;
-            if (target.Distance(t) > y) pos = target.Position.Extend(t, y);
+            if (target.Distance(t.CastPosition) <= y) pos = t.CastPosition;
+            if (target.Distance(t.CastPosition) > y) pos = target.Position.Extend(t.CastPosition, y);
             if (Player.Distance(pos) <= 949 && target.Distance(pos) >= 100) _q.Cast(pos);
             if (Player.Distance(target.Position) <=
                 Player.BoundingRadius + Player.AttackRange + target.BoundingRadius) _q.Cast(pos);
