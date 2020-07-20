@@ -357,7 +357,7 @@ namespace MightyAio.Champions
 
         private static float Qdmg(AIBaseClient t) => _q.IsReady() ? _q.GetDamage(t) + passivedmg(t) : 0;
 
-        private static float Rdmg(AIHeroClient t) => (float) (_r.IsReady() ? _q.GetDamage(t) + passivedmg(t) * 3 + Player.GetAutoAttackDamage(t) : 0);
+        private static float Rdmg(AIHeroClient t) => (float) (_r.IsReady() ? _r.GetDamage(t) + passivedmg(t) * 3 + Player.GetAutoAttackDamage(t) : 0);
 
         #endregion
 
