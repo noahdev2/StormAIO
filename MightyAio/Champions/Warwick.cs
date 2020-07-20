@@ -50,6 +50,7 @@ namespace MightyAio.Champions
             var rMenu = new Menu("R", "R")
             {
                 new MenuBool("R", "Use in Combo R"),
+                new MenuBool("RTT", "Use R if target is under tower",false),
                 new MenuKeyBind("RT", "simi R Key", Keys.T, KeyBindType.Press),
                 new MenuSlider("RH", " R || When ur target health is below %", 50)
             };
@@ -332,6 +333,7 @@ namespace MightyAio.Champions
         {
             var target = TargetSelector.GetTarget(Rrange());
             if (target == null || !_r.IsReady()) return;
+            if (target.IsUnderEnemyTurret() && !_menu["R"].GetValue<MenuBool>("RTT")) return;
             _r.Range = Rrange();
             var rpre = _r.GetPrediction(target);
             if (rpre.Hitchance >= HitChance.Medium &&
