@@ -32,10 +32,10 @@ namespace MightyAio.Champions
         private static int[] _spellLevels;
         private static double tmdmg = 0;
         private static int LastTattack=0;
-        private static int lastskin = 0;
         private static int time = 0;
         private static int lastsound = 7;
-        public static SoundPlayer sounds;
+        public static SoundPlayer sound1,sound2,sound3,sound4,sound5,sound6;
+
         #endregion
 
         #region Menu
@@ -150,7 +150,6 @@ namespace MightyAio.Champions
                 });
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            Spellbook.OnCastSpell += SpellbookOnOnCastSpell;
             AIBaseClient.OnProcessSpellCast += AIBaseClientOnOnProcessSpellCast;
             Dash.OnDash += (sender, args) =>
             {
@@ -160,47 +159,51 @@ namespace MightyAio.Champions
             };
             Interrupter.OnInterrupterSpell += (sender, args) => { };
             AIBaseClient.OnBuffGain += AIBaseClientOnOnBuffGain;
+            var dir = Resource1._1;
+            var dir2 = Resource1._2;
+            var dir3 = Resource1._3;
+            var dir4 = Resource1._4;
+            var dir5 = Resource1._5;
+            var dir6 = Resource1._6;
+            sound1 = new SoundPlayer(dir);
+            sound2 = new SoundPlayer(dir2);
+            sound3 = new SoundPlayer(dir3);
+            sound4 = new SoundPlayer(dir4);
+            sound5 = new SoundPlayer(dir5);
+            sound6 = new SoundPlayer(dir6);
+            sound1.Load();
+            sound2.Load();
+            sound3.Load();
+            sound4.Load();
+            sound5.Load();
+            sound6.Load();
         }
+        #endregion
+
+        #region args
 
         private void AIBaseClientOnOnBuffGain(AIBaseClient sender, AIBaseClientBuffGainEventArgs args)
         {
             if (sender.IsMe && args.Buff.Name == "UndyingRage")
             {
                 if (!_menu["R"].GetValue<MenuBool>("RS")) return;
-                var dir = Resource1._1;
-                var dir2 = Resource1._2;
-                var dir3 = Resource1._3;
-                var dir4 = Resource1._4;
-                var dir5 = Resource1._5;
-                var dir6 = Resource1._6;
+              
                 var random = new Random();
                 var num = random.Next(6);
-                
                 if (lastsound == num)  num = random.Next(6);
-                var alldir = new[] { dir, dir2, dir3, dir4,dir5,dir6};
-                //   int num = random.Next(a);
-                sounds = new SoundPlayer(alldir[num]);
-                sounds.Load();
-                sounds.Play();
+                Game.Print(num);
+                var a = new [] {sound1,sound2,sound3,sound4,sound5,sound6};
+                a[num].Play();
                 lastsound = num;
             }
         }
 
-
-        private void SpellbookOnOnCastSpell(Spellbook sender, SpellbookCastSpellEventArgs args)
-        {
-            
-            if (!_r.IsReady() || args.Target == null ||
-                Player.HealthPercent >= RH) return;
-            if (sender.Owner.IsEnemy   && args.Target != null && args.Target.IsMe)
-            {
-               
-                    _r.Cast();
-                
-            }
-        }
+        
+     
 
         #endregion
+
+       
 
         #region Etc
 
@@ -212,16 +215,14 @@ namespace MightyAio.Champions
 
         private void AIBaseClientOnOnProcessSpellCast(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
         {
-            if (sender.IsMe && args.Slot == SpellSlot.R)
-            {
-                lastskin = _menu["Misc"].GetValue<MenuSlider>("setskin").Value;
-            }
+          
             if (sender.IsMe && args.Slot == SpellSlot.E)
             {
-                Game.SendEmote(EmoteId.Laugh);
+                Game.SendEmote(EmoteId.Dance);
             }
             if (sender.IsEnemy  && sender is AITurretClient && args.Target != null && sender.DistanceToPlayer() < 1400 && args.Target.IsMe && args.SData.Name == "SRUAP_Turret_Chaos1BasicAttack")
             {
+                restT();
                 var dmg = sender.GetAutoAttackDamage(Player);
                 LastTattack = Variables.GameTimeTickCount;
                 if (tmdmg > 1.2) tmdmg = 1.2;
@@ -232,12 +233,14 @@ namespace MightyAio.Champions
                 }
                 tmdmg += 0.4;
             }
-            
             if (!_r.IsReady() || args.Target == null ||
-                Player.HealthPercent >= RH || !args.Target.IsMe) return;
-            if (sender is AIHeroClient )
+                Player.HealthPercent >= RH ) return;
+            if (!(sender is AIHeroClient)) return;
+            if (sender.IsEnemy   && args.Target != null && args.Target.IsMe)
             {
+               
                 _r.Cast();
+                
             }
             if (sender.IsMinion || sender.IsMonster)
             {
@@ -344,26 +347,16 @@ namespace MightyAio.Champions
                 case OrbwalkerMode.LastHit:
                     break;
             }
-
-            if (Player.HasBuff("UndyingRage")) forfun();
+            
             if (Feel) feel();
             
             CastQ();
             KillSteal();
             if (_menu["Misc"].GetValue<MenuBool>("autolevel")) Levelup();
-            restT();
-            AIBaseClient.OnBuffLose += AIBaseClientOnOnBuffLose;
+          
         }
 
-        private static void AIBaseClientOnOnBuffLose(AIBaseClient sender, AIBaseClientBuffLoseEventArgs args)
-        {
-            if (sender.IsMe && args.Buff.Name == "UndyingRage")
-            {
-                _menu["Misc"].GetValue<MenuSlider>("setskin").SetValue(lastskin);
-              
-            }
-        }
-
+      
         #endregion
 
         #region Orbwalker mod
@@ -532,25 +525,13 @@ namespace MightyAio.Champions
                     break;
             }
         }
-        private static void forfun()
-        {
-            
-            if (Variables.GameTimeTickCount - time < 400) return;
-            var random = new Random();
-            var text = new List<int>
-            {
-                1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21
-            };
-            var num = random.Next(text.Count);
-            _menu["Misc"].GetValue<MenuSlider>("setskin").SetValue(text[num]);
-            time = Variables.GameTimeTickCount;
-        }
+       
         private static void restT()
         {
-            if ( Variables.GameTimeTickCount - LastTattack > 3000)
-            {
-                tmdmg = 0;
-            }
+            if (Variables.GameTimeTickCount - LastTattack < 3000) return;
+
+            tmdmg = 0;
+            
         }
         #endregion
     }
