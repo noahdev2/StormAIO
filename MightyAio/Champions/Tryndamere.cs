@@ -220,7 +220,7 @@ namespace MightyAio.Champions
             {
                 Game.SendEmote(EmoteId.Dance);
             }
-            if (sender.IsEnemy  && sender is AITurretClient && args.Target != null && sender.DistanceToPlayer() < 1400 && args.Target.IsMe && args.SData.Name == "SRUAP_Turret_Chaos1BasicAttack")
+            if (sender.IsEnemy  && sender is AITurretClient && args.Target != null && sender.DistanceToPlayer() < 3000 && args.Target.IsMe && args.SData.Name == "SRUAP_Turret_Chaos1BasicAttack")
             {
                 restT();
                 var dmg = sender.GetAutoAttackDamage(Player);

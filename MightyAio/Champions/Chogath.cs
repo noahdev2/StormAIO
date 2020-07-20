@@ -130,7 +130,7 @@ namespace MightyAio.Champions
             _w = new Spell(SpellSlot.W, 650);
             _e = new Spell(SpellSlot.E, 500);
             _r = new Spell(SpellSlot.R, 175);
-            _q.SetSkillshot(1.2f, 250f, float.MinValue, false, SkillshotType.Circle);
+            _q.SetSkillshot(0.725f, 230f, 2000, false, SkillshotType.Circle);
             _w.SetSkillshot(0.5f, 60f, int.MaxValue, false, SkillshotType.Cone);
             CreateMenu();
             _berlinfont = new Font(
@@ -351,17 +351,10 @@ namespace MightyAio.Champions
         {
             if (!_q.IsReady() || target.HasBuffOfType(BuffType.SpellShield))
                 return;
-            var t = SpellPrediction.GetPrediction(target, (float) 0.625);
+          
+            var t = _q.GetPrediction(target);
             if (t.Hitchance < HitChance.High) return;
-            var x = target.MoveSpeed;
-            var y = x * 850 / 1000;
-            var pos = target.Position;
-            if (target.Distance(t.CastPosition) <= y) pos = t.CastPosition;
-            if (target.Distance(t.CastPosition) > y) pos = target.Position.Extend(t.CastPosition, y);
-            if (Player.Distance(pos) <= 949 && target.Distance(pos) >= 100) _q.Cast(pos);
-            if (Player.Distance(target.Position) <=
-                Player.BoundingRadius + Player.AttackRange + target.BoundingRadius) _q.Cast(pos);
-            // credits MaddoPls for CastQ Prediction
+            _q.Cast(t.CastPosition);
         }
 
         private static void CastW(AIHeroClient target)

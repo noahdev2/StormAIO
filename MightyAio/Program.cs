@@ -63,6 +63,9 @@ using MightyAio.Champions;
                     case "Tryndamere":
                         var Tryndamere = new Tryndamere();
                         break;
+                    case "Warwick":
+                        var Warwick = new Warwick();
+                        break;
                    
                 }
             }

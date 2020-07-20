@@ -70,6 +70,7 @@
     <Compile Include="Champions\Tryndamere.cs" />
     <Compile Include="Champions\Udyr.cs" />
     <Compile Include="Champions\Volibear.cs" />
+    <Compile Include="Champions\Warwick.cs" />
     <Compile Include="Champions\Yorick.cs" />
     <Compile Include="Champions\Yuumi.cs" />
     <Compile Include="Champions\Zac.cs" />
