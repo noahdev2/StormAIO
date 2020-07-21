@@ -26,7 +26,6 @@ namespace MightyAio.Champions
         private static Font _berlinfont;
         private static int _mykills = 0 + Player.ChampionsKilled;
         private static int[] _spellLevels;
-        private static float MyLastSpeed = Player.MoveSpeed;
 
         #endregion
 
@@ -121,7 +120,7 @@ namespace MightyAio.Champions
             _w = new Spell(SpellSlot.W, 4000) {Delay = 0.5f};
             _e = new Spell(SpellSlot.E, 375) {Delay = 0f};
             _e.SetSkillshot(0f, 225f, 1000f, false, SkillshotType.Line);
-            _r = new Spell(SpellSlot.R, 675);
+            _r = new Spell(SpellSlot.R);
             _r.SetSkillshot(0.1f, 100f, float.MaxValue, false, SkillshotType.Line);
             CreateMenu();
             _berlinfont = new Font(
@@ -145,9 +144,18 @@ namespace MightyAio.Champions
                     CastQ();
             };
             Interrupter.OnInterrupterSpell += (sender, args) => { };
+            Game.OnNotify += GameOnOnNotify;
         }
 
-       
+        private void GameOnOnNotify(GameNotifyEventArgs args)
+        {
+            if (args.EventId == GameEventId.OnReincarnate)
+            {
+                Player.SetSkin(_menu["Misc"].GetValue<MenuSlider>("setskin").Value);
+            }
+
+        }
+
         #endregion
 
         #region args
@@ -182,7 +190,7 @@ namespace MightyAio.Champions
             if (_menu["Drawing"].GetValue<MenuBool>("DrawE") && _e.IsReady())
                 Drawing.DrawCircle(Player.Position, _e.Range, Color.DarkCyan);
             if (_menu["Drawing"].GetValue<MenuBool>("DrawR") && _r.IsReady())
-                Drawing.DrawCircle(Player.Position, Rrange(), Color.Violet);
+                Drawing.DrawCircle(Player.Position,Rrange , Color.Violet);
 
             var drawKill = _menu["Drawing"].GetValue<MenuBool>("Drawkillabeabilities");
             foreach (
@@ -232,9 +240,7 @@ namespace MightyAio.Champions
                 case OrbwalkerMode.LastHit:
                     break;
             }
-
-            var a = Variables.GameTimeTickCount;
-            if (a + 250 >= Variables.GameTimeTickCount) MyLastSpeed = Player.MoveSpeed;
+            
             KillSteal();
             if (_menu["Misc"].GetValue<MenuBool>("autolevel")) Levelup();
             if (_menu["R"].GetValue<MenuKeyBind>("RT").Active) CastR2();
@@ -246,6 +252,7 @@ namespace MightyAio.Champions
 
         private static void Combo()
         {
+            if (!Orbwalker.CanAttack()) CastQ();
             CastE();
             if (_menu["R"].GetValue<MenuBool>("R")) CastR();
         }
@@ -272,9 +279,9 @@ namespace MightyAio.Champions
             if (Qdmg(target)  >= target.Health + target.AllShield && _menu["KS"].GetValue<MenuBool>("Q") && _q.IsInRange(target)) _q.Cast(target);
             if (Rdmg(target) >= target.Health + target.AllShield && _menu["KS"].GetValue<MenuBool>("R"))
             {
-                target = TargetSelector.GetTarget(Rrange());
+                target = TargetSelector.GetTarget(Rrange);
                 if (target == null || !_r.IsReady()) return;
-                _r.Range = Rrange();
+                _r.Range = Rrange;
                 var rpre = _r.GetPrediction(target);
                 if (rpre.Hitchance >= HitChance.Medium) _r.Cast(rpre.CastPosition);
             }
@@ -309,19 +316,17 @@ namespace MightyAio.Champions
 
         private static void CastR()
         {
-            var target = TargetSelector.GetTarget(Rrange());
+            var target = TargetSelector.GetTarget(Rrange);
             if (target == null || !_r.IsReady()) return;
             if (target.IsUnderEnemyTurret() && !_menu["R"].GetValue<MenuBool>("RTT")) return;
-            _r.Range = Rrange();
             var rpre = _r.GetPrediction(target);
             if (rpre.Hitchance >= HitChance.Medium &&
                 target.HealthPercent <= _menu["R"].GetValue<MenuSlider>("RH").Value) _r.Cast(rpre.CastPosition);
         }
         private static void CastR2()
         {
-            var target = TargetSelector.GetTarget(Rrange());
+            var target = TargetSelector.GetTarget(Rrange);
             if (target == null || !_r.IsReady()) return;
-            _r.Range = Rrange();
             var rpre = _r.GetPrediction(target);
             if (rpre.Hitchance >= HitChance.Medium) _r.Cast(rpre.CastPosition);
         }
@@ -364,17 +369,10 @@ namespace MightyAio.Champions
                     }
                 }
         }
-        private static float Rrange()
-        {
-            var range = MyLastSpeed * 2.50;
-            if (range <= _r.Range) return _r.Range;
-
-            return (float) ((float) range * 0.85);
-        }
-
         private static void DrawText(Font aFont, string aText, int aPosX, int aPosY, ColorBGRA aColor) =>
         aFont.DrawText(null, aText, aPosX, aPosY, aColor);
-        
+
+        private static float Rrange => (float) (675 >= Player.MoveSpeed * 1.9 ? 675 : (Player.MoveSpeed * 1.9) );
 
         private static void Levelup()
         {
