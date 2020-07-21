@@ -197,7 +197,7 @@ namespace MightyAio.Champions
                     DrawText(_berlinfont, "Killable Skills (Q):",
                         (int) Drawing.WorldToScreen(enemyVisible.Position)[0] - 38,
                         (int) Drawing.WorldToScreen(enemyVisible.Position)[1] + 10, SharpDX.Color.White);
-                else if (Qdmg(enemyVisible) > enemyVisible.Health + Rdmg(enemyVisible))
+                else if (Qdmg(enemyVisible)+ Rdmg(enemyVisible)> enemyVisible.Health )
                     DrawText(_berlinfont, "Killable Skills (R + Q):",
                         (int) Drawing.WorldToScreen(enemyVisible.Position)[0] - 38,
                         (int) Drawing.WorldToScreen(enemyVisible.Position)[1] + 10, SharpDX.Color.White);
@@ -216,33 +216,11 @@ namespace MightyAio.Champions
                 _mykills = Player.ChampionsKilled;
                 Emote();
             }
-
-            var gold = Player.Gold;
-            var time = Game.Time / 60;
-            var item = _menu["autoitem"].GetValue<MenuList>("selectitem").SelectedValue;
-
-            if (item != "none" && Game.MapId == GameMapId.SummonersRift)
-                switch (item)
-                {
-                    case "Hunter's Machete":
-                    {
-                        if (time < 1 && Player.InShop())
-                        {
-                            if (gold >= 500 && !Player.HasItem(ItemId.Hunters_Machete))
-                                Player.BuyItem(ItemId.Hunters_Machete);
-                            if (gold >= 150 && !Player.HasItem(ItemId.Refillable_Potion))
-                                Player.BuyItem(ItemId.Refillable_Potion);
-                        }
-
-                        break;
-                    }
-                }
-
+            buyitem();
             var getskin = _menu["Misc"].GetValue<MenuSlider>("setskin").Value;
             var skin = _menu["Misc"].GetValue<MenuBool>("UseSkin");
             if (skin && Player.SkinID != getskin) Player.SetSkin(getskin);
-
-            Orbwalker.AttackState = true;
+            
             switch (Orbwalker.ActiveMode)
             {
                 case OrbwalkerMode.Combo:
@@ -363,6 +341,29 @@ namespace MightyAio.Champions
 
         #region Extra functions
 
+        private static void buyitem()
+        {
+            var gold = Player.Gold;
+            var time = Game.Time / 60;
+            var item = _menu["autoitem"].GetValue<MenuList>("selectitem").SelectedValue;
+
+            if (item != "none" && Game.MapId == GameMapId.SummonersRift)
+                switch (item)
+                {
+                    case "Hunter's Machete":
+                    {
+                        if (time < 1 && Player.InShop())
+                        {
+                            if (gold >= 500 && !Player.HasItem(ItemId.Hunters_Machete))
+                                Player.BuyItem(ItemId.Hunters_Machete);
+                            if (gold >= 150 && !Player.HasItem(ItemId.Refillable_Potion))
+                                Player.BuyItem(ItemId.Refillable_Potion);
+                        }
+
+                        break;
+                    }
+                }
+        }
         private static float Rrange()
         {
             var range = MyLastSpeed * 2.50;
