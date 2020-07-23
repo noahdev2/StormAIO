@@ -60,7 +60,7 @@ namespace MightyAio.Champions
             // R
             var RMenu = new Menu("R", "R")
             {
-                new MenuBool("R", "Use R in Combo Only When Target is out of range and killable"),
+                new MenuBool("R", "Use R in Combo"),
                 new MenuSlider("RC","Use R When you hit",3,1,5)
             };
             Menu.Add(RMenu);
