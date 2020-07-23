@@ -1,11 +1,13 @@
 ﻿﻿using System;
-using System.Linq;
+ using System.Collections.Generic;
+ using System.Linq;
 using System.Windows.Forms;
 using EnsoulSharp;
 using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI.Values;
 using EnsoulSharp.SDK.Prediction;
-using SharpDX;
+ using EnsoulSharp.SDK.Utility;
+ using SharpDX;
 using SharpDX.Direct3D9;
 using Color = System.Drawing.Color;
 using Menu = EnsoulSharp.SDK.MenuUI.Menu;
@@ -26,27 +28,16 @@ namespace MightyAio.Champions
 
         private static void CreateMenu()
         {
-            Menu = new Menu("Senna", "Senna", true);
+            Menu = new Menu("Lillia", "Lillia", true);
 
             // Q
             var QMenu = new Menu("Q", "Q")
             {
-                new MenuSlider("HealSet", "Auto Heal When Ally is below", 50),
-                new MenuBool("QHeal", "Auto Heal"),
-                new MenuSlider("QHealM", "Mana for Q heal", 50),
-                new MenuKeyBind("QSimi", "Heal simikey", Keys.A, KeyBindType.Press),
-                new MenuBool("QC", "Use Q in Combo"),
-                new MenuBool("QH", "Use Q in Harass"),
-                new MenuSlider("QMana", "Mana for Q in harass", 40),
-                new MenuBool("QE", "Use Extended Q ")
+                new MenuBool("QC", "Use W in Combo"),
+                new MenuBool("QH", "Use W in Harass"),
+                new MenuSlider("QMana", "Mana for using Q in harass", 30),
+                new MenuBool("QM","Q managnet")
             };
-            var ally = from hero in ObjectManager.Get<AIHeroClient>()
-                where hero.IsAlly
-                select hero;
-            alliles = new Menu("alliles", "Use Q on");
-            foreach (var hero in ally.Where(x => x.CharacterName != "Senna"))
-                alliles.Add(new MenuBool(hero.CharacterName, "Use Q on " + hero.CharacterName));
-            QMenu.Add(alliles);
             Menu.Add(QMenu);
 
             // W
@@ -54,44 +45,50 @@ namespace MightyAio.Champions
             {
                 new MenuBool("WC", "Use W in Combo"),
                 new MenuBool("WH", "Use W in Harass"),
-                new MenuSlider("WMana", "Mana for W in harass", 40),
-                new MenuBool("WGap", "Use W in gapclose "),
-                new MenuBool("WI", "Use W in Interrupter", false)
+                new MenuSlider("WMana", "Mana for using W in harass", 50),
             };
             Menu.Add(WMenu);
             // E
             var EMenu = new Menu("E", "E")
             {
                 new MenuBool("EC", "Use E in Combo"),
-                new MenuBool("EF", "Use E in Feel"),
-                new MenuKeyBind("FeelKey", "Feel Key", Keys.Z, KeyBindType.Press)
+                new MenuBool("EC2", "Use E long range in Combo"),
+                new MenuBool("EF", "Use E in Harass"),
+                new MenuSlider("EM","Use E when Mana >",70)
             };
             Menu.Add(EMenu);
             // R
             var RMenu = new Menu("R", "R")
             {
-                new MenuBool("RC", "Use R in Combo Only When Target is out of range and killable"),
-                new MenuKeyBind("RS", "Rsimikey", Keys.H, KeyBindType.Press)
+                new MenuBool("R", "Use R in Combo Only When Target is out of range and killable"),
+                new MenuSlider("RC","Use R When you hit",3,1,5)
             };
             Menu.Add(RMenu);
             // lane clear
             var laneclear = new Menu("laneclear", "Lane Clear")
             {
-                new MenuBool("Q", "Use Q for Lane Clear", false),
-                new MenuSlider("QMana", "Mana for Q in LaneClear", 40),
-                new MenuSlider("Qcount", "Only use Q if it can hit ", 2, 0, 5),
-                new MenuSeparator("Soul", "X Simi collecting Souls key")
+                new MenuKeyBind("SpellFarm","Spell Farm Key",Keys.M,KeyBindType.Toggle),
+                new MenuBool("Q", "Use Q for Lane Clear"),
+                new MenuSlider("QMana", "Mana for using Q in LaneClear", 40),
+                new MenuBool("W", "Use W for Lane Clear",false),
+                new MenuSlider("WMana", "Mana for using W in LaneClear", 80),
             };
             Menu.Add(laneclear);
+            var Jungleclear = new Menu("JungleClear", "Jungle Clear")
+            {
+                new MenuBool("Q", "Use Q" ),
+                new MenuBool("W", "Use W" ),
+                new MenuBool("E", "Use E" ),
+            };
+            Menu.Add(Jungleclear);
 
             // kill steal
             var killsteal = new Menu("KillSteal", "Kill Steal")
             {
                 new MenuBool("Q", "Use Q"),
-                new MenuBool("WQ", "UseWardQ"),
-                new MenuBool("D", "Use Ignite"),
+                new MenuBool("E", "E"),
+                new MenuBool("E2", "Use E Max Range"),
                 new MenuBool("W", "Use W"),
-                new MenuBool("R", "Use R", false)
             };
             Menu.Add(killsteal);
 
@@ -99,7 +96,7 @@ namespace MightyAio.Champions
             var miscMenu = new Menu("Misc", "Misc")
             {
                 new MenuBool("UseSkin", "Use Skin Changer"),
-                new MenuSlider("setskin", "set skin", 10, 0, 55),
+                new MenuSlider("setskin", "set skin", 4, 0, 55),
                 new MenuBool("autolevel", "Auto Level")
             };
 
@@ -119,9 +116,8 @@ namespace MightyAio.Champions
                 new MenuBool("DrawQ", "Draw Q"),
                 new MenuBool("DrawW", "Draw W"),
                 new MenuBool("DrawE", "Draw E"),
-                new MenuBool("DrawQ2", "Draw Q max range"),
-                new MenuBool("PermaShow", "Perma Show"),
-                new MenuBool("Drawkillabeabilities", "Draw kill abe abilities")
+                new MenuBool("DrawSpell", "Draw Spell status"),
+                new MenuBool("Drawkillabeabilities", "Draw kill able abilities")
             };
             Menu.Add(drawMenu);
 
@@ -168,11 +164,14 @@ namespace MightyAio.Champions
                 });
 
             Game.OnUpdate += GameOnOnUpdate;
-            Gapcloser.OnGapcloser += Gapcloser_OnGapcloser;
             Drawing.OnDraw += DrawingOnOnDraw;
-            Interrupter.OnInterrupterSpell += OnInterruptible;
+            Game.OnNotify += delegate(GameNotifyEventArgs args)
+            {
+                if (args.EventId == GameEventId.OnReincarnate && Menu["Misc"].GetValue<MenuBool>("UseSkin"))
+                    Player.SetSkin(Menu["Misc"].GetValue<MenuSlider>("setskin").Value);
+            };
         }
-
+        private static bool spellfarmkey => Menu["laneclear"].GetValue<MenuKeyBind>("SpellFarm").Active;
         private static void DrawText(Font aFont, string aText, int aPosX, int aPosY, ColorBGRA aColor)
         {
             aFont.DrawText(null, aText, aPosX, aPosY, aColor);
@@ -181,17 +180,16 @@ namespace MightyAio.Champions
         private static void DrawingOnOnDraw(EventArgs args)
         {
             var drawQ = Menu["Drawing"].GetValue<MenuBool>("DrawQ");
-            var drawQM = Menu["Drawing"].GetValue<MenuBool>("DrawQ2");
             var drawW = Menu["Drawing"].GetValue<MenuBool>("DrawW");
             var drawE = Menu["Drawing"].GetValue<MenuBool>("DrawE");
             var drawKill = Menu["Drawing"].GetValue<MenuBool>("Drawkillabeabilities");
-            var PermaShow = Menu["Drawing"].GetValue<MenuBool>("PermaShow");
+            var drawS = Menu["Drawing"].GetValue<MenuBool>("DrawSpell");
             var p = Player.Position;
 
-            if (drawQ && (Q.IsReady() || PermaShow))
-                Drawing.DrawCircle(p, Player.GetRealAutoAttackRange(), Color.Purple);
-            if (drawE && (E.IsReady() || PermaShow)) Drawing.DrawCircle(p, E.Range, Color.Red);
-            if (drawW && (W.IsReady() || PermaShow)) Drawing.DrawCircle(p, W.Range, Color.DarkCyan);
+            if (drawQ && (Q.IsReady()))
+                Drawing.DrawCircle(p, Q.Range, Color.Purple);
+            if (drawE && (E.IsReady() )) Drawing.DrawCircle(p, E.Range, Color.Red);
+            if (drawW && (W.IsReady() )) Drawing.DrawCircle(p, W.Range, Color.DarkCyan);
 
             foreach (
                 var enemyVisible in
@@ -204,8 +202,20 @@ namespace MightyAio.Champions
                     var aa = string.Format("AA Left:" + (int) (enemyVisible.Health / autodmg));
                     if (drawKill)
                     {
-                        if (100> enemyVisible.Health)
+                        if (Q.GetDamage(enemyVisible) > enemyVisible.Health)
                             DrawText(Berlinfont, "Killable Skills (Q):",
+                                (int) Drawing.WorldToScreen(enemyVisible.Position)[0] - 38,
+                                (int) Drawing.WorldToScreen(enemyVisible.Position)[1] + 10, SharpDX.Color.White);
+                        else if (Q.GetDamage(enemyVisible) + Q.GetDamage(enemyVisible) > enemyVisible.Health)
+                            DrawText(Berlinfont, "Killable Skills (Q + outrange true dmg):",
+                                (int) Drawing.WorldToScreen(enemyVisible.Position)[0] - 38,
+                                (int) Drawing.WorldToScreen(enemyVisible.Position)[1] + 10, SharpDX.Color.White);
+                        else if (Q.GetDamage(enemyVisible) + Q.GetDamage(enemyVisible) + W.GetDamage(enemyVisible,DamageStage.Empowered) > enemyVisible.Health)
+                            DrawText(Berlinfont, "Killable Skills (Q + outrange true dmg + W):",
+                                (int) Drawing.WorldToScreen(enemyVisible.Position)[0] - 38,
+                                (int) Drawing.WorldToScreen(enemyVisible.Position)[1] + 10, SharpDX.Color.White);
+                        else if (Q.GetDamage(enemyVisible) + Q.GetDamage(enemyVisible) + W.GetDamage(enemyVisible,DamageStage.Empowered) + E.GetDamage(enemyVisible) > enemyVisible.Health)
+                            DrawText(Berlinfont, "Killable Skills (Q + outrange true dmg + W  + E):",
                                 (int) Drawing.WorldToScreen(enemyVisible.Position)[0] - 38,
                                 (int) Drawing.WorldToScreen(enemyVisible.Position)[1] + 10, SharpDX.Color.White);
                         else
@@ -213,6 +223,17 @@ namespace MightyAio.Champions
                                 (int) Drawing.WorldToScreen(enemyVisible.Position)[1] + 10, SharpDX.Color.White);
                     }
                 }
+            if (drawS)
+            {
+                if (spellfarmkey)
+                    DrawText(Berlinfont, "Spell Farm On",
+                        (int) Drawing.WorldToScreen(Player.Position)[0] - 58,
+                        (int) Drawing.WorldToScreen(Player.Position)[1] + 30, SharpDX.Color.White);
+                if (!spellfarmkey)
+                    DrawText(Berlinfont, "Spell Farm Off",
+                        (int) Drawing.WorldToScreen(Player.Position)[0] - 58,
+                        (int) Drawing.WorldToScreen(Player.Position)[1] + 30, SharpDX.Color.White);
+            }
         }
 
         #endregion GameLoad
@@ -244,14 +265,18 @@ namespace MightyAio.Champions
 
                 case OrbwalkerMode.LaneClear:
                     LaneClear();
+                    JungleClear();
                     break;
 
                 case OrbwalkerMode.LastHit:
-                    LastHit();
+                   
                     break;
             }
 
-            if (Menu["E"].GetValue<MenuKeyBind>("FeelKey").Active) Feel();
+            
+       
+
+          
             Killsteal();
             if (Menu["Misc"].GetValue<MenuBool>("autolevel")) Levelup();
         }
@@ -261,68 +286,163 @@ namespace MightyAio.Champions
 
         #region Orbwalker mod
 
-        private static void LastHit()
-        {
-            
-        }
-
-        private static void Feel()
-        {
-            var UseEtofeel = Menu["E"].GetValue<MenuBool>("EF");
-            Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
-
-            if (E.IsReady() && UseEtofeel) E.Cast();
-        }
-
         private static void LaneClear()
         {
-          
+            if (!spellfarmkey ) return;
+            var minions = GameObjects.GetMinions(Player.Position, Q.Range).OrderByDescending(x => x.MaxHealth).ThenBy(
+                x=> x.DistanceToPlayer()).ToList();
+            if (!minions.Any()) return;
+            foreach (var moster in minions.Where(x=> x.IsValid))
+            {
+                if (Menu["laneclear"].GetValue<MenuBool>("Q") && Player.ManaPercent >= Menu["laneclear"].GetValue<MenuSlider>("QMana").Value )
+                { 
+                
+                    if (IsInInnerRange(moster)) Orbwalker.Move(Player.Position.Extend(moster.Position, -Q.Range));
+                    Q.Cast();
+                     
+            
+                }
+                if (Menu["laneclear"].GetValue<MenuBool>("W") && Player.ManaPercent >= Menu["laneclear"].GetValue<MenuSlider>("WMana").Value)
+                {
+                    var wiminion = GameObjects.GetMinions(Player.Position, W.Range).OrderByDescending(x=> x.MaxHealth).ToList();
+                    if (!wiminion.Any()) return;
+                    var aa=   W.GetCircularFarmLocation(wiminion, W.Width);
+                    if (aa.MinionsHit >= 1)
+                    {
+                        W.Cast(aa.Position);
+                    }
+                }
+            
+            }
         }
-        
+
+        private static void JungleClear()
+        {
+            var Jgl = GameObjects.GetJungles(Player.Position, Q.Range).OrderByDescending(x => x.MaxHealth).ThenBy(
+                x=> x.DistanceToPlayer()).ToList();
+            if (!Jgl.Any()) return;
+            foreach (var moster in Jgl.Where(x=> x.IsValid))
+            {
+                if (Menu["JungleClear"].GetValue<MenuBool>("Q"))
+                { 
+                
+                     if (IsInInnerRange(moster)) Orbwalker.Move(Player.Position.Extend(moster.Position, -Q.Range));
+                     Q.Cast();
+                     
+            
+                }
+                if (Menu["JungleClear"].GetValue<MenuBool>("W"))
+                {
+                    var wiminion = GameObjects.GetJungles(Player.Position, W.Range).OrderByDescending(x=> x.MaxHealth).ToList();
+                    if (!wiminion.Any()) return;
+                    var aa=   W.GetCircularFarmLocation(wiminion, W.Width);
+                    if (aa.MinionsHit >= 1)
+                    {
+                        W.Cast(aa.Position);
+                    }
+                }
+                if (Menu["JungleClear"].GetValue<MenuBool>("E"))
+                {
+                    E.Cast(moster);
+                }
+            }
+        }
 
         private static void Combo()
         {
-          
+            if (Menu["Q"].GetValue<MenuBool>("QC"))castQ();
+            if (Menu["W"].GetValue<MenuBool>("WC"))castW();
+            if (Menu["E"].GetValue<MenuBool>("EC"))castE();
+            if (Menu["E"].GetValue<MenuBool>("EC2"))castE2();
+            castR();
         }
 
 
         private static void Harass()
         {
-           
+            if (Menu["Q"].GetValue<MenuBool>("QH") && Menu["Q"].GetValue<MenuBool>("QMana") >= Player.ManaPercent)castQ();
+            if (Menu["W"].GetValue<MenuBool>("WH") && Menu["W"].GetValue<MenuBool>("WMana") >= Player.ManaPercent)castW();
+            if (Menu["E"].GetValue<MenuBool>("EF") && Menu["E"].GetValue<MenuBool>("EM")    >= Player.ManaPercent)castE();
         }
 
         #endregion
+        
+        #region spell Functions
 
-        #region Args
-
-        private static void Gapcloser_OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserArgs Args)
+        private static void castQ()
         {
-            if (!Menu["W"].GetValue<MenuBool>("WGap")) return;
-
-            if (W.IsReady() && sender != null && sender.IsValidTarget(W.Range))
+            if (!Q.IsReady()) return;
+            var target = TargetSelector.GetTarget(Q.Range);
+            if (target == null) return;
+            if (IsInInnerRange(target) && Menu["Q"].GetValue<MenuBool>("QM") )
             {
-                var pred = W.GetPrediction(sender);
-
-                if (pred != null && pred.Hitchance >= HitChance.High) W.Cast(pred.CastPosition);
+                Orbwalker.Move(Player.Position.Extend(target.Position, -Q.Range + 100));
+                DelayAction.Add(250,()=> Q.Cast() );
+            }
+            else
+            {
+                Q.Cast();
             }
         }
 
-        private void OnInterruptible(AIHeroClient sender, Interrupter.InterruptSpellArgs args)
+        private static void castW()
         {
-            if (!Menu["W"].GetValue<MenuBool>("WI")) return;
-
-            if (W.IsReady() && sender != null && sender.IsValidTarget(W.Range))
+            var target = TargetSelector.GetTarget(W.Range);
+            if (target == null) return;
+            var wpre=  W.GetPrediction(target);
+            if (wpre.Hitchance >= HitChance.High)
             {
-                var pred = W.GetPrediction(sender);
-
-                if (pred != null && pred.Hitchance >= HitChance.High) W.Cast(pred.CastPosition);
+              if (wpre.CastPosition.IsWall()) return;
+              W.Cast(wpre.UnitPosition);
             }
         }
 
-       
+        private static void castE()
+        {
+            if (!E.IsReady()) return;
+            var target = TargetSelector.GetTarget(E.Range);
+            if (target == null) return;
+            var epre = E.GetPrediction(target);
+            if (epre.Hitchance >= HitChance.High) E.Cast(epre.CastPosition);
+        }
 
-        #endregion Args
+        private static void castE2()
+        {
+            if (!E.IsReady()) return;
+            var target = TargetSelector.GetTarget(20000);
+            if (target == null) return;
+            var from = Player.Position.ToVector2();
+            var to = target.Position.ToVector2();
+            var direction = (from - to).Normalized();
+            var distance = from.Distance(to);
 
+            for (var d = 0; d < distance; d = d + 20)
+            {
+                var point = from + d * direction;
+                var flags = NavMesh.GetCollisionFlags(point.ToVector3());
+
+                if (flags.HasFlag(CollisionFlags.Building) || flags.HasFlag(CollisionFlags.Wall))
+                {
+                    return;
+                }
+            }
+            var epre = E2.GetPrediction(target,true);
+            if (epre.Hitchance >= HitChance.VeryHigh)
+            {
+                E2.Cast(epre.CastPosition);
+            }
+        }
+        private static void castR()
+        {
+            if (!R.IsReady() || !Menu["R"].GetValue<MenuBool>("R") ) return;
+            var target = GameObjects.EnemyHeroes.Count(x => x.HasBuff("LilliaPDoT"));
+            if (target >= Menu["R"].GetValue<MenuSlider>("RC").Value)
+            {
+                R.Cast();
+            }
+        }
+
+        #endregion
         #region Extra functions
 
        
@@ -350,16 +470,11 @@ namespace MightyAio.Champions
             if (rLevel < level[3]) ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.R);
         }
 
-        private static bool IsInInnerRange(AIHeroClient Target)
+        private static bool IsInInnerRange(AIBaseClient Target)
         {
-            return Target.DistanceToPlayer() > 225;
+            return Target.DistanceToPlayer() <= 225;
         }
-        private static bool DreamBuff(AIHeroClient Target)
-        {
-            const string BuffName = "buffname";
-            return Target.HasBuff(BuffName);
-        }
-
+   
         private static void Emote()
         {
             var b = Emotes.GetValue<MenuList>("selectitem").SelectedValue;
@@ -393,7 +508,24 @@ namespace MightyAio.Champions
 
         private static void Killsteal()
         {
-       
+            var target = TargetSelector.GetTarget(20000);
+            if (target==null) return;
+            if (Q.GetDamage(target) + Q.GetDamage(target) >= target.Health)
+            {
+                if (!Menu["KillSteal"].GetValue<MenuBool>("Q")) return;
+                castQ();
+            }
+
+            if (W.GetDamage(target,DamageStage.Empowered) >= target.Health)
+            {
+                if (!Menu["KillSteal"].GetValue<MenuBool>("W")) return;
+                castW();
+            }
+            if (E.GetDamage(target) >= target.Health)
+            {
+                if (Menu["KillSteal"].GetValue<MenuBool>("E")) castE();
+                if (Menu["KillSteal"].GetValue<MenuBool>("E2")) castE2();
+            }
         }
 
      

@@ -245,6 +245,11 @@ namespace MightyAio.Champions
 
                 LastSpellCastTime = Variables.GameTimeTickCount;
             };
+            Game.OnNotify += delegate(GameNotifyEventArgs args)
+            {
+                if (args.EventId == GameEventId.OnReincarnate && Menu["Misc"].GetValue<MenuBool>("UseSkin"))
+                    Player.SetSkin(Menu["Misc"].GetValue<MenuSlider>("setskin").Value);
+            };
         }
 
         #endregion

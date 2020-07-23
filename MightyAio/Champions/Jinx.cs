@@ -191,6 +191,11 @@ namespace MightyAio.Champions
             Teleport.OnTeleport += OnTeleportEvent;
             Interrupter.OnInterrupterSpell += OnInterruptible;
             AIBaseClient.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
+            Game.OnNotify += delegate(GameNotifyEventArgs args)
+            {
+                if (args.EventId == GameEventId.OnReincarnate && Menu["Misc"].GetValue<MenuSliderButton>("UseSkin").Enabled)
+                    Player.SetSkin(Menu["Misc"].GetValue<MenuSliderButton>("UseSkin").Value);
+            };
         }
 
 

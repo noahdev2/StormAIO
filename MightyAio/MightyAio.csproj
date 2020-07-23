@@ -74,6 +74,7 @@
     <Compile Include="Champions\Yorick.cs" />
     <Compile Include="Champions\Yuumi.cs" />
     <Compile Include="Champions\Zac.cs" />
+    <Compile Include="Champions\Zed.cs" />
     <Compile Include="Champions\Zoe.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
