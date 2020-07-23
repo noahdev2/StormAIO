@@ -177,6 +177,12 @@ namespace MightyAio.Champions
             sound4.Load();
             sound5.Load();
             sound6.Load();
+            Game.OnNotify += delegate(GameNotifyEventArgs args)
+            {
+                if (args.EventId == GameEventId.OnReincarnate && _menu["Misc"].GetValue<MenuBool>("UseSkin"))
+                    Player.SetSkin(_menu["Misc"].GetValue<MenuSlider>("setskin").Value);
+            };
+             
         }
         #endregion
 
@@ -191,7 +197,6 @@ namespace MightyAio.Champions
                 var random = new Random();
                 var num = random.Next(6);
                 if (lastsound == num)  num = random.Next(6);
-                Game.Print(num);
                 var a = new [] {sound1,sound2,sound3,sound4,sound5,sound6};
                 a[num].Play();
                 lastsound = num;

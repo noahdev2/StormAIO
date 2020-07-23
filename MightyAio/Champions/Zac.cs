@@ -53,8 +53,6 @@ namespace MightyAio.Champions
             var EMenu = new Menu("E", "E")
             {
                 new MenuBool("EC", "Use E in Combo"),
-                //new MenuBool("EF", "Use E in Feel"),
-                //new MenuKeyBind("FeelKey","Feel Key",System.Windows.Forms.Keys.Z,KeyBindType.Press)
             };
             Menu.Add(EMenu);
             // R
@@ -126,6 +124,11 @@ namespace MightyAio.Champions
             Drawing.OnDraw += Game_OnDraw;
             Game.OnUpdate += Game_OnGameUpdate;
             AIBaseClient.OnProcessSpellCast += AIBaseClientOnProcessSpellCast;
+            Game.OnNotify += delegate(GameNotifyEventArgs args)
+            {
+                if (args.EventId == GameEventId.OnReincarnate && Menu["Misc"].GetValue<MenuBool>("UseSkin"))
+                    player.SetSkin(Menu["Misc"].GetValue<MenuSlider>("setskin").Value);
+            };
         }
 
         private void AIBaseClientOnProcessSpellCast(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
@@ -134,7 +137,7 @@ namespace MightyAio.Champions
             {
                 if (zacETime == 0f)
                 {
-                    zacETime = System.Environment.TickCount;
+                    zacETime = Environment.TickCount;
                     DelayAction.Add(4000, () => { zacETime = 0f; });
                 }
             }
@@ -556,7 +559,7 @@ namespace MightyAio.Champions
             {
                 var qpre = Q.GetPrediction(target);
                 if (qpre.Hitchance >= HitChance.High) { 
-                Q.Cast(target);
+                    Q.Cast(target);
                 }
             }
             if (WQA && target.Health + target.AllShield < W.GetDamage(target) && W.IsReady() && W.IsInRange(target))

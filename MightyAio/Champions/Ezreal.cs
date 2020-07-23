@@ -195,6 +195,11 @@ namespace MightyAio.Champions
             Gapcloser.OnGapcloser += Gapcloser_OnGapcloser;
             Drawing.OnDraw += DrawingOnOnDraw;
             Teleport.OnTeleport += OnTeleportEvent;
+            Game.OnNotify += delegate(GameNotifyEventArgs args)
+            {
+                if (args.EventId == GameEventId.OnReincarnate && Menu["Misc"].GetValue<MenuBool>("UseSkin"))
+                    Player.SetSkin(Menu["Misc"].GetValue<MenuSlider>("setskin").Value);
+            };
         }
         
 

@@ -17,7 +17,7 @@ namespace MightyAio.Champions
     {
         private static AIHeroClient Player => ObjectManager.Player;
 
-        public static Menu Menu { get; set; }
+        private static Menu Menu { get; set; }
 
         #region Menu
 
@@ -125,7 +125,7 @@ namespace MightyAio.Champions
             var miscMenu = new Menu("Misc", "Misc")
             {
                 new MenuBool("UseETower", "Dodge tower shots with E"),
-                new MenuSlider("setskin", "set skin", 14, 0, 15)
+                new MenuSlider("setskin", "set skin", 14)
             };
             Menu.Add(miscMenu);
 
@@ -159,16 +159,8 @@ namespace MightyAio.Champions
 
         public Fizz()
         {
-            var championName = Player.CharacterName.ToLowerInvariant();
 
-            switch (championName)
-            {
-                case "fizz":
-                    // skill order
-                    SpellLevels = new[] {2, 3, 1, 3, 3, 4, 3, 2, 3, 2, 4, 2, 2, 1, 1, 4, 1, 1};
-                    break;
-            }
-
+            SpellLevels = new[] {2, 3, 1, 3, 3, 4, 3, 2, 3, 2, 4, 2, 2, 1, 1, 4, 1, 1};
             Q = new Spell(SpellSlot.Q, 550);
             W = new Spell(SpellSlot.W, Player.GetRealAutoAttackRange());
             E = new Spell(SpellSlot.E, 400);
@@ -197,6 +189,11 @@ namespace MightyAio.Champions
             Game.OnUpdate += GameOnOnUpdate;
             AIBaseClient.OnProcessSpellCast += ObjAiBaseOnOnProcessSpellCast;
             Drawing.OnDraw += DrawingOnOnDraw;
+            Game.OnNotify += delegate(GameNotifyEventArgs args)
+            {
+                if (args.EventId == GameEventId.OnReincarnate )
+                    Player.SetSkin(Menu["Misc"].GetValue<MenuSlider>("setskin").Value);
+            };
         }
 
         private static void DrawText(Font aFont, string aText, int aPosX, int aPosY, ColorBGRA aColor)
@@ -847,15 +844,6 @@ namespace MightyAio.Champions
             if (eLevel < level[2]) ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.E);
 
             if (rLevel < level[3]) ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.R);
-        }
-    }
-
-    internal static class SpellEx
-    {
-        public static bool IsEnabledAndReady(this Spell spell)
-        {
-            return Fizz.Menu[Orbwalker.ActiveMode.ToString()]
-                .GetValue<MenuBool>("Use" + spell.Slot + Orbwalker.ActiveMode) && spell.IsReady();
         }
     }
 }

@@ -152,6 +152,11 @@ namespace MightyAio.Champions
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             AIBaseClient.OnProcessSpellCast += AIBaseClientOnOnProcessSpellCast;
+            Game.OnNotify += delegate(GameNotifyEventArgs args)
+            {
+                if (args.EventId == GameEventId.OnReincarnate && _menu["Misc"].GetValue<MenuBool>("UseSkin"))
+                    Player.SetSkin(_menu["Misc"].GetValue<MenuSlider>("setskin").Value);
+            };
             
         }
 

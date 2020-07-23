@@ -6,14 +6,12 @@ using MightyAio.Champions;
 {
     internal static class Program
     {
-        private static AIHeroClient _player;
-
+        
         private static void Main(string[] args)
         {
             try
             {
-                _player = ObjectManager.Player;
-                switch (_player.CharacterName)
+                switch (ObjectManager.Player.CharacterName)
                 {
                     case "Fizz":
                         var fizz = new Fizz();
@@ -65,6 +63,12 @@ using MightyAio.Champions;
                         break;
                     case "Warwick":
                         var Warwick = new Warwick();
+                        break;
+                    case "Zed":
+                        var Zed = new Zed();
+                        break;
+                    case "Lillia":
+                        var Lillia = new Lillia();
                         break;
                    
                 }

@@ -27,7 +27,6 @@ namespace MightyAio.Champions
         private static int[] _spellLevels;
         private static bool AutoW => _menu["W"].GetValue<MenuBool>("AW");
         private static bool Rbuff => Player.HasBuff("skarnerimpalebuff");
-        private static int OnWayPonit;
         #endregion
 
         #region Menu
@@ -157,6 +156,11 @@ namespace MightyAio.Champions
             Interrupter.OnInterrupterSpell += (sender, args) =>
             {
                 // something will be added if needed it 
+            };
+            Game.OnNotify += delegate(GameNotifyEventArgs args)
+            {
+                if (args.EventId == GameEventId.OnReincarnate && _menu["Misc"].GetValue<MenuBool>("UseSkin"))
+                    Player.SetSkin(_menu["Misc"].GetValue<MenuSlider>("setskin").Value);
             };
         }
         #endregion

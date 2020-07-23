@@ -15,7 +15,7 @@ using Menu = EnsoulSharp.SDK.MenuUI.Menu;
 
 namespace MightyAio.Champions
 {
-    internal class Warwick
+    internal class Zed
     {
         #region Basics
 
@@ -26,14 +26,14 @@ namespace MightyAio.Champions
         private static Font _berlinfont;
         private static int _mykills = 0 + Player.ChampionsKilled;
         private static int[] _spellLevels;
-
+        private static Vector3 RShadowpos;
         #endregion
 
         #region Menu
 
         private static void CreateMenu()
         {
-            _menu = new Menu("Warwick", "Warwick", true);
+            _menu = new Menu("Zed", "Zed", true);
             var qMenu = new Menu("Q", "Q")
             {
                 new MenuBool("Q", "Use Q in combo"),
@@ -112,16 +112,16 @@ namespace MightyAio.Champions
 
         #region Gamestart
 
-        public Warwick()
+        public Zed()
         {
-            _spellLevels = new[] {1, 2, 3, 2, 2, 4, 1, 1, 1, 1, 4, 3, 3, 3, 3, 4, 2, 2};
-            _q = new Spell(SpellSlot.Q, 350);
-            _q.SetTargetted(0f, 2000f);
-            _w = new Spell(SpellSlot.W, 4000) {Delay = 0.5f};
-            _e = new Spell(SpellSlot.E, 375) {Delay = 0f};
-            _e.SetSkillshot(0f, 225f, 1000f, false, SkillshotType.Line);
-            _r = new Spell(SpellSlot.R);
-            _r.SetSkillshot(0.1f, 100f, float.MaxValue, false, SkillshotType.Line);
+            _spellLevels = new[] {1, 2, 3, 1, 1, 4, 1, 3, 3, 1, 4, 3, 3, 2, 2, 4, 2, 2};
+            _q = new Spell(SpellSlot.Q, 900);
+            _q.SetSkillshot(0.25f, 50f,1700f,false,SkillshotType.Line);
+            _w = new Spell(SpellSlot.W, 650); 
+            _w.SetSkillshot(0f,50f,2500,false,SkillshotType.Line);
+            _e = new Spell(SpellSlot.E, 290f) {Delay = 0f};
+            _r = new Spell(SpellSlot.R,625);
+            _r.SetTargetted(0f, float.MaxValue);
             CreateMenu();
             _berlinfont = new Font(
                 Drawing.Direct3DDevice,
@@ -136,49 +136,32 @@ namespace MightyAio.Champions
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             AIBaseClient.OnProcessSpellCast += AIBaseClientOnOnProcessSpellCast;
-            Orbwalker.OnAction += OrbwalkerOnOnAction;
-            Dash.OnDash += (sender, args) =>
-            {
-                if (!_menu["Q"].GetValue<MenuBool>("QA")) return;
-                if (sender.IsEnemy)
-                    CastQ();
-            };
-            Interrupter.OnInterrupterSpell += (sender, args) => { };
+            AIBaseClient.OnBuffGain += AIBaseClientOnOnBuffGain;
             Game.OnNotify += delegate(GameNotifyEventArgs args)
             {
                 if (args.EventId == GameEventId.OnReincarnate && _menu["Misc"].GetValue<MenuBool>("UseSkin"))
                     Player.SetSkin(_menu["Misc"].GetValue<MenuSlider>("setskin").Value);
             };
         }
-        
+
+        private void AIBaseClientOnOnBuffGain(AIBaseClient sender, AIBaseClientBuffGainEventArgs args)
+        {
+            if (sender.IsMe)
+            {
+                Game.Print(args.Buff.Name);
+            }
+        }
 
         #endregion
 
         #region args
-
-        private void OrbwalkerOnOnAction(object sender, OrbwalkerActionArgs args)
+        
+        private static void AIBaseClientOnOnProcessSpellCast(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
         {
-            if (Player.HasBuff("warwickrsound")) args.Process = false;
-            if (args.Type == OrbwalkerType.AfterAttack && Orbwalker.ActiveMode == OrbwalkerMode.Combo)
+            if (sender.IsMe)
             {
-                CastQ();
+              //  Game.Print(args.SData.Name);
             }
-            if (args.Type == OrbwalkerType.AfterAttack && Orbwalker.ActiveMode == OrbwalkerMode.LaneClear)
-            {
-                JungleClear();
-            }
-        }
-
-        private static void AIBaseClientOnOnProcessSpellCast(AIBaseClient sender,
-            AIBaseClientProcessSpellCastEventArgs args)
-        {
-            if (args.Target == null) return;
-            if (sender.IsMe && args.Target.IsEnemy && args.Target is AIHeroClient) Game.SendEmote(EmoteId.Laugh);
-            if (!args.Target.IsMe) return;
-            // Cast E to reduce damage from jgl camps
-            if (Player.HasBuff("WarwickE"))
-                return; // it looks like both E cast and recast has the same name so I have to use if hasbuff 
-            if (sender.IsMonster && Player.CountEnemyHeroesInRange(1000) == 0) _e.Cast();
         }
 
         private static void Drawing_OnDraw(EventArgs args)
@@ -186,8 +169,8 @@ namespace MightyAio.Champions
             if (_menu["Drawing"].GetValue<MenuBool>("DrawE") && _e.IsReady())
                 Drawing.DrawCircle(Player.Position, _e.Range, Color.DarkCyan);
             if (_menu["Drawing"].GetValue<MenuBool>("DrawR") && _r.IsReady())
-                Drawing.DrawCircle(Player.Position,Rrange , Color.Violet);
-
+                Drawing.DrawCircle(Player.Position,_r.Range , Color.Violet);
+            
             var drawKill = _menu["Drawing"].GetValue<MenuBool>("Drawkillabeabilities");
             foreach (
                 var enemyVisible in
@@ -239,7 +222,9 @@ namespace MightyAio.Champions
             
             KillSteal();
             if (_menu["Misc"].GetValue<MenuBool>("autolevel")) Levelup();
-            if (_menu["R"].GetValue<MenuKeyBind>("RT").Active) CastR2();
+            if (_menu["R"].GetValue<MenuKeyBind>("RT").Active) ;
+            
+         
         }
 
         #endregion
@@ -248,39 +233,43 @@ namespace MightyAio.Champions
 
         private static void Combo()
         {
-            if (!Orbwalker.CanAttack()) CastQ();
-            CastE();
-            if (_menu["R"].GetValue<MenuBool>("R")) CastR();
+            var target = TargetSelector.GetTarget(1400);
+            if (target == null) return;
+            if (_q.IsReady() && WShadow != null)
+            {
+                var qpre = _q.GetPrediction(target);
+                if (WShadow != null && WShadow.Distance(target) <= Player.Distance(target))  _q.UpdateSourcePosition(WShadow.Position);
+                if (qpre.Hitchance >= HitChance.High)
+                {
+                    _q.Cast(target);
+                }
+            }
+
+            if ( Player.Spellbook.GetSpell(SpellSlot.W).Name != "ZedW") return;
+          
+                _w.Cast(target);
+
+        }
+        private static void Harass()
+        {
+         
         }
         
         private static void LaneClear()
         {
-            var minons = GameObjects.GetMinions(Player.Position, _q.Range).Where(x => x.Health <= Qdmg(x))
-                .OrderByDescending(x => x.MaxHealth).FirstOrDefault();
-            if (minons == null || !_menu["LaneClear"].GetValue<MenuBool>("Q")) return;
-            _q.Cast(minons);
+          
         }
 
         private static void JungleClear()
         {
-            var Jungle = GameObjects.GetJungles(Player.Position, _q.Range).OrderByDescending(x => x.MaxHealth)
-                .ThenBy(x => x.DistanceToPlayer()).FirstOrDefault();
-            if (Jungle == null || !_menu["JungleClear"].GetValue<MenuBool>("Q")) return;
-            _q.Cast(Jungle);
+          
         }
         private static void KillSteal()
         {
-            var target = TargetSelector.GetTarget(3000);
-            if (target == null) return;
-            if (Qdmg(target)  >= target.Health + target.AllShield && _menu["KS"].GetValue<MenuBool>("Q") && _q.IsInRange(target)) _q.Cast(target);
-            if (Rdmg(target) >= target.Health + target.AllShield && _menu["KS"].GetValue<MenuBool>("R"))
-            {
-                target = TargetSelector.GetTarget(Rrange);
-                if (target == null || !_r.IsReady()) return;
-                _r.Range = Rrange;
-                var rpre = _r.GetPrediction(target);
-                if (rpre.Hitchance >= HitChance.Medium) _r.Cast(rpre.CastPosition);
-            }
+            var target = GameObjects.EnemyHeroes.Where(x => 
+                x.IsValidTarget(_q.Range, true, possbiletarget()));
+            
+          
         }
 
         #endregion
@@ -290,44 +279,20 @@ namespace MightyAio.Champions
 
         private static void CastQ()
         {
-            var target = TargetSelector.GetTarget(_q.Range);
-            if (target == null) return;
-            if (!_q.IsReady() || !_menu["Q"].GetValue<MenuBool>("Q")) return;
-            _q.Cast(target);
+            
         }
 
 
         private static void CastE()
         {
-            var target = TargetSelector.GetTarget(_e.Range);
-            if (target == null || !_e.IsInRange(target) || !_menu["E"].GetValue<MenuBool>("EC")) return;
-            if (!_e.IsReady()) return;
-            if (target.IsFacing(Player) && !Player.HasBuff("WarwickE"))
-            {
-                _e.Cast();
-                return;
-            }
-            _e.Cast();
+          
         }
 
         private static void CastR()
         {
-            var target = TargetSelector.GetTarget(Rrange);
-            if (target == null || !_r.IsReady()) return;
-            if (target.IsUnderEnemyTurret() && !_menu["R"].GetValue<MenuBool>("RTT")) return;
-            var rpre = _r.GetPrediction(target);
-            if (rpre.Hitchance >= HitChance.Medium &&
-                target.HealthPercent <= _menu["R"].GetValue<MenuSlider>("RH").Value) _r.Cast(rpre.CastPosition);
+         
         }
-        private static void CastR2()
-        {
-            var target = TargetSelector.GetTarget(Rrange);
-            if (target == null || !_r.IsReady()) return;
-            var rpre = _r.GetPrediction(target);
-            if (rpre.Hitchance >= HitChance.Medium) _r.Cast(rpre.CastPosition);
-        }
-
-       
+     
         #endregion
 
         #region damage
@@ -342,6 +307,17 @@ namespace MightyAio.Champions
 
         #region Extra functions
 
+        private static Vector3 possbiletarget()
+        {
+            var target = GameObjects.EnemyHeroes.FirstOrDefault(x => x.IsValid);
+            var allshowads = new[] {WShadow.Position, RShadow.Position, Player.Position};
+            foreach (var showads in allshowads.Where(x=> x.IsValid()).OrderBy(x=> x.Distance(target)))
+            {
+                return showads;
+            }
+
+            return Player.Position;
+        }
         private static void buyitem()
         {
             var gold = Player.Gold;
@@ -365,33 +341,10 @@ namespace MightyAio.Champions
                     }
                 }
         }
-        private static void DrawText(Font aFont, string aText, int aPosX, int aPosY, ColorBGRA aColor) =>
-        aFont.DrawText(null, aText, aPosX, aPosY, aColor);
-
-        private static float Rrange => (float) (675 >= Player.MoveSpeed * 1.9 ? 675 : (Player.MoveSpeed * 1.9) );
-
-        private static void Levelup()
-        {
-            if (Math.Abs(Player.PercentCooldownMod) >= 0.8) return; // if it's urf Don't auto level 
-            var qLevel = _q.Level;
-            var wLevel = _w.Level;
-            var eLevel = _e.Level;
-            var rLevel = _r.Level;
-
-            if (qLevel + wLevel + eLevel + rLevel >= Player.Level || Player.Level > 18) return;
-
-            var level = new[] {0, 0, 0, 0};
-            for (var i = 0; i < Player.Level; i++) level[_spellLevels[i] - 1] = level[_spellLevels[i] - 1] + 1;
-
-            if (qLevel < level[0]) Player.Spellbook.LevelSpell(SpellSlot.Q);
-            if (wLevel < level[1]) Player.Spellbook.LevelSpell(SpellSlot.W);
-            if (eLevel < level[2]) Player.Spellbook.LevelSpell(SpellSlot.E);
-            if (rLevel < level[3]) Player.Spellbook.LevelSpell(SpellSlot.R);
-        }
-
         private static void Emote()
         {
             var b = _emotes.GetValue<MenuList>("selectitem").SelectedValue;
+            Game.SendEmote(EmoteId.Laugh);
             switch (b)
             {
                 case "Mastery":
@@ -419,6 +372,80 @@ namespace MightyAio.Champions
                     break;
             }
         }
+        private static void DrawText(Font aFont, string aText, int aPosX, int aPosY, ColorBGRA aColor) =>
+        aFont.DrawText(null, aText, aPosX, aPosY, aColor);
+
+        private static void Levelup()
+        {
+            if (Math.Abs(Player.PercentCooldownMod) >= 0.8) return; // if it's urf Don't auto level 
+            if (_q.Level + _w.Level + _e.Level + _r.Level >= Player.Level || Player.Level > 18) return;
+
+            var level = new[] {0, 0, 0, 0};
+            for (var i = 0; i < Player.Level; i++) level[_spellLevels[i] - 1] = level[_spellLevels[i] - 1] + 1;
+
+            if (_q.Level < level[0]) Player.Spellbook.LevelSpell(SpellSlot.Q);
+            if (_w.Level < level[1]) Player.Spellbook.LevelSpell(SpellSlot.W);
+            if (_e.Level < level[2]) Player.Spellbook.LevelSpell(SpellSlot.E);
+            if (_r.Level < level[3]) Player.Spellbook.LevelSpell(SpellSlot.R);
+        }
+
+        #region Shawdow postions
+
+        private static AIMinionClient WShadow => GameObjects.Get<AIMinionClient>().FirstOrDefault(x => x.IsValid && x.IsAlly  && x.HasBuff("zedwshadowbuff")  && x.Name == "Shadow");
+        private static AIMinionClient RShadow => GameObjects.Get<AIMinionClient>().FirstOrDefault(x => x.IsValid && x.IsAlly  && x.HasBuff("zedrshadowbuff")  && x.Name == "Shadow");
+        
+
+        #endregion
+        #region Spell recasts
+
+        private  enum WStage
+        {
+            First,
+            Second,
+            Cooldown
+        }
+
+        private static WStage _wStage
+        {
+            get
+            {
+                if (!_w.IsReady()) return WStage.Cooldown;
+
+                return Player.Spellbook.GetSpell(SpellSlot.W).Name == "ZedW" ? WStage.First : WStage.Second;
+            }
+        } 
+        private  enum RStage
+        {
+            First,
+            Second,
+            Cooldown
+        }
+
+        private static RStage _RStage
+        {
+            get
+            {
+                if (!_w.IsReady()) return RStage.Cooldown;
+
+                return Player.Spellbook.GetSpell(SpellSlot.R).Name == "ZedR" ? RStage.First : RStage.Second;
+            }
+        } 
+
+        #endregion
+
+        #region Damage
+
+        private static float passivedmg(AIHeroClient target)
+        {
+            var dmglevel = 6;
+            if (Player.Level >= 7) dmglevel = 8;
+            if (Player.Level >= 17) dmglevel = 10;
+
+            return (float) (target.HealthPercent <= 50 && target.HasBuff("") ? Player.CalculateMagicDamage(target, target.MaxHealth / dmglevel) : 0);
+        }
+
+        #endregion
+      
 
         #endregion
     }

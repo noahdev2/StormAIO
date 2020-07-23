@@ -156,6 +156,11 @@ namespace MightyAio.Champions
             {
                 if (sender.IsEnemy && _menu["W"].GetValue<MenuBool>("AW") && _w.IsInRange(sender)) _w.Cast(sender);
             };
+            Game.OnNotify += delegate(GameNotifyEventArgs args)
+            {
+                if (args.EventId == GameEventId.OnReincarnate && _menu["Misc"].GetValue<MenuBool>("UseSkin"))
+                    Player.SetSkin(_menu["Misc"].GetValue<MenuSlider>("setskin").Value);
+            };
         }
 
         #endregion

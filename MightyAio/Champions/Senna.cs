@@ -192,6 +192,11 @@ namespace MightyAio.Champions
             Teleport.OnTeleport += OnTeleportEvent;
             Interrupter.OnInterrupterSpell += OnInterruptible;
             Orbwalker.OnAction += OrbwalkerOnOnAction;
+            Game.OnNotify += delegate(GameNotifyEventArgs args)
+            {
+                if (args.EventId == GameEventId.OnReincarnate && Menu["Misc"].GetValue<MenuBool>("UseSkin"))
+                    Player.SetSkin(Menu["Misc"].GetValue<MenuSlider>("setskin").Value);
+            };
         }
 
         private void OrbwalkerOnOnAction(object sender, OrbwalkerActionArgs args)
