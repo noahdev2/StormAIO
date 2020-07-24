@@ -422,7 +422,7 @@ namespace MightyAio.Champions
 
         private static void CastQ()
         {
-            if (Player.IsRecalling()) return;
+            if (Player.IsRecalling() || Player.HasBuff("UndyingRage")) return;
             if (!_q.IsReady() || Player.HealthPercent > _menu["Q"].GetValue<MenuSlider>("QH").Value ||
                 !_menu["Q"].GetValue<MenuBool>("Q"))
                 return;
