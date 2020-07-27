@@ -20,7 +20,7 @@ namespace MightyAio.Champions
 
         private static AIHeroClient Player => ObjectManager.Player;
 
-        private static Menu Menu, alliles, Emotes;
+        private static Menu Menu, Emotes;
 
         #endregion
 

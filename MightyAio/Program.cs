@@ -70,6 +70,9 @@ using MightyAio.Champions;
                     case "Lillia":
                         var Lillia = new Lillia();
                         break;
+                    case "Irelia":
+                        var Irelia = new Irelia();
+                        break;
                    
                 }
             }
