@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Drawing;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Windows.Forms;
 using EnsoulSharp;
 using EnsoulSharp.SDK;
@@ -10,7 +8,6 @@ using EnsoulSharp.SDK.Prediction;
 using SharpDX;
 using SharpDX.Direct3D9;
 using Color = System.Drawing.Color;
-using Font = SharpDX.Direct3D9.Font;
 using Menu = EnsoulSharp.SDK.MenuUI.Menu;
 
 namespace MightyAio.Champions
@@ -22,7 +19,6 @@ namespace MightyAio.Champions
         private static Spell _q, _w, _e, _r;
         private static Menu _menu, _emotes;
         private static AIHeroClient Player => ObjectManager.Player;
-        private static SystemColors _color;
         private static Font _berlinfont;
         private static int _mykills = 0 + Player.ChampionsKilled;
         private static int[] _spellLevels;
@@ -42,14 +38,13 @@ namespace MightyAio.Champions
             _menu.Add(qMenu);
             var eMenu = new Menu("E", "E")
             {
-
-                new MenuBool("EC", "Use E in Combo"),
+                new MenuBool("EC", "Use E in Combo")
             };
             _menu.Add(eMenu);
             var rMenu = new Menu("R", "R")
             {
                 new MenuBool("R", "Use in Combo R"),
-                new MenuBool("RTT", "Use R if target is under tower",false),
+                new MenuBool("RTT", "Use R if target is under tower", false),
                 new MenuKeyBind("RT", "simi R Key", Keys.T, KeyBindType.Press),
                 new MenuSlider("RH", " R || When ur target health is below %", 50)
             };
@@ -57,20 +52,20 @@ namespace MightyAio.Champions
 
             var laneClearMenu = new Menu("LaneClear", "LaneClear")
             {
-                new MenuBool("Q", "Use Q"),
+                new MenuBool("Q", "Use Q")
             };
             _menu.Add(laneClearMenu);
             var JungleClearMenu = new Menu("JungleClear", "Jungle Clear")
             {
                 new MenuBool("Q", "Use Q"),
-                new MenuBool("E", "Use auto E"),
+                new MenuBool("E", "Use auto E")
             };
 
             _menu.Add(JungleClearMenu);
             var killSteal = new Menu("KS", "KillSteal")
             {
                 new MenuBool("Q", "Use Q"),
-                new MenuBool("R", "Use R",false)
+                new MenuBool("R", "Use R", false)
             };
             _menu.Add(killSteal);
             var miscMenu = new Menu("Misc", "Misc")
@@ -150,7 +145,6 @@ namespace MightyAio.Champions
                     Player.SetSkin(_menu["Misc"].GetValue<MenuSlider>("setskin").Value);
             };
         }
-        
 
         #endregion
 
@@ -159,14 +153,9 @@ namespace MightyAio.Champions
         private void OrbwalkerOnOnAction(object sender, OrbwalkerActionArgs args)
         {
             if (Player.HasBuff("warwickrsound")) args.Process = false;
-            if (args.Type == OrbwalkerType.AfterAttack && Orbwalker.ActiveMode == OrbwalkerMode.Combo)
-            {
-                CastQ();
-            }
+            if (args.Type == OrbwalkerType.AfterAttack && Orbwalker.ActiveMode == OrbwalkerMode.Combo) CastQ();
             if (args.Type == OrbwalkerType.AfterAttack && Orbwalker.ActiveMode == OrbwalkerMode.LaneClear)
-            {
                 JungleClear();
-            }
         }
 
         private static void AIBaseClientOnOnProcessSpellCast(AIBaseClient sender,
@@ -178,7 +167,8 @@ namespace MightyAio.Champions
             // Cast E to reduce damage from jgl camps
             if (Player.HasBuff("WarwickE"))
                 return; // it looks like both E cast and recast has the same name so I have to use if hasbuff 
-            if (sender.IsMonster && Player.CountEnemyHeroesInRange(1000) == 0) _e.Cast();
+            if (sender.IsMonster && Player.CountEnemyHeroesInRange(1000) == 0 &&
+                _menu["JungleClear"].GetValue<MenuBool>("E")) _e.Cast();
         }
 
         private static void Drawing_OnDraw(EventArgs args)
@@ -186,7 +176,7 @@ namespace MightyAio.Champions
             if (_menu["Drawing"].GetValue<MenuBool>("DrawE") && _e.IsReady())
                 Drawing.DrawCircle(Player.Position, _e.Range, Color.DarkCyan);
             if (_menu["Drawing"].GetValue<MenuBool>("DrawR") && _r.IsReady())
-                Drawing.DrawCircle(Player.Position,Rrange , Color.Violet);
+                Drawing.DrawCircle(Player.Position, Rrange, Color.Violet);
 
             var drawKill = _menu["Drawing"].GetValue<MenuBool>("Drawkillabeabilities");
             foreach (
@@ -201,7 +191,7 @@ namespace MightyAio.Champions
                     DrawText(_berlinfont, "Killable Skills (Q):",
                         (int) Drawing.WorldToScreen(enemyVisible.Position)[0] - 38,
                         (int) Drawing.WorldToScreen(enemyVisible.Position)[1] + 10, SharpDX.Color.White);
-                else if (Qdmg(enemyVisible)+ Rdmg(enemyVisible)> enemyVisible.Health )
+                else if (Qdmg(enemyVisible) + Rdmg(enemyVisible) > enemyVisible.Health)
                     DrawText(_berlinfont, "Killable Skills (R + Q):",
                         (int) Drawing.WorldToScreen(enemyVisible.Position)[0] - 38,
                         (int) Drawing.WorldToScreen(enemyVisible.Position)[1] + 10, SharpDX.Color.White);
@@ -210,7 +200,9 @@ namespace MightyAio.Champions
                         (int) Drawing.WorldToScreen(enemyVisible.Position)[1] + 10, SharpDX.Color.White);
             }
         }
+
         #endregion
+
         #region gameupdate
 
         private static void Game_OnUpdate(EventArgs args)
@@ -220,11 +212,12 @@ namespace MightyAio.Champions
                 _mykills = Player.ChampionsKilled;
                 Emote();
             }
+
             buyitem();
             var getskin = _menu["Misc"].GetValue<MenuSlider>("setskin").Value;
             var skin = _menu["Misc"].GetValue<MenuBool>("UseSkin");
             if (skin && Player.SkinID != getskin) Player.SetSkin(getskin);
-            
+
             switch (Orbwalker.ActiveMode)
             {
                 case OrbwalkerMode.Combo:
@@ -236,7 +229,7 @@ namespace MightyAio.Champions
                 case OrbwalkerMode.LastHit:
                     break;
             }
-            
+
             KillSteal();
             if (_menu["Misc"].GetValue<MenuBool>("autolevel")) Levelup();
             if (_menu["R"].GetValue<MenuKeyBind>("RT").Active) CastR2();
@@ -252,7 +245,7 @@ namespace MightyAio.Champions
             CastE();
             if (_menu["R"].GetValue<MenuBool>("R")) CastR();
         }
-        
+
         private static void LaneClear()
         {
             var minons = GameObjects.GetMinions(Player.Position, _q.Range).Where(x => x.Health <= Qdmg(x))
@@ -268,11 +261,13 @@ namespace MightyAio.Champions
             if (Jungle == null || !_menu["JungleClear"].GetValue<MenuBool>("Q")) return;
             _q.Cast(Jungle);
         }
+
         private static void KillSteal()
         {
             var target = TargetSelector.GetTarget(3000);
             if (target == null) return;
-            if (Qdmg(target)  >= target.Health + target.AllShield && _menu["KS"].GetValue<MenuBool>("Q") && _q.IsInRange(target)) _q.Cast(target);
+            if (Qdmg(target) >= target.Health + target.AllShield && _menu["KS"].GetValue<MenuBool>("Q") &&
+                _q.IsInRange(target)) _q.Cast(target);
             if (Rdmg(target) >= target.Health + target.AllShield && _menu["KS"].GetValue<MenuBool>("R"))
             {
                 target = TargetSelector.GetTarget(Rrange);
@@ -300,13 +295,15 @@ namespace MightyAio.Champions
         private static void CastE()
         {
             var target = TargetSelector.GetTarget(_e.Range);
-            if (target == null || !_e.IsInRange(target) || !_menu["E"].GetValue<MenuBool>("EC")) return;
+            if (target == null || !_e.IsInRange(target) || !_menu["E"].GetValue<MenuBool>("EC") ||
+                target.HaveImmovableBuff()) return;
             if (!_e.IsReady()) return;
             if (target.IsFacing(Player) && !Player.HasBuff("WarwickE"))
             {
                 _e.Cast();
                 return;
             }
+
             _e.Cast();
         }
 
@@ -319,6 +316,7 @@ namespace MightyAio.Champions
             if (rpre.Hitchance >= HitChance.Medium &&
                 target.HealthPercent <= _menu["R"].GetValue<MenuSlider>("RH").Value) _r.Cast(rpre.CastPosition);
         }
+
         private static void CastR2()
         {
             var target = TargetSelector.GetTarget(Rrange);
@@ -327,16 +325,24 @@ namespace MightyAio.Champions
             if (rpre.Hitchance >= HitChance.Medium) _r.Cast(rpre.CastPosition);
         }
 
-       
         #endregion
 
         #region damage
 
-        private static float passivedmg(AIBaseClient t) => (float) Player.CalculateMagicDamage(t, 8 + 2 * Player.Level);
+        private static float passivedmg(AIBaseClient t)
+        {
+            return (float) Player.CalculateMagicDamage(t, 8 + 2 * Player.Level);
+        }
 
-        private static float Qdmg(AIBaseClient t) => _q.IsReady() ? _q.GetDamage(t) + passivedmg(t) : 0;
+        private static float Qdmg(AIBaseClient t)
+        {
+            return _q.IsReady() ? _q.GetDamage(t) + passivedmg(t) : 0;
+        }
 
-        private static float Rdmg(AIHeroClient t) => (float) (_r.IsReady() ? _r.GetDamage(t) + passivedmg(t) * 3 + Player.GetAutoAttackDamage(t) : 0);
+        private static float Rdmg(AIHeroClient t)
+        {
+            return (float) (_r.IsReady() ? _r.GetDamage(t) + passivedmg(t) * 3 + Player.GetAutoAttackDamage(t) : 0);
+        }
 
         #endregion
 
@@ -365,10 +371,13 @@ namespace MightyAio.Champions
                     }
                 }
         }
-        private static void DrawText(Font aFont, string aText, int aPosX, int aPosY, ColorBGRA aColor) =>
-        aFont.DrawText(null, aText, aPosX, aPosY, aColor);
 
-        private static float Rrange => (float) (675 >= Player.MoveSpeed * 1.9 ? 675 : (Player.MoveSpeed * 1.9) );
+        private static void DrawText(Font aFont, string aText, int aPosX, int aPosY, ColorBGRA aColor)
+        {
+            aFont.DrawText(null, aText, aPosX, aPosY, aColor);
+        }
+
+        private static float Rrange => (float) (675 >= Player.MoveSpeed * 1.9 ? 675 : Player.MoveSpeed * 1.9);
 
         private static void Levelup()
         {
