@@ -25,7 +25,6 @@ namespace MightyAio.Champions
         private static double recallstart;
         private static string sendername;
         private static bool Chatsent;
-        private static bool IspostAttack;
         private static bool SpellFarm => Menu["laneclear"].GetValue<MenuKeyBind>("Key").Active;
 
         #endregion
@@ -203,7 +202,6 @@ namespace MightyAio.Champions
         {
             if (args.Type == OrbwalkerType.BeforeAttack)
             {
-                IspostAttack = false;
                 if (!Menu["Misc"].GetValue<MenuBool>("SupportMode")) return;
                 if (Orbwalker.ActiveMode.Equals(OrbwalkerMode.LastHit) ||
                     Orbwalker.ActiveMode.Equals(OrbwalkerMode.LaneClear) ||
@@ -217,11 +215,6 @@ namespace MightyAio.Champions
                         GameObjects.AllyHeroes.Any(x => x.Distance(Player) < 1000 && !x.IsMe) && !aa.Any())
                         args.Process = false;
                 }
-            }
-
-            if (args.Type == OrbwalkerType.AfterAttack)
-            {
-                IspostAttack = true;
             }
         }
 
@@ -467,9 +460,8 @@ namespace MightyAio.Champions
             if (args != null && Sender.IsValid && Sender.IsEnemy && Sender is AIHeroClient)
             {
                 var damage = R.GetDamage(args.Source);
-
                 if (args.Status == Teleport.TeleportStatus.Start &&
-                    (args.Source.Health + args.Source.HPRegenRate) * 8 + args.Source.AllShield < damage)
+                    args.Source.Health + args.Source.AllShield < damage)
                 {
                     if (args.Source.HasBuff("willrevive") || args.Source.HasBuff("bansheesveil") ||
                         args.Source.HasBuff("itemmagekillerveil")) return;
@@ -504,29 +496,7 @@ namespace MightyAio.Champions
         private static int Qdamage(AIHeroClient target)
         {
             var q = 0;
-            switch (Q.Level)
-            {
-                case 1:
-                    q = 40;
-                    break;
-
-                case 2:
-                    q = 70;
-                    break;
-
-                case 3:
-                    q = 100;
-                    break;
-
-                case 4:
-                    q = 130;
-                    break;
-
-                case 5:
-                    q = 160;
-                    break;
-            }
-
+            q = 40 + 30 * (Q.Level - 1);
             var bouns = Player.TotalAttackDamage - Player.BaseAttackDamage;
 
             var totalqdamage =
@@ -570,11 +540,11 @@ namespace MightyAio.Champions
         {
             if (!Q.IsReady() || target == null || target.IsDead ||
                 target.HasBuffOfType(BuffType.Invulnerability)) return;
-            if (target.IsValidTarget(Q.Range) && IspostAttack)
+            if (target.IsValidTarget(Q.Range) )
             {
                 Q.CastOnUnit(target);
             }
-            else if (target.IsValidTarget(Q2.Range) && useExtendQ && IspostAttack)
+            else if (target.IsValidTarget(Q2.Range) && useExtendQ )
             {
                 var collisions =
                     GameObjects.AllGameObjects.Where(x => Q2.IsInRange(x) && x.IsValid)
@@ -586,7 +556,7 @@ namespace MightyAio.Champions
                     var qPred = Q2.GetPrediction(target);
                     var Line = new Geometry.Rectangle(Player.PreviousPosition,
                         Player.PreviousPosition.Extend(vailds.Position, Q2.Range), Q2.Width);
-                    if (Line.IsInside(qPred.UnitPosition.ToVector2()) && Q.IsInRange(vailds) && IspostAttack)
+                    if (Line.IsInside(qPred.UnitPosition.ToVector2()) && Q.IsInRange(vailds) )
                     {
                         Q.CastOnUnit(vailds);
                         break;
@@ -629,23 +599,19 @@ namespace MightyAio.Champions
         private static void Levelup()
         {
             if (Math.Abs(Player.PercentCooldownMod) >= 0.8) return; // check if it's urf mode 
-            var qLevel = Q.Level;
-            var wLevel = W.Level;
-            var eLevel = E.Level;
-            var rLevel = R.Level;
 
-            if (qLevel + wLevel + eLevel + rLevel >= ObjectManager.Player.Level || Player.Level > 18) return;
+            if (Q.Level + W.Level + E.Level + R.Level >= Player.Level || Player.Level > 18) return;
 
             var level = new[] {0, 0, 0, 0};
-            for (var i = 0; i < ObjectManager.Player.Level; i++)
+            for (var i = 0; i < Player.Level; i++)
                 level[SpellLevels[i] - 1] = level[SpellLevels[i] - 1] + 1;
 
-            if (qLevel < level[0]) ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.Q);
+            if (Q.Level < level[0]) Player.Spellbook.LevelSpell(SpellSlot.Q);
 
-            if (wLevel < level[1]) ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.W);
+            if (W.Level < level[1]) Player.Spellbook.LevelSpell(SpellSlot.W);
 
-            if (eLevel < level[2]) ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.E);
-            if (rLevel < level[3]) ObjectManager.Player.Spellbook.LevelSpell(SpellSlot.R);
+            if (E.Level < level[2]) Player.Spellbook.LevelSpell(SpellSlot.E);
+            if (R.Level < level[3]) Player.Spellbook.LevelSpell(SpellSlot.R);
         }
 
         private static void Baseutl()
