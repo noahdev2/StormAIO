@@ -32,7 +32,7 @@ namespace MightyAio.Champions
 
         private static void CreateMenu()
         {
-            Menu = new Menu("Jinx", "Jinx", true);
+            Menu = new Menu("MightyJinx", "Mighty Jinx", true);
 
             var comboMenu = new Menu("Combo", "Combo")
             {

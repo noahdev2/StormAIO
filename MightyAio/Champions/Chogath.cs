@@ -33,7 +33,7 @@ namespace MightyAio.Champions
 
         private static void CreateMenu()
         {
-            _menu = new Menu("Chogath", "Chogath", true);
+            _menu = new Menu("MightyChogath", "Mighty Chogath", true);
             var qMenu = new Menu("Q", "Q")
             {
                 new MenuBool("QC", "Use Q in Combo"),

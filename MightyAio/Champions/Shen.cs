@@ -31,7 +31,7 @@ namespace MightyAio.Champions
 
         private static void CreateMenu()
         {
-            _menu = new Menu("Shen", "Shen", true); 
+            _menu = new Menu("MightyShen", "Mighty Shen", true); 
             var qMenu = new Menu("Q", "Q")
             {
                 new MenuBool("QC", "Use Q in Combo"),

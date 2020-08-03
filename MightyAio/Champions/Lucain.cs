@@ -70,7 +70,7 @@ namespace MightyAio.Champions
 
         private static void CreateMenu()
         {
-            Menu = new Menu("Lucian", "Lucian", true);
+            Menu = new Menu("MightyLucian", "Mighty Lucian", true);
 
             // Q
             var QMenu = new Menu("Q", "Q")

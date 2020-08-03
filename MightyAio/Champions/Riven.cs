@@ -289,7 +289,7 @@ namespace MightyAio.Champions
 
         private static void OnMenuLoad()
         {
-            Menu = new Menu("Riven", "Riven", true);
+            Menu = new Menu("MightyRiven", "Mighty Riven", true);
             var Keys = new Menu("Keys", "Keys Binding")
             {
                 new MenuKeyBind("Burst", "Burst", System.Windows.Forms.Keys.T, KeyBindType.Press),

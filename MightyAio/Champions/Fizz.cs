@@ -23,7 +23,7 @@ namespace MightyAio.Champions
 
         private static void CreateMenu()
         {
-            Menu = new Menu("Fizz", "Fizz", true);
+            Menu = new Menu("MightyFizz", "Mighty Fizz", true);
 
             // Combo
             var comboMenu = new Menu("Combo", "Combo")

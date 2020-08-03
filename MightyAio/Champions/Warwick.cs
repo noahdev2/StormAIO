@@ -29,7 +29,7 @@ namespace MightyAio.Champions
 
         private static void CreateMenu()
         {
-            _menu = new Menu("Warwick", "Warwick", true);
+            _menu = new Menu("MightyWarwick", "Mighty Warwick", true);
             var qMenu = new Menu("Q", "Q")
             {
                 new MenuBool("Q", "Use Q in combo"),

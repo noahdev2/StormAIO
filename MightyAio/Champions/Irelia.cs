@@ -27,7 +27,7 @@ namespace MightyAio.Champions
 
         private static void CreateMenu()
         {
-            Menu = new Menu("Irelia", "Beta Irelia", true);
+            Menu = new Menu("MightyIrelia", "Beta Mighty Irelia", true);
 
             var Combo = new Menu("Combo", "Combo")
             {

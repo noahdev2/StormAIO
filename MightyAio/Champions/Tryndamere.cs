@@ -42,7 +42,7 @@ namespace MightyAio.Champions
 
         private static void CreateMenu()
         {
-            _menu = new Menu("Tryndamere", "Tryndamere", true);
+            _menu = new Menu("MightyTryndamere", "Mighty Tryndamere", true);
             var qMenu = new Menu("Q", "Q")
             {
                 new MenuBool("Q", "Auto Q"),
