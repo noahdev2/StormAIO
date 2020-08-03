@@ -461,7 +461,7 @@ namespace MightyAio.Champions
             {
                 var damage = R.GetDamage(args.Source);
                 if (args.Status == Teleport.TeleportStatus.Start &&
-                    args.Source.Health + args.Source.AllShield < damage)
+                    args.Source.Health + args.Source.HPRegenRate * 8 + args.Source.AllShield < damage)
                 {
                     if (args.Source.HasBuff("willrevive") || args.Source.HasBuff("bansheesveil") ||
                         args.Source.HasBuff("itemmagekillerveil")) return;
