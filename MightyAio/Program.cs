@@ -73,6 +73,9 @@ using MightyAio.Champions;
                     case "Irelia":
                         var Irelia = new Irelia();
                         break;
+                    case "Yone":
+                        var Yone = new Yone();
+                        break;
                    
                 }
             }

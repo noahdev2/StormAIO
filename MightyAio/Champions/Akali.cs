@@ -577,7 +577,7 @@ namespace MightyAio.Champions
             {
                 float damage = 50 + 35 * (E.Level - 1);
                 damage += Player.TotalAttackDamage * 0.35f + Player.TotalMagicalDamage * 0.5f;
-                return (float) Player.CalculateDamage(target, DamageType.Physical, damage);
+                return (float) Player.CalculateDamage(target, DamageType.Magical, damage);
             }
 
             return 0;

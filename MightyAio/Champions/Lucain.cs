@@ -925,7 +925,7 @@ namespace MightyAio.Champions
             if (R.Level < 1) return 0;
             var ad = Player.TotalAttackDamage * 0.25;
             var bulletdamage = new[] {20 + ad, 40 + ad, 60 + ad}[R.Level - 1];
-            var shots = new[] {20, 25, 30}[R.Level - 1];
+            var shots = new[] {22, 28, 34}[R.Level - 1];
             var total = bulletdamage * shots;
             return (float) Player.CalculatePhysicalDamage(target, total);
         }

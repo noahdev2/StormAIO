@@ -59,6 +59,7 @@
     <Compile Include="Champions\Chogath.cs" />
     <Compile Include="Champions\Ezreal.cs" />
     <Compile Include="Champions\Fizz.cs" />
+    <Compile Include="Champions\Galio.cs" />
     <Compile Include="Champions\HpBarIndicator.cs" />
     <Compile Include="Champions\Irelia.cs" />
     <Compile Include="Champions\Jinx.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="Champions\Udyr.cs" />
     <Compile Include="Champions\Volibear.cs" />
     <Compile Include="Champions\Warwick.cs" />
+    <Compile Include="Champions\Yone.cs" />
     <Compile Include="Champions\Yorick.cs" />
     <Compile Include="Champions\Yuumi.cs" />
     <Compile Include="Champions\Zac.cs" />
