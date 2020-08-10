@@ -1,9 +1,9 @@
-﻿using System;
+﻿
 using EnsoulSharp;
 using EnsoulSharp.SDK.MenuUI.Values;
-using static MightyAio.MainMenu;
+using static StormAIO.MainMenu;
 
-namespace MightyAio.utilities
+namespace StormAIO.utilities
 {
     public class Emote
     {

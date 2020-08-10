@@ -1,12 +1,9 @@
 ﻿﻿using System;
- using System.Reflection;
- using System.Threading;
- using System.Threading.Tasks;
  using EnsoulSharp;
-using MightyAio.Champions;
- using MightyAio.utilities;
+ using StormAIO.Champions;
+ using StormAIO.utilities;
 
- namespace MightyAio
+ namespace StormAIO
 {
     internal static class Program
     {

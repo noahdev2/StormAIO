@@ -5,11 +5,11 @@ using EnsoulSharp;
 using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI.Values;
 using EnsoulSharp.SDK.Prediction;
-using MightyAio.utilities;
+using StormAIO.utilities;
 using Color = System.Drawing.Color;
 using Menu = EnsoulSharp.SDK.MenuUI.Menu;
 
-namespace MightyAio.Champions
+namespace StormAIO.Champions
 {
     internal class Yone
     {

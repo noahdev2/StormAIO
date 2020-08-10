@@ -2,7 +2,7 @@
 using EnsoulSharp.SDK.MenuUI.Values;
 using SharpDX;
 
-namespace MightyAio
+namespace StormAIO
 {
     
     public class MainMenu

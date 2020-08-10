@@ -3,7 +3,7 @@ using EnsoulSharp;
 using EnsoulSharp.SDK.MenuUI;
 using EnsoulSharp.SDK.MenuUI.Values;
 
-namespace MightyAio.utilities
+namespace StormAIO.utilities
 {
     public class SkinChanger
     {

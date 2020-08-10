@@ -3,7 +3,7 @@ using System.Net;
 using System.Threading;
 using EnsoulSharp;
 
-namespace MightyAio
+namespace StormAIO
 {
     public class Checker
     {

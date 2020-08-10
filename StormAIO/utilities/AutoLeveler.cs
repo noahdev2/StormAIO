@@ -1,10 +1,9 @@
 ﻿using System;
 using EnsoulSharp;
-using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI.Values;
 using EnsoulSharp.SDK.Utility;
 
-namespace MightyAio.utilities
+namespace StormAIO.utilities
 {
     public class AutoLeveler
     {
@@ -16,7 +15,7 @@ namespace MightyAio.utilities
             var LevelMenu = MainMenu.Level.GetValue<MenuBool>("autolevel");
             Champ();
             if (!LevelMenu || Urf || SpellLevels == null) return;
-            DelayAction.Add(5000, () => MyLevelLogic());
+            DelayAction.Add(3000, () => MyLevelLogic());
             AIHeroClient.OnLevelUp +=  AIHeroClientOnOnLevelUp;
         }
 

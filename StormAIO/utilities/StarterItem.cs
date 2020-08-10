@@ -3,7 +3,7 @@ using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI.Values;
 using EnsoulSharp.SDK.Utility;
 
-namespace MightyAio.utilities
+namespace StormAIO.utilities
 {
     public class StarterItem
     {

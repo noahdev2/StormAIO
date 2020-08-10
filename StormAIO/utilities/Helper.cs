@@ -1,13 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using EnsoulSharp;
 using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI.Values;
 using SharpDX;
 using Color = System.Drawing.Color;
 
-namespace MightyAio.utilities
+namespace StormAIO.utilities
 {
-    public class Helper
+    public static class Helper
     {
         private static AIHeroClient Player => ObjectManager.Player;
         /// <summary>
@@ -53,14 +54,23 @@ namespace MightyAio.utilities
             }
         }
         /// <summary>
-        ///     Checks for Indicator 
+        ///     Checks for Indicator from menu
         /// </summary>
         /// <returns></returns>
         public static bool drawIndicator => MainMenu.Main_Menu["Indicator"].GetValue<MenuBool>("Indicator");
         /// <summary>
-        ///     gets Selected color 
+        ///     gets Selected color from menu
         /// </summary>
         /// <returns></returns>
         public static MenuColor drawColor => MainMenu.Main_Menu["Indicator"].GetValue<MenuColor>("SetColor");
+        /// <summary>
+        ///     Checks if the Target is moving towards you or you are moving Towards the target
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsMovingTowards(this AIHeroClient unit, Vector3 position)
+        {
+            return unit.IsMoving && unit.Path.Last().Distance(position) <=  100;
+        }
+        
     }
 }
