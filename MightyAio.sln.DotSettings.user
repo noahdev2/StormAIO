@@ -1,9 +1,0 @@
-﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005CAmeen_005CDownloads_005CEnsoulSharp_005CSystem_005CEnsoulSharp_002ESDK_002Edll/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005CAmeen_005CDownloads_005CEnsoulSharp_005CSystem_005CEnsoulSharp_002EWrapper_002Edll/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005CAmeen_005CDownloads_005CEnsoulSharp_005CSystem_005CSharpDX_002EDirect3D9_002Edll/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005CAmeen_005CDownloads_005CEnsoulSharp_005CSystem_005CSharpDX_002Edll/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CUsers_005CAmeen_005CRiderProjects_005Ctest_005Ctrndamere_005Ctrndamere_005Cbin_005CRelease_005Ctrndamere_002Edll/@EntryIndexedValue">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
-  &lt;Assembly Path="C:\Users\Ameen\RiderProjects\test\trndamere\trndamere\bin\Release\trndamere.dll" /&gt;&#xD;
-&lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>
