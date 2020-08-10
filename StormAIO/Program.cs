@@ -21,6 +21,7 @@ using MightyAio.Champions;
                 var LoadEmote     = new Emote();
                 var LoadSkinSeter = new SkinChanger();
                 var LoadAutoLevel = new AutoLeveler();
+                var BuyItem       = new StarterItem();
                 switch (ObjectManager.Player.CharacterName)
                 {
                     case "Yone":

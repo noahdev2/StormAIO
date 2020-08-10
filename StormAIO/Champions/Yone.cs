@@ -94,13 +94,6 @@ namespace MightyAio.Champions
                 new MenuBool("R", "Use R", false)
             };
             Menu.Add(killSteal);
-         
-            var itembuy = new Menu("autoitem", "Starter Item")
-            {
-                new MenuList("selectitem", "Select Item",
-                    new[] {"Dorans Blade", "none"})
-            };
-            Menu.Add(itembuy);
             var drawMenu = new Menu("Drawing", "Draw")
             {
                 new MenuBool("DrawQ", "Draw Q"),
@@ -213,8 +206,7 @@ namespace MightyAio.Champions
         private static void Game_OnUpdate(EventArgs args)
         {
             if (Helper.Checker()) return; 
-
-            buyitem();
+            
 
             switch (Orbwalker.ActiveMode)
             {
@@ -535,30 +527,6 @@ namespace MightyAio.Champions
 
         #region Extra functions
 
-        private static void buyitem()
-        {
-            var gold = Player.Gold;
-            var time = Game.Time / 60;
-            var item = Menu["autoitem"].GetValue<MenuList>("selectitem").SelectedValue;
-
-            if (item != "none" && Game.MapId == GameMapId.SummonersRift)
-                switch (item)
-                {
-                    case "Dorans Blade":
-                    {
-                        if (time < 1 && Player.InShop())
-                        {
-                            if (gold >= 500 && !Player.HasItem(ItemId.Dorans_Blade))
-                                Player.BuyItem(ItemId.Dorans_Blade);
-                            if (gold >= 50 && !Player.HasItem(ItemId.Health_Potion))
-                                Player.BuyItem(ItemId.Health_Potion);
-                        }
-
-                        break;
-                    }
-                }
-        }
-        
         private static float AllDamage(AIHeroClient target)
         {
             float Damage = 0;
