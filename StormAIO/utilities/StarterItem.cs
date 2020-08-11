@@ -35,6 +35,18 @@ namespace StormAIO.utilities
 
                         break;
                     }
+                    case "Hunter's Machete":
+                    {
+                        if (time < 1 && Player.InShop())
+                        {
+                            if (gold >= 500 && !Player.HasItem(ItemId.Hunters_Machete))
+                                Player.BuyItem(ItemId.Hunters_Machete);
+                            if (gold >= 150 && !Player.HasItem(ItemId.Refillable_Potion))
+                                Player.BuyItem(ItemId.Refillable_Potion);
+                        }
+
+                        break;
+                    }
                 }
         }
 
@@ -46,6 +58,10 @@ namespace StormAIO.utilities
                 case "Yone":
                     MainMenu.Main_Menu.Add(new MenuList("selectitem", "StarterItem",
                         new[] {"Dorans Blade", "none"}));
+                    break;
+                case "Warwick":
+                    MainMenu.Main_Menu.Add(new MenuList("selectitem", "Select Item",
+                        new[] {"Hunter's Machete", "none"}));
                     break;
             }
         }

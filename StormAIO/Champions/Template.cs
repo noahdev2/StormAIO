@@ -83,7 +83,12 @@ namespace StormAIO.Champions
                 DrawingMenu.DrawE,
                 DrawingMenu.DrawR
             };
-
+            var StructureMenu = new Menu("StructureClear","Structure Clear")
+            {
+                StructureClearMenu.QSliderBool,
+                StructureClearMenu.WSliderBool,
+                StructureClearMenu.ESliderBool
+            };
             var menuList = new[]
             {
                 comboMenu,
@@ -91,6 +96,7 @@ namespace StormAIO.Champions
                 killStealMenu,
                 laneClearMenu,
                 jungleClearMenu,
+                StructureMenu,
                 lastHitMenu,
                 drawingMenu
             };
@@ -160,6 +166,19 @@ namespace StormAIO.Champions
             public static readonly MenuSlider ECountSliderBool =
                 new MenuSlider("laneClearECount", "Use E if hittable minions >= x", 3, 1, 5);
         }
+        public static class StructureClearMenu
+        {
+            public static readonly MenuSliderButton QSliderBool =
+                new MenuSliderButton("structClearQ", "Use Q | If Mana >= x%", 50);
+            
+            public static readonly MenuSliderButton WSliderBool =
+                new MenuSliderButton("structClearW", "Use W | If Mana >= x%", 50);
+
+            public static readonly MenuSliderButton ESliderBool =
+                new MenuSliderButton("structClearE", "Use E | If Mana >= x%", 50);
+            
+        }
+
 
         public static class LastHitMenu
         {

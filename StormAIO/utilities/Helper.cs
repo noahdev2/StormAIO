@@ -71,6 +71,10 @@ namespace StormAIO.utilities
         {
             return unit.IsMoving && unit.Path.Last().Distance(position) <=  100;
         }
-        
+        /// <summary>
+        ///     Returns the spellstate of Ingite
+        /// </summary>
+        /// <returns></returns>
+        public static bool Ignite => Player.Spellbook.CanUseSpell(Player.GetSpellSlot("SummonerDot")) == SpellState.Ready;
     }
 }

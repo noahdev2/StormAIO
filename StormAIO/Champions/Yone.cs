@@ -458,7 +458,7 @@ namespace StormAIO.Champions
             if (!R.IsReady() || target == null || !Rmulti) return;
             R.Cast(target, false, false, true, Rnumber - 1 );
         }
-        private static bool Ignite => Player.Spellbook.CanUseSpell(Player.GetSpellSlot("SummonerDot")) == SpellState.Ready;
+       
 
         private static void AutoStack()
         {
@@ -538,7 +538,7 @@ namespace StormAIO.Champions
             if (R.IsReady()) Damage += Rdmg(target);
             if (Player.GetBuffCount("itemmagicshankcharge") == 100) 
                 Damage += (float)Player.CalculateMagicDamage(target, 100 + 0.1 * Player.TotalMagicalDamage);
-            if (Ignite) Damage += (float)Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
+            if (Helper.Ignite) Damage += (float)Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
             return Damage;
         }
         #endregion

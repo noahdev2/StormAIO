@@ -24,7 +24,9 @@
                     case "Yone":
                         var Yone = new Yone();
                         break;
-                   
+                   case "Warwick":
+                       var Warwick = new Warwick();
+                       break;
                 }
             }
             catch (Exception error)
