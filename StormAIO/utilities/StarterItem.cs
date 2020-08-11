@@ -35,7 +35,7 @@ namespace StormAIO.utilities
 
                         break;
                     }
-                    case "Hunter's Machete":
+                    case "Hunters Machete":
                     {
                         if (time < 1 && Player.InShop())
                         {
@@ -45,6 +45,35 @@ namespace StormAIO.utilities
                                 Player.BuyItem(ItemId.Refillable_Potion);
                         }
 
+                        break;
+                    }
+                    case "Dorans Ring":
+                    {
+                        if (time < 1 && Player.InShop())
+                        {
+                            if (gold >= 500 && !Player.HasItem(ItemId.Dorans_Ring)) Player.BuyItem(ItemId.Dorans_Ring);
+                            if (gold >= 50 && !Player.HasItem(ItemId.Health_Potion))
+                                Player.BuyItem(ItemId.Health_Potion);
+                        }
+
+                        break;
+                    }
+                    case "Dorans Shield":
+                    {
+                        if (time < 1 && Player.InShop())
+                            if (gold >= 500 && !Player.HasItem(ItemId.Long_Sword))
+                                Player.BuyItem(ItemId.Long_Sword);
+                        if (gold >= 50 && !Player.HasItem(ItemId.Health_Potion))
+                            Player.BuyItem(ItemId.Health_Potion);
+                        break;
+                    }
+                    case "Long Sword":
+                    {
+                        if (time < 1 && Player.InShop())
+                            if (gold >= 500 && !Player.HasItem(ItemId.Dorans_Shield))
+                                Player.BuyItem(ItemId.Dorans_Shield);
+                        if (gold >= 50 && !Player.HasItem(ItemId.Health_Potion))
+                            Player.BuyItem(ItemId.Health_Potion);
                         break;
                     }
                 }
@@ -61,7 +90,11 @@ namespace StormAIO.utilities
                     break;
                 case "Warwick":
                     MainMenu.Main_Menu.Add(new MenuList("selectitem", "Select Item",
-                        new[] {"Hunter's Machete", "none"}));
+                        new[] {"Hunters Machete", "none"}));
+                    break;
+                case "Akali":
+                    MainMenu.Main_Menu.Add(new MenuList("selectitem", "Select Item",
+                        new[] {"Dorans Ring", "Dorans Shield", "Long Sword", "none"}));
                     break;
             }
         }

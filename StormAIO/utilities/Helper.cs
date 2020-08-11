@@ -76,5 +76,20 @@ namespace StormAIO.utilities
         /// </summary>
         /// <returns></returns>
         public static bool Ignite => Player.Spellbook.CanUseSpell(Player.GetSpellSlot("SummonerDot")) == SpellState.Ready;
+
+        /// <summary>
+        ///     Checks for Truehealth
+        /// </summary>
+        /// <returns></returns>
+        public static float TrueHealth(this AIBaseClient Target)
+        {
+            var health= Target.Health;
+            health         += Target.AllShield;
+            if (Target.HasBuffOfType(BuffType.Invulnerability))
+            {
+                health     += 99999;
+            }
+            return health;
+        }
     }
 }

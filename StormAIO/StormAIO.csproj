@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Champions\Akali.cs" />
     <Compile Include="Champions\Template.cs" />
     <Compile Include="Champions\Warwick.cs" />
     <Compile Include="Champions\Yone.cs" />

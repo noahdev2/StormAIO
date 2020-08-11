@@ -27,10 +27,14 @@
                    case "Warwick":
                        var Warwick = new Warwick();
                        break;
+                    case "Akali":
+                        var Akali = new Akali();
+                        break;
                 }
             }
             catch (Exception error)
             {
+                Game.Print("Failed to load reload or Check ur Console");
                 Console.WriteLine(@"Failed To load: " + error);
             }
         }

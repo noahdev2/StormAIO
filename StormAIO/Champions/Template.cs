@@ -197,7 +197,9 @@ namespace StormAIO.Champions
         
 
         #endregion
-        #region Gamestart
+
+        #region Spells 
+
         private static void InitSpell()
         {
             Q = new Spell(SpellSlot.Q);
@@ -205,7 +207,11 @@ namespace StormAIO.Champions
             E = new Spell(SpellSlot.E);
             R = new Spell(SpellSlot.R);
         }
-        
+
+
+        #endregion
+        #region Gamestart
+      
         public Template()
         {
             InitSpell();

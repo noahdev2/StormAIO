@@ -150,6 +150,7 @@ namespace StormAIO.Champions
 
         private static void Game_OnUpdate(EventArgs args)
         {
+            if (Helper.Checker()) return;
             switch (Orbwalker.ActiveMode)
             {
                 case OrbwalkerMode.Combo:
