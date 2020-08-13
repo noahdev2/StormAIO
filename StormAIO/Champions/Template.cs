@@ -225,6 +225,7 @@ namespace StormAIO.Champions
                 if (!Helper.drawIndicator || t == null) return;
                 Helper.Indicator(AllDamage(t));
             };
+            
         }
 
         #endregion

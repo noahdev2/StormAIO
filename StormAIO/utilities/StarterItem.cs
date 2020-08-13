@@ -76,6 +76,13 @@ namespace StormAIO.utilities
                             Player.BuyItem(ItemId.Health_Potion);
                         break;
                     }
+                    case "Corrupting Potion":
+                    {
+                        if (time < 1 && Player.InShop())
+                            if (gold >= 500 && !Player.HasItem(ItemId.Corrupting_Potion))
+                                Player.BuyItem(ItemId.Corrupting_Potion);
+                        break;
+                    }
                 }
         }
 
@@ -95,6 +102,10 @@ namespace StormAIO.utilities
                 case "Akali":
                     MainMenu.Main_Menu.Add(new MenuList("selectitem", "Select Item",
                         new[] {"Dorans Ring", "Dorans Shield", "Long Sword", "none"}));
+                    break;
+                case "Yorick":
+                    MainMenu.Main_Menu.Add(new MenuList("selectitem", "Select Item",
+                        new[] {"Dorans Blade", "Corrupting Potion", "none"}));
                     break;
             }
         }

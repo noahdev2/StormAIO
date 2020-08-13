@@ -63,6 +63,9 @@ namespace StormAIO.utilities
                 case "Akali":
                     SpellLevels = new[] {1, 3, 2, 1, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2};
                     break;
+                case "Yorick":
+                    SpellLevels = new[] {1, 3, 2, 1, 1, 4, 1, 2, 1, 2, 4, 2, 2, 3, 3, 4, 3, 3};
+                    break;
             }
         }
         #endregion

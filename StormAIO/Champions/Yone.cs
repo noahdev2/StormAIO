@@ -329,12 +329,12 @@ namespace StormAIO.Champions
             var Q3target = TargetSelector.GetTarget(Q3.Range);
             var Wtarget = TargetSelector.GetTarget(W.Range);
             var Rtarget = TargetSelector.GetTarget(R.Range);
-            if (Qtarget != null && Qtarget.Health + Qtarget.AllShield < Qdmg(Qtarget) && QKS && _QStage == QStage.First)
+            if (Qtarget != null && Qtarget.TrueHealth() < Qdmg(Qtarget) && QKS && _QStage == QStage.First)
                 Q.Cast(Qtarget);
-            if (Q3target != null && Q3target.Health + Q3target.AllShield < Qdmg(Q3target) && Q3KS &&
+            if (Q3target != null && Q3target.TrueHealth() < Qdmg(Q3target) && Q3KS &&
                 _QStage == QStage.Second) Q3.Cast(Qtarget);
-            if (Wtarget != null && Wtarget.Health + Wtarget.AllShield < Wdmg(Wtarget) && WKS) W.Cast(Wtarget);
-            if (Rtarget != null && Rtarget.Health + Rtarget.AllShield < Rdmg(Rtarget) && RKS)
+            if (Wtarget != null && Wtarget.TrueHealth() < Wdmg(Wtarget) && WKS) W.Cast(Wtarget);
+            if (Rtarget != null && Rtarget.TrueHealth() < Rdmg(Rtarget) && RKS)
             {
                 if (!R.IsReady()) return;
                 var rpre = R.GetPrediction(Rtarget);
