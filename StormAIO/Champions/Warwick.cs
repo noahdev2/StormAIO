@@ -229,7 +229,6 @@ namespace StormAIO.Champions
                 return !Player.HasBuff("WarwickE") ? EStage.Cast : EStage.Recast;
             }
         }
-
         #endregion
 
         #region Spell Functions

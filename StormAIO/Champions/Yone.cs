@@ -217,7 +217,7 @@ namespace StormAIO.Champions
                     Harass();
                     break;
                 case OrbwalkerMode.LaneClear:
-                    LaneClear();
+                 if (DrawLabel.SpellFarm)   LaneClear();
                     JungleClear();
                     break;
                 case OrbwalkerMode.LastHit:

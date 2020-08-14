@@ -92,19 +92,19 @@ namespace StormAIO.utilities
             switch (Champ)
             {
                 case "Yone":
-                    MainMenu.Main_Menu.Add(new MenuList("selectitem", "StarterItem",
+                    MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "StarterItem",
                         new[] {"Dorans Blade", "none"}));
                     break;
                 case "Warwick":
-                    MainMenu.Main_Menu.Add(new MenuList("selectitem", "Select Item",
+                    MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "Select Item",
                         new[] {"Hunters Machete", "none"}));
                     break;
                 case "Akali":
-                    MainMenu.Main_Menu.Add(new MenuList("selectitem", "Select Item",
+                    MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "Select Item",
                         new[] {"Dorans Ring", "Dorans Shield", "Long Sword", "none"}));
                     break;
                 case "Yorick":
-                    MainMenu.Main_Menu.Add(new MenuList("selectitem", "Select Item",
+                    MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "Select Item",
                         new[] {"Dorans Blade", "Corrupting Potion", "none"}));
                     break;
             }

@@ -57,12 +57,12 @@ namespace StormAIO.utilities
         ///     Checks for Indicator from menu
         /// </summary>
         /// <returns></returns>
-        public static bool drawIndicator => MainMenu.Main_Menu["Indicator"].GetValue<MenuBool>("Indicator");
+        public static bool drawIndicator => MainMenu.UtilitiesMenu["Indicator"].GetValue<MenuBool>("Indicator");
         /// <summary>
         ///     gets Selected color from menu
         /// </summary>
         /// <returns></returns>
-        public static MenuColor drawColor => MainMenu.Main_Menu["Indicator"].GetValue<MenuColor>("SetColor");
+        public static MenuColor drawColor => MainMenu.UtilitiesMenu["Indicator"].GetValue<MenuColor>("SetColor");
         /// <summary>
         ///     Checks if the Target is moving towards you or you are moving Towards the target
         /// </summary>
@@ -91,5 +91,21 @@ namespace StormAIO.utilities
             }
             return health;
         }
+        /// <summary>
+        ///     Checks for if it's a team fight
+        /// </summary>
+        /// <returns></returns>
+        public static bool TeamFight()
+        {
+            int Count = Player.CountEnemyHeroesInRange(3000);
+            int Ally = Player.CountAllyHeroesInRange(3000);
+            if (Ally > 1 && Count > 2)
+            {
+                return true;
+            }
+
+            return false;
+        }
+    
     }
 }

@@ -29,11 +29,7 @@
             {
               //  if (!Checker.ServerStatus() || !Checker.IsUpdatetoDate()) return; // disable for now We need to add a file location to our checker.cs
                 var LoadMenu      = new MainMenu();
-                var LoadEmote     = new Emote();
-                var LoadSkinSeter = new SkinChanger();
-                var LoadAutoLevel = new AutoLeveler();
-                var BuyItem       = new StarterItem();
-                var farmHelper    = new ArrowDrawer();
+                
                 switch (ObjectManager.Player.CharacterName)
                 {
                     case "Yone":
@@ -55,6 +51,12 @@
                 Game.Print("Failed to load reload or Check ur Console");
                 Console.WriteLine(@"Failed To load: " + error);
             }
+            var LoadEmote     = new Emote();
+            var LoadSkinSeter = new SkinChanger();
+            var LoadAutoLevel = new AutoLeveler();
+            var BuyItem       = new StarterItem();
+            var farmHelper    = new ArrowDrawer();
         }
+        
     }
 }
