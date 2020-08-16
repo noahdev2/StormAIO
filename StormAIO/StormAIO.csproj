@@ -66,6 +66,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Champions\Akali.cs" />
+    <Compile Include="Champions\Jinx.cs" />
+    <Compile Include="Champions\KogMaw.cs" />
     <Compile Include="Champions\Template.cs" />
     <Compile Include="Champions\Warwick.cs" />
     <Compile Include="Champions\Yone.cs" />
@@ -77,6 +79,7 @@
     <Compile Include="utilities\AutoLeveler.cs" />
     <Compile Include="utilities\Drawbackground.cs" />
     <Compile Include="utilities\DrawText.cs" />
+    <Compile Include="utilities\DrawText2.cs" />
     <Compile Include="utilities\Emote.cs" />
     <Compile Include="utilities\ArrowDrawer.cs" />
     <Compile Include="utilities\Helper.cs" />

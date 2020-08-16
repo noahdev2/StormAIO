@@ -268,7 +268,7 @@ namespace StormAIO.Champions
                     Harass();
                     break;
                 case OrbwalkerMode.LaneClear:
-                    LaneClear();
+                  if(MainMenu.SpellFarm.Active) LaneClear();
                     JungleClear();
                     break;
                 case OrbwalkerMode.LastHit:
@@ -342,8 +342,7 @@ namespace StormAIO.Champions
         {
           
         }
-
-        private static bool Ignite => Player.Spellbook.CanUseSpell(Player.GetSpellSlot("SummonerDot")) == SpellState.Ready;
+        
         
         #endregion
 
@@ -386,7 +385,7 @@ namespace StormAIO.Champions
             if (R.IsReady()) Damage += Rdmg(target);
             if (Player.GetBuffCount("itemmagicshankcharge") == 100) 
                 Damage += (float)Player.CalculateMagicDamage(target, 100 + 0.1 * Player.TotalMagicalDamage);
-            if (Ignite) Damage += (float)Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
+            if (Helper.Ignite) Damage += (float)Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
             return Damage;
         }
         #endregion

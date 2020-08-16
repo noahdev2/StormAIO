@@ -107,6 +107,10 @@ namespace StormAIO.utilities
                     MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "Select Item",
                         new[] {"Dorans Blade", "Corrupting Potion", "none"}));
                     break;
+                case "KogMaw":
+                    MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "StarterItem",
+                        new[] {"Dorans Blade", "none"}));
+                    break;
             }
         }
     }

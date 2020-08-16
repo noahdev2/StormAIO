@@ -12,21 +12,21 @@ using Menu = EnsoulSharp.SDK.MenuUI.Menu;
 
 namespace StormAIO.utilities
 {
-    public class DrawText
+    public class DrawText2
     {
         private static Font Font;
       
-        public DrawText(string text,string keytype,MenuKeyBind Toggle ,Color coloron,Color coloroff, int Textpos = 77,int keypos = 84)
+        public DrawText2(string text,MenuSliderButton Number , int Textpos = 77)
         {
            
            
             Drawing.OnDraw += delegate(EventArgs args)
             {
-                Drawing.DrawLine(1819 , keypos, 1907 , keypos, 22, Color.FromArgb(230, Toggle.Active ? coloron : coloroff));
+              
                 DrawTextWithFont(Font, text,1672 ,
                     Textpos , SharpDX.Color.White);
-                DrawTextWithFont(Font, keytype,1855 ,
-                    Textpos , !Toggle.Active ? SharpDX.Color.White : SharpDX.Color.Black);
+                DrawTextWithFont(Font, Number.ActiveValue == -1 ?  (Number.ActiveValue == 0).ToString(): Number.ActiveValue.ToString(),1855 ,
+                    Textpos , SharpDX.Color.White);
             };
             Font = new Font(
                 Drawing.Direct3DDevice,

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using EnsoulSharp;
 using EnsoulSharp.SDK;
@@ -106,6 +107,44 @@ namespace StormAIO.utilities
 
             return false;
         }
-    
+        /// <summary>
+        ///     Checks if aibaseclient has a Hard CC 
+        /// </summary>
+        /// <returns></returns>
+        public static bool HardCC(this BuffType buffType)
+        {
+            switch (buffType)
+            {
+                case BuffType.Flee:
+                case BuffType.Charm:
+                case BuffType.Snare:
+                case BuffType.Stun:
+                case BuffType.Taunt:
+                case BuffType.Suppression:
+                case BuffType.Knockup:
+                case BuffType.Asleep:
+                    return true;
+            }
+
+            return false;
+        }
+        /// <summary>
+        ///     Checks if aibaseclient is slowed or has a cc 
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsMovementImpairing(this BuffType buffType)
+        {
+            return buffType.HardCC() || buffType == BuffType.Slow;
+        }
+        /// <summary>
+        ///     Checks for buff time left
+        /// </summary>
+        /// <returns></returns>
+        public static float TimeLeft(this BuffInstance buff)
+        {
+            return buff.EndTime - Variables.GameTimeTickCount;
+        }
+        
+       
     }
 }

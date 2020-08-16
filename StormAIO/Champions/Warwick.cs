@@ -157,7 +157,7 @@ namespace StormAIO.Champions
                     Combo();
                     break;
                 case OrbwalkerMode.LaneClear:
-                    LaneClear();
+                if(MainMenu.SpellFarm.Active)    LaneClear();
                     break;
                 case OrbwalkerMode.LastHit:
                     break;

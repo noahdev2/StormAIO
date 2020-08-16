@@ -51,7 +51,7 @@ namespace StormAIO
             {
                 new MenuKeyBind("SpellFarmKey","Spell Far mKey",Keys.M,KeyBindType.Toggle),
                 new MenuKeyBind("Test2","Test",Keys.A,KeyBindType.Toggle),
-                new MenuSeparator("C","Changes Need Reload Reload Key F5")
+                new MenuSeparator("C","Changes Need Reload, Reload Key F5")
             };
             UtilitiesMenu.Add(Labeler);
             UtilitiesMenu.Attach();

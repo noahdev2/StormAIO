@@ -30,7 +30,7 @@
             {
               //  if (!Checker.ServerStatus() || !Checker.IsUpdatetoDate()) return; // disable for now We need to add a file location to our checker.cs
                 var LoadMenu      = new MainMenu();
-                
+                var drawBackground = new Drawbackground(); // background Drawer 
                 switch (ObjectManager.Player.CharacterName)
                 {
                     case "Yone":
@@ -45,6 +45,9 @@
                     case "Yorick":
                         var Yorick = new Yorick();
                         break;
+                    case "KogMaw":
+                        var kowmaw = new Kowmaw();
+                        break;
                 }
             }
             catch (Exception error)
@@ -57,9 +60,8 @@
             var LoadAutoLevel = new AutoLeveler();
             var BuyItem       = new StarterItem();
             var farmHelper    = new ArrowDrawer();
-            var drawBackground = new Drawbackground();
-            var drawLabel = new DrawText("SpellFarm", MainMenu.Key, MainMenu.SpellFarm,Color.GreenYellow, Color.Red);
-            var testLabel = new DrawText("test",MainMenu.Key2,MainMenu.test2,Color.GreenYellow, Color.Red,100,109);
+            var drawLabel = new DrawText("SpellFarm", MainMenu.Key, MainMenu.SpellFarm,Color.GreenYellow, Color.Red); // Box Drawer with text
+            var testLabel = new DrawText2("Skin index",SkinChanger.SkinMeun,100); // Text Drawer 
         }
         
     }

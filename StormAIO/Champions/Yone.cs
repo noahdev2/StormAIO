@@ -5,6 +5,7 @@ using EnsoulSharp;
 using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI.Values;
 using EnsoulSharp.SDK.Prediction;
+using SharpDX;
 using StormAIO.utilities;
 using Color = System.Drawing.Color;
 using Menu = EnsoulSharp.SDK.MenuUI.Menu;
@@ -19,7 +20,6 @@ namespace StormAIO.Champions
         private static Menu Menu;
         private static AIHeroClient Player => ObjectManager.Player;
         private static float sheenTimer;
-
         #endregion
 
         #region Menu
@@ -137,6 +137,8 @@ namespace StormAIO.Champions
         private static bool WKS => Menu["KS"].GetValue<MenuBool>("W");
         private static bool RKS => Menu["KS"].GetValue<MenuBool>("R");
         
+        private static MenuKeyBind SimiR => Menu["R"].GetValue<MenuKeyBind>("RT");
+        
 
         #endregion
 
@@ -158,6 +160,7 @@ namespace StormAIO.Champions
         public Yone()
         {
             InitSpell();
+            test1();
             CreateMenu();
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
@@ -174,6 +177,7 @@ namespace StormAIO.Champions
                 if (!Helper.drawIndicator || t == null) return;
                 Helper.Indicator(AllDamage(t));
             };
+            new DrawText("Simi R Key",SimiR.Key.ToString(),SimiR,Color.GreenYellow,Color.Red,123,132);
         }
 
         #endregion
@@ -217,14 +221,15 @@ namespace StormAIO.Champions
                     Harass();
                     break;
                 case OrbwalkerMode.LaneClear:
-                 if (MainMenu.SpellFarm)   LaneClear();
+                 if (MainMenu.SpellFarm.Active)   LaneClear();
                     JungleClear();
                     break;
                 case OrbwalkerMode.LastHit:
                     LastHit();
                     break;
+                  
             }
-
+            
             KillSteal();
             if (Menu["R"].GetValue<MenuKeyBind>("RT").Active) CastR2();
             if (Player.HaveImmovableBuff() && _EStage == EStage.Recast && RemoveDebuff &&
@@ -527,6 +532,11 @@ namespace StormAIO.Champions
 
         #region Extra functions
 
+        private static void test1()
+        {
+           
+            
+        }
         private static float AllDamage(AIHeroClient target)
         {
             float Damage = 0;

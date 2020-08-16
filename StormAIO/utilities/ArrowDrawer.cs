@@ -56,11 +56,11 @@ namespace StormAIO.utilities
             {
                 new Menu("Heros", "Heros")
                 {
-                    new MenuBool("DrawPlayer", "Draw On Me"),
+                    new MenuBool("DrawPlayer", "Draw On Me",false),
                     new MenuColor("PlayerColor", "My Arrow Color", new ColorBGRA(255, 255, 255, 198)),
-                    new MenuBool("DrawAlly", "Draw On Ally"),
+                    new MenuBool("DrawAlly", "Draw On Ally",false),
                     new MenuColor("AllyColor", "Ally Arrow Color", new ColorBGRA(255, 255, 255, 198)),
-                    new MenuBool("DrawEnemy", "Draw On Enemy"),
+                    new MenuBool("DrawEnemy", "Draw On Enemy",false),
                     new MenuColor("EnemyColor", "Enemy Arrow Color", new ColorBGRA(255, 255, 255, 198)),
                     new MenuBool("DrawTarget", "Draw On Selected Target"),
                     new MenuColor("TargetColor", "Target Arrow Color", new ColorBGRA(255, 255, 255, 198)),
