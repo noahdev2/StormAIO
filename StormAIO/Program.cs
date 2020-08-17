@@ -48,6 +48,9 @@
                     case "KogMaw":
                         var kowmaw = new Kowmaw();
                         break;
+                    case "Ashe":
+                        new Ashe();
+                        break;
                 }
             }
             catch (Exception error)
@@ -62,6 +65,7 @@
             var farmHelper    = new ArrowDrawer();
             var drawLabel = new DrawText("SpellFarm", MainMenu.Key, MainMenu.SpellFarm,Color.GreenYellow, Color.Red); // Box Drawer with text
             var testLabel = new DrawText2("Skin index",SkinChanger.SkinMeun,100); // Text Drawer 
+            new Rundown();
         }
         
     }
