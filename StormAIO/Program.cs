@@ -72,6 +72,7 @@
             var drawLabel = new DrawText("SpellFarm", MainMenu.Key, MainMenu.SpellFarm,Color.GreenYellow, Color.Red); // Box Drawer with text
             var testLabel = new DrawText2("Skin index",SkinChanger.SkinMeun,100); // Text Drawer
             new Rundown();
+            Game.Print("May the Storm rise!");
         }
         
     }
