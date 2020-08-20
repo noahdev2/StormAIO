@@ -70,6 +70,7 @@
     <Compile Include="Champions\Drmundo.cs" />
     <Compile Include="Champions\Jinx.cs" />
     <Compile Include="Champions\KogMaw.cs" />
+    <Compile Include="Champions\Lucian.cs" />
     <Compile Include="Champions\Maokai.cs" />
     <Compile Include="Champions\Rengar.cs" />
     <Compile Include="Champions\Template.cs" />
