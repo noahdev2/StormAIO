@@ -57,6 +57,9 @@
                     case "Ashe":
                         new Ashe();
                         break;
+                    case "Lucian":
+                        new Lucian();
+                        break;
                 }
             }
             catch (Exception error)
