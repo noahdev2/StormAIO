@@ -68,6 +68,7 @@
     <Compile Include="Champions\Akali.cs" />
     <Compile Include="Champions\Ashe.cs" />
     <Compile Include="Champions\Drmundo.cs" />
+    <Compile Include="Champions\Jinx.cs" />
     <Compile Include="Champions\KogMaw.cs" />
     <Compile Include="Champions\Maokai.cs" />
     <Compile Include="Champions\Rengar.cs" />
