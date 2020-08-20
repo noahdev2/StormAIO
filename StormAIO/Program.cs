@@ -54,6 +54,9 @@
                     case "Rengar":
                         var Rengar = new Rengar();
                         break;
+                    case "Ashe":
+                        new Ashe();
+                        break;
                 }
             }
             catch (Exception error)
@@ -67,7 +70,8 @@
             var BuyItem       = new StarterItem();
             var farmHelper    = new ArrowDrawer();
             var drawLabel = new DrawText("SpellFarm", MainMenu.Key, MainMenu.SpellFarm,Color.GreenYellow, Color.Red); // Box Drawer with text
-            var testLabel = new DrawText2("Skin index",SkinChanger.SkinMeun,100); // Text Drawer 
+            var testLabel = new DrawText2("Skin index",SkinChanger.SkinMeun,100); // Text Drawer
+            new Rundown();
         }
         
     }
