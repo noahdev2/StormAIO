@@ -12,7 +12,6 @@ namespace StormAIO
         public static string Key => Labeler.GetValue<MenuKeyBind>("SpellFarmKey").Key.ToString();
         public static string Key2 => Labeler.GetValue<MenuKeyBind>("Test2").Key.ToString();
         public static MenuKeyBind SpellFarm => Labeler.GetValue<MenuKeyBind>("SpellFarmKey");
-        public static MenuKeyBind test2 => Labeler.GetValue<MenuKeyBind>("Test2");
         public MainMenu()
         {
             CreateMenu();
@@ -50,11 +49,11 @@ namespace StormAIO
             Labeler = new Menu("L","Label Menu")
             {
                 new MenuKeyBind("SpellFarmKey","Spell Far mKey",Keys.M,KeyBindType.Toggle),
-                new MenuKeyBind("Test2","Test",Keys.A,KeyBindType.Toggle),
                 new MenuSeparator("C","Changes Need Reload, Reload Key F5")
             };
             UtilitiesMenu.Add(Labeler);
             UtilitiesMenu.Attach();
+            SpellFarm.SetValue(true); // < set it to on by Default 
         }
         #endregion
     }

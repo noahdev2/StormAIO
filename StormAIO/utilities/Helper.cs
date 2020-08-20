@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using EnsoulSharp;
 using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI.Values;
@@ -12,6 +10,7 @@ namespace StormAIO.utilities
     public static class Helper
     {
         private static AIHeroClient Player => ObjectManager.Player;
+
         /// <summary>
         ///     Returns the current AttackSpeed state of Player.
         /// </summary>
@@ -20,6 +19,7 @@ namespace StormAIO.utilities
         {
             return (float) (BaseAttackSpeed * Player.AttackSpeedMod);
         }
+
         /// <summary>
         ///     Checks if the user is recalling or typing or isdead.
         /// </summary>
@@ -29,8 +29,9 @@ namespace StormAIO.utilities
             if (Player.IsRecalling() || Player.IsDead || MenuGUI.IsChatOpen) return true;
             return false;
         }
+
         /// <summary>
-        ///     Draws Damage Indicator 
+        ///     Draws Damage Indicator
         /// </summary>
         /// <returns></returns>
         public static void Indicator(float damage)
@@ -38,45 +39,51 @@ namespace StormAIO.utilities
             foreach (var target in GameObjects.EnemyHeroes.Where(x =>
                 x.IsValidTarget(2000) && !x.IsDead && x.IsHPBarRendered))
             {
-                Vector2 pos = Drawing.WorldToScreen(target.Position);
+                var pos = Drawing.WorldToScreen(target.Position);
 
                 if (!pos.IsOnScreen())
                     return;
-                
+
                 var hpBar = target.HPBarPosition;
                 var damagePercentage =
-                    ((target.Health - damage) > 0 ? (target.Health - damage) : 0) / target.MaxHealth;
+                    (target.Health - damage > 0 ? target.Health - damage : 0) / target.MaxHealth;
                 var currentHealthPercentage = target.Health / target.MaxHealth;
 
                 var startPoint = new Vector2(hpBar.X - 45 + damagePercentage * 104, hpBar.Y - 18);
                 var endPoint = new Vector2(hpBar.X - 45 + currentHealthPercentage * 104, hpBar.Y - 18);
 
-                Drawing.DrawLine(startPoint, endPoint, 12,  Color.FromArgb(drawColor.ColorA,drawColor.ColorR,drawColor.ColorG,drawColor.ColorB));
+                Drawing.DrawLine(startPoint, endPoint, 12,
+                    Color.FromArgb(drawColor.ColorA, drawColor.ColorR, drawColor.ColorG, drawColor.ColorB));
             }
         }
+
         /// <summary>
         ///     Checks for Indicator from menu
         /// </summary>
         /// <returns></returns>
         public static bool drawIndicator => MainMenu.UtilitiesMenu["Indicator"].GetValue<MenuBool>("Indicator");
+
         /// <summary>
         ///     gets Selected color from menu
         /// </summary>
         /// <returns></returns>
         public static MenuColor drawColor => MainMenu.UtilitiesMenu["Indicator"].GetValue<MenuColor>("SetColor");
+
         /// <summary>
         ///     Checks if the Target is moving towards you or you are moving Towards the target
         /// </summary>
         /// <returns></returns>
         public static bool IsMovingTowards(this AIHeroClient unit, Vector3 position)
         {
-            return unit.IsMoving && unit.Path.Last().Distance(position) <=  100;
+            return unit.IsMoving && unit.Path.Last().Distance(position) <= 100;
         }
+
         /// <summary>
         ///     Returns the spellstate of Ingite
         /// </summary>
         /// <returns></returns>
-        public static bool Ignite => Player.Spellbook.CanUseSpell(Player.GetSpellSlot("SummonerDot")) == SpellState.Ready;
+        public static bool Ignite =>
+            Player.Spellbook.CanUseSpell(Player.GetSpellSlot("SummonerDot")) == SpellState.Ready;
 
         /// <summary>
         ///     Checks for Truehealth
@@ -84,31 +91,27 @@ namespace StormAIO.utilities
         /// <returns></returns>
         public static float TrueHealth(this AIBaseClient Target)
         {
-            var health= Target.Health;
-            health         += Target.AllShield;
-            if (Target.HasBuffOfType(BuffType.Invulnerability))
-            {
-                health     += 99999;
-            }
+            var health = Target.Health;
+            health += Target.AllShield;
+            if (Target.HasBuffOfType(BuffType.Invulnerability)) health += 99999;
             return health;
         }
+
         /// <summary>
         ///     Checks for if it's a team fight
         /// </summary>
         /// <returns></returns>
         public static bool TeamFight()
         {
-            int Count = Player.CountEnemyHeroesInRange(3000);
-            int Ally = Player.CountAllyHeroesInRange(3000);
-            if (Ally > 1 && Count > 2)
-            {
-                return true;
-            }
+            var Count = Player.CountEnemyHeroesInRange(3000);
+            var Ally = Player.CountAllyHeroesInRange(3000);
+            if (Ally > 1 && Count > 2) return true;
 
             return false;
         }
+
         /// <summary>
-        ///     Checks if aibaseclient has a Hard CC 
+        ///     Checks if aibaseclient has a Hard CC
         /// </summary>
         /// <returns></returns>
         public static bool HardCC(this BuffType buffType)
@@ -128,14 +131,16 @@ namespace StormAIO.utilities
 
             return false;
         }
+
         /// <summary>
-        ///     Checks if aibaseclient is slowed or has a cc 
+        ///     Checks if aibaseclient is slowed or has a cc
         /// </summary>
         /// <returns></returns>
         public static bool IsMovementImpairing(this BuffType buffType)
         {
             return buffType.HardCC() || buffType == BuffType.Slow;
         }
+
         /// <summary>
         ///     Checks for buff time left
         /// </summary>
@@ -144,7 +149,29 @@ namespace StormAIO.utilities
         {
             return buff.EndTime - Variables.GameTimeTickCount;
         }
-        
-       
+
+        /// <summary>
+        ///     Checks attack if u can auto attack a hero
+        /// </summary>
+        /// <returns></returns>
+        public static bool CanAttackAnyHero
+            => Orbwalker.CanAttack() &&
+               GameObjects.EnemyHeroes.Any(x => x.IsValidTarget(Player.GetRealAutoAttackRange()));
+
+        /// <summary>
+        ///     Checks attack if u can auto attack a minion
+        /// </summary>
+        /// <returns></returns>
+        public static bool CanAttackAnyMinion
+            => Orbwalker.CanAttack() &&
+               GameObjects.EnemyMinions.Any(x => x.IsValidTarget(Player.GetRealAutoAttackRange()));
+
+        /// <summary>
+        ///     Checks attack if u can auto attack a Turrent
+        /// </summary>
+        /// <returns></returns>
+        public static bool CanAttackTurret
+            => Orbwalker.CanAttack() &&
+               GameObjects.EnemyTurrets.Any(x => x.IsValidTarget(Player.GetRealAutoAttackRange()));
     }
 }

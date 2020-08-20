@@ -198,7 +198,7 @@ namespace StormAIO.Champions
             E = new Spell(SpellSlot.E, 1280);
             R = new Spell(SpellSlot.R, 1300f);
 
-            Q.SetSkillshot(0.35f, 95f, 1650f,true,SkillshotType.Line);
+            Q.SetSkillshot(0.35f, 95f, 1650f,true,SkillshotType.Line,HitChance.VeryHigh);
             E.SetSkillshot(0.25f, 125f, 1350f, false, SkillshotType.Line);
             R.SetSkillshot(0.85f, 175f, float.MaxValue,false ,SkillshotType.Circle);
         }

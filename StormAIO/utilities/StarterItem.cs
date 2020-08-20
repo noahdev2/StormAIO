@@ -11,7 +11,7 @@ namespace StormAIO.utilities
         public StarterItem()
         {
             CreateMenu();
-            DelayAction.Add(200, () => BuyItem());
+            DelayAction.Add(1000, () => BuyItem());
         }
 
         private static void BuyItem()
@@ -61,8 +61,8 @@ namespace StormAIO.utilities
                     case "Dorans Shield":
                     {
                         if (time < 1 && Player.InShop())
-                            if (gold >= 500 && !Player.HasItem(ItemId.Long_Sword))
-                                Player.BuyItem(ItemId.Long_Sword);
+                            if (gold >= 500 && !Player.HasItem(ItemId.Dorans_Shield))
+                                Player.BuyItem(ItemId.Dorans_Shield);
                         if (gold >= 50 && !Player.HasItem(ItemId.Health_Potion))
                             Player.BuyItem(ItemId.Health_Potion);
                         break;
@@ -111,6 +111,15 @@ namespace StormAIO.utilities
                     MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "StarterItem",
                         new[] {"Dorans Blade", "none"}));
                     break;
+                case "DrMundo":
+                    MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "Select Item",
+                        new[] {"Dorans Shield", "none"}));
+                    break;
+                case "Rengar":
+                    MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "Select Item",
+                        new[] {"Hunters Machete","Dorans Blade","none"}));
+                    break;
+                    
             }
         }
     }

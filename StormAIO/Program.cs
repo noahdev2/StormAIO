@@ -48,6 +48,12 @@
                     case "KogMaw":
                         var kowmaw = new Kowmaw();
                         break;
+                    case "DrMundo":
+                        var DrMundo = new Drmundo();
+                        break;
+                    case "Rengar":
+                        var Rengar = new Rengar();
+                        break;
                 }
             }
             catch (Exception error)

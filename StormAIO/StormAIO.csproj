@@ -66,8 +66,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Champions\Akali.cs" />
-    <Compile Include="Champions\Jinx.cs" />
+    <Compile Include="Champions\Drmundo.cs" />
     <Compile Include="Champions\KogMaw.cs" />
+    <Compile Include="Champions\Maokai.cs" />
+    <Compile Include="Champions\Rengar.cs" />
     <Compile Include="Champions\Template.cs" />
     <Compile Include="Champions\Warwick.cs" />
     <Compile Include="Champions\Yone.cs" />
