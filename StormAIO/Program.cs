@@ -48,8 +48,6 @@
                     case "KogMaw":
                         var kowmaw = new Kowmaw();
                         break;
-                        new Lucian();
-                        break;
                 }
             }
             catch (Exception error)
