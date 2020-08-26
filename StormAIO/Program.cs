@@ -48,16 +48,6 @@
                     case "KogMaw":
                         var kowmaw = new Kowmaw();
                         break;
-                    case "DrMundo":
-                        var DrMundo = new Drmundo();
-                        break;
-                    case "Rengar":
-                        var Rengar = new Rengar();
-                        break;
-                    case "Ashe":
-                        new Ashe();
-                        break;
-                    case "Lucian":
                         new Lucian();
                         break;
                 }
@@ -73,9 +63,7 @@
             var BuyItem       = new StarterItem();
             var farmHelper    = new ArrowDrawer();
             var drawLabel = new DrawText("SpellFarm", MainMenu.Key, MainMenu.SpellFarm,Color.GreenYellow, Color.Red); // Box Drawer with text
-            var testLabel = new DrawText2("Skin index",SkinChanger.SkinMeun,100); // Text Drawer
-            new Rundown();
-            Game.Print("May the Storm rise!");
+            var testLabel = new DrawText2("Skin index",SkinChanger.SkinMeun,100); // Text Drawer 
         }
         
     }
