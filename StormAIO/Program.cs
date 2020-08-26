@@ -48,6 +48,30 @@
                     case "KogMaw":
                         var kowmaw = new Kowmaw();
                         break;
+                    case "DrMundo":
+                        var DrMundo = new Drmundo();
+                        break;
+                    case "Rengar":
+                        var Rengar = new Rengar();
+                        break;
+                    case "Garen":
+                        var Garen = new Garen();
+                        break; 
+                    case "Ashe":
+                        var Ashe = new Ashe();
+                        break;
+                    case "Urgot":
+                        var Urgot = new Urgot();
+                        break;
+                    case "Lucian":
+                        var Lucian = new Lucian();
+                        break;
+                    case "Chogath":
+                        var Chogath = new Chogath();
+                        break;
+                    case "Zed" :
+                        var Zed = new Zed();
+                        break;
                 }
             }
             catch (Exception error)
@@ -61,7 +85,8 @@
             var BuyItem       = new StarterItem();
             var farmHelper    = new ArrowDrawer();
             var drawLabel = new DrawText("SpellFarm", MainMenu.Key, MainMenu.SpellFarm,Color.GreenYellow, Color.Red); // Box Drawer with text
-            var testLabel = new DrawText2("Skin index",SkinChanger.SkinMeun,100); // Text Drawer 
+            var testLabel = new DrawText2("Skin index",SkinChanger.SkinMeun,100); // Text Drawer
+            var RunDown = new Rundown();
         }
         
     }

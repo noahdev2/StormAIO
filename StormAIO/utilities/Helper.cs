@@ -167,6 +167,13 @@ namespace StormAIO.utilities
                GameObjects.EnemyMinions.Any(x => x.IsValidTarget(Player.GetRealAutoAttackRange()));
 
         /// <summary>
+        ///     Checks attack if u can auto attack a Monster
+        /// </summary>
+        /// <returns></returns>
+        public static bool CanAttackAnyMonster
+            => Orbwalker.CanAttack() &&
+               GameObjects.Jungle.Any(x => x.IsValidTarget(Player.GetRealAutoAttackRange()));
+        /// <summary>
         ///     Checks attack if u can auto attack a Turrent
         /// </summary>
         /// <returns></returns>

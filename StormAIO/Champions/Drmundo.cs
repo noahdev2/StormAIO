@@ -36,7 +36,7 @@ namespace StormAIO.Champions
             {
                 HarassMenu.QSliderBool,
                 HarassMenu.WSliderBool,
-                HarassMenu.ESliderBool
+                HarassMenu.EBool
             };
             
             var killStealMenu = new Menu("killSteal", "KillSteal")
@@ -48,20 +48,19 @@ namespace StormAIO.Champions
             {
                 LaneClearMenu.QSliderBool,
                 LaneClearMenu.WSliderBool,
-                LaneClearMenu.ESliderBool,
+                LaneClearMenu.EBool,
             };
 
             var jungleClearMenu = new Menu("JungleClear", "Jungle Clear")
             {
                 JungleClearMenu.QSliderBool,
                 JungleClearMenu.WSliderBool,
-                JungleClearMenu.ESliderBool
+                JungleClearMenu.EBool
             };
 
             var lastHitMenu = new Menu("lastHit", "Last Hit")
             {
                 LastHitMenu.QBool,
-                LastHitMenu.EBool,
             };
             var GapCloserMenu = new Menu("GapCloserMenu","GapCloser")
             {
@@ -111,7 +110,7 @@ namespace StormAIO.Champions
         {
             public static readonly MenuSliderButton QSliderBool = new MenuSliderButton("harassQ", "Use Q | If Health >= x%", 30);
             public static readonly MenuSliderButton WSliderBool = new MenuSliderButton("harassW", "Use W | If Health >= x%", 30);
-            public static readonly MenuSliderButton ESliderBool = new MenuSliderButton("harassE", "Use E | If Health >= x%", 30);
+            public static readonly MenuBool EBool = new MenuBool("harassE", "Use E");
             
         }
 
@@ -131,8 +130,8 @@ namespace StormAIO.Champions
             public static readonly MenuSliderButton WSliderBool =
                 new MenuSliderButton("jungleClearW", "Use W | If Health >= x%", 10);
 
-            public static readonly MenuSliderButton ESliderBool =
-                new MenuSliderButton("jungleClearE", "Use E | If Health >= x%", 10);
+            public static readonly MenuBool EBool =
+                new MenuBool("jungleClearE", "Use E");
         }
 
         public static class LaneClearMenu
@@ -145,8 +144,8 @@ namespace StormAIO.Champions
                 new MenuSliderButton("laneClearW", "Use W | If Health >= x%", 50);
             
 
-            public static readonly MenuSliderButton ESliderBool =
-                new MenuSliderButton("laneClearE", "Use E | If Health >= x%", 50);
+            public static readonly MenuBool EBool =
+                new MenuBool("laneClearE", "Use E");
             
         }
         public static class StructureClearMenu
@@ -178,7 +177,7 @@ namespace StormAIO.Champions
         private static void InitSpell()
         {
             Q = new Spell(SpellSlot.Q,975);
-            Q.SetSkillshot(0.25f,120f,2000,true,SkillshotType.Line,HitChance.VeryHigh);
+            Q.SetSkillshot(0.25f,75f,1500,true,SkillshotType.Line,HitChance.VeryHigh);
             W = new Spell(SpellSlot.W,325);
             W.Delay = 0f;
             E = new Spell(SpellSlot.E);
@@ -205,7 +204,7 @@ namespace StormAIO.Champions
                 Helper.Indicator(AllDamage(t));
             };
             Gapcloser.OnGapcloser += GapcloserOnOnGapcloser;
-            AIBaseClient.OnProcessSpellCast += AIBaseClientOnOnProcessSpellCast ;
+            AIBaseClient.OnProcessSpellCast += AIBaseClientOnOnProcessSpellCast;
         }
 
         private void AIBaseClientOnOnProcessSpellCast(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
@@ -262,20 +261,7 @@ namespace StormAIO.Champions
         }
         private static void OrbwalkerOnOnAction(object sender, OrbwalkerActionArgs args)
         {
-            if (args.Type == OrbwalkerType.BeforeAttack)
-            {
-                if (args.Target.IsEnemy && args.Target.IsMinion() && (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear))
-                {
-                    if (LaneClearMenu.ESliderBool.Enabled && LaneClearMenu.ESliderBool.ActiveValue < Player.HealthPercent)
-                    {
-                        var minions = GameObjects.GetMinions(Player.Position, Player.GetRealAutoAttackRange() + 25).Where(
-                                x => E.GetDamage(x) + Player.GetAutoAttackDamage(x) > x.Health).OrderByDescending(x => x.MaxHealth)
-                            .ThenBy(x => x.DistanceToPlayer()).FirstOrDefault();
-                        if (minions == null) return;
-                        E.Cast();
-                    }
-                }
-            }
+            
             if (args.Type != OrbwalkerType.AfterAttack || !E.IsReady()) return;
             if (args.Target.IsEnemy && args.Target is AIHeroClient && (Orbwalker.ActiveMode == OrbwalkerMode.Combo))
             {
@@ -283,15 +269,15 @@ namespace StormAIO.Champions
             }
             if (args.Target.IsEnemy && args.Target is AIHeroClient && (Orbwalker.ActiveMode == OrbwalkerMode.Harass))
             {
-                if(HarassMenu.ESliderBool.Enabled && HarassMenu.ESliderBool.ActiveValue < Player.HealthPercent) CastE();
+                if(HarassMenu.EBool.Enabled) CastE();
             }
            
             if (args.Target.IsEnemy && args.Target.IsJungle() && (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear))
             {
-                if (JungleClearMenu.ESliderBool.Enabled && JungleClearMenu.ESliderBool.ActiveValue < Player.HealthPercent)
+                if (JungleClearMenu.EBool.Enabled)
                 {
-                    var Jungle = GameObjects.GetJungles(Player.Position, Player.GetRealAutoAttackRange() + 25).OrderByDescending(x => x.MaxHealth)
-                        .ThenBy(x => x.DistanceToPlayer()).FirstOrDefault();
+                    var Jungle = GameObjects.GetJungles(Player.Position, Player.GetRealAutoAttackRange() + 25)
+                        .OrderBy(x => x.DistanceToPlayer()).FirstOrDefault();
                     if (Jungle == null) return;
                     E.Cast();
                 }
@@ -394,6 +380,19 @@ namespace StormAIO.Champions
                 }
                 if (minions != null && W.ToggleState == 1) W.Cast();
             }
+            if (LaneClearMenu.EBool.Enabled && E.IsReady())
+            {
+                var minions = GameObjects.GetMinions(Player.Position, Player.GetRealAutoAttackRange()).OrderBy(x => x.DistanceToPlayer())
+                    .FirstOrDefault();
+                if (minions == null) return;
+                if ( E.GetDamage(minions) > minions.Health)
+                {
+                    E.Cast();
+                    Orbwalker.Attack(minions);
+
+                }
+            }
+            
         }
 
         private static void JungleClear()
@@ -450,11 +449,6 @@ namespace StormAIO.Champions
         {
             var target = Q.GetTarget();
             if (target == null || !Q.IsReady()) return;
-            if (Q.CanCast(target))
-            {
-                Q.Cast(target);
-                return;
-            }
 
             var qpre = Q.GetPrediction(target);
             if (qpre.Hitchance == HitChance.High)

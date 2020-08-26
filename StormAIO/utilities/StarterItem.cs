@@ -17,14 +17,16 @@ namespace StormAIO.utilities
         private static void BuyItem()
         {
             var gold = Player.Gold;
-            var time = Game.Time / 60;
-            var item = MainMenu.Main_Menu.GetValue<MenuList>("selectitem").SelectedValue;
-            
-            if (item != "none" && item != null && Game.MapId == GameMapId.SummonersRift)
+            var time  = Game.Time / 60;
+            var item = MainMenu.UtilitiesMenu.GetValue<MenuList>("selectitem").SelectedValue;
+
+            if (item != null && Game.MapId == GameMapId.SummonersRift)
+            {
                 switch (item)
                 {
                     case "Dorans Blade":
                     {
+
                         if (time < 1 && Player.InShop())
                         {
                             if (gold >= 500 && !Player.HasItem(ItemId.Dorans_Blade))
@@ -70,10 +72,10 @@ namespace StormAIO.utilities
                     case "Long Sword":
                     {
                         if (time < 1 && Player.InShop())
-                            if (gold >= 500 && !Player.HasItem(ItemId.Dorans_Shield))
-                                Player.BuyItem(ItemId.Dorans_Shield);
-                        if (gold >= 50 && !Player.HasItem(ItemId.Health_Potion))
-                            Player.BuyItem(ItemId.Health_Potion);
+                            if (gold >= 500 && !Player.HasItem(ItemId.Long_Sword))
+                                Player.BuyItem(ItemId.Long_Sword);
+                        if (gold >= 150 && !Player.HasItem(ItemId.Refillable_Potion))
+                            Player.BuyItem(ItemId.Refillable_Potion);
                         break;
                     }
                     case "Corrupting Potion":
@@ -84,6 +86,7 @@ namespace StormAIO.utilities
                         break;
                     }
                 }
+            }
         }
 
         private static void CreateMenu()
@@ -119,7 +122,26 @@ namespace StormAIO.utilities
                     MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "Select Item",
                         new[] {"Hunters Machete","Dorans Blade","none"}));
                     break;
-                    
+                case "Garen":
+                    MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "Select Item",
+                        new[] {"Dorans Shield","Long Sword","none"}));
+                    break;
+                case "Urgot":
+                    MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "Select Item",
+                        new[] {"Dorans Blade","Long Sword","Long Sword","none"}));
+                    break;
+                case "Lucian":
+                        MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "Select Item",
+                            new[] {"Dorans Blade","Long Sword","none"}));
+                      break;
+                case "Chogath":
+                    MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "Select Item",
+                        new[] {"Dorans Ring","Dorans Shield","none"}));
+                    break;
+                case "Zed":
+                    MainMenu.UtilitiesMenu.Add(new MenuList("selectitem", "Select Item",
+                        new[] {"Long Sword","none"}));
+                    break;
             }
         }
     }

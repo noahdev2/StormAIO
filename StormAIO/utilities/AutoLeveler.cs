@@ -15,7 +15,7 @@ namespace StormAIO.utilities
             var LevelMenu = MainMenu.Level.GetValue<MenuBool>("autolevel");
             Champ();
             if (!LevelMenu || Urf || SpellLevels == null) return;
-            DelayAction.Add(3000, () => MyLevelLogic());
+            DelayAction.Add(1000, () => MyLevelLogic());
             AIHeroClient.OnLevelUp +=  AIHeroClientOnOnLevelUp;
         }
 
@@ -74,6 +74,21 @@ namespace StormAIO.utilities
                     break;
                 case "Rengar":
                     SpellLevels = new[] {1, 2,3, 1, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2};
+                    break;
+                case "Garen":
+                    SpellLevels = new[] {1, 3,2, 3, 3, 4, 3, 1, 3, 1, 4, 1, 1, 2, 2, 4, 2, 2};
+                    break;
+                case "Urgot":
+                    SpellLevels = new[] {1, 3,2, 2, 2, 4, 2, 3, 2, 3, 4, 3, 3, 1, 1, 4, 1, 1};
+                    break;
+                case "Lucian":
+                    SpellLevels = new[] {1, 3, 2, 1, 1, 4, 1, 2, 1, 3, 4, 3, 3, 3, 2, 4, 2, 2};
+                    break;
+                case "Chogath":
+                    SpellLevels = new[] {1, 3, 1, 2, 1, 4, 1, 2, 1, 2, 4, 2, 2, 3, 3, 4, 3, 3};
+                    break;
+                case "Zed":
+                    SpellLevels = new[] {1, 3, 2, 1, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2};
                     break;
             }
         }

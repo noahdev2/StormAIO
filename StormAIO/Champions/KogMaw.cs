@@ -200,7 +200,8 @@ namespace StormAIO.Champions
 
             Q.SetSkillshot(0.35f, 95f, 1650f,true,SkillshotType.Line,HitChance.VeryHigh);
             E.SetSkillshot(0.25f, 125f, 1350f, false, SkillshotType.Line);
-            R.SetSkillshot(0.85f, 175f, float.MaxValue,false ,SkillshotType.Circle);
+            R.SetSkillshot(1.20f, 120f, float.MaxValue, false, false, SkillshotType.Circle);
+
         }
 
 

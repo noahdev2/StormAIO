@@ -6,6 +6,7 @@ using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI;
 using EnsoulSharp.SDK.MenuUI.Values;
 using EnsoulSharp.SDK.Prediction;
+using EnsoulSharp.SDK.Utility;
 using SharpDX;
 using static StormAIO.MainMenu;
 
@@ -24,6 +25,7 @@ namespace StormAIO.utilities
         #endregion
         public Rundown()
         {
+            
             RundownMenu = new Menu("rundownMenu", "Rundown™")
             {
                 new Menu("rundownTab", "Run it down?")
@@ -80,7 +82,7 @@ namespace StormAIO.utilities
 
             Troll();
             Follow();
-            
+            if (Game.MapId != GameMapId.SummonersRift) return; // don't try to run to lanes if they Don't exist 
             if (rundownTop)
             {
                 if (RunMidSpot || Player.IsDead)

@@ -372,7 +372,7 @@ namespace StormAIO.Champions
             {
                 if (!Q.IsReady()) return QStage.Cooldown;
 
-                return Player.Spellbook.GetSpell(SpellSlot.Q).Name == "YoneQ" ? QStage.First : QStage.Second;
+                return Q.Name == "YoneQ" ? QStage.First : QStage.Second;
             }
         }
 
