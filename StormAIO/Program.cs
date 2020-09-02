@@ -72,6 +72,9 @@
                     case "Zed" :
                         var Zed = new Zed();
                         break;
+                    case "Twitch" :
+                        var Twitch = new Twitch();
+                        break;
                 }
             }
             catch (Exception error)
