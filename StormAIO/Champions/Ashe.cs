@@ -314,22 +314,6 @@ namespace StormAIO.Champions
                     }
                 }
                     break;
-
-                case OrbwalkerMode.Harass:
-                {
-                    if (args.Target == null ||
-                        args.Target.Type != GameObjectType.AIHeroClient) return;
-
-                    if (W.IsReady() && HarassMenu.WSliderBool.Enabled &&
-                        HarassMenu.WSliderBool.ActiveValue < Player.ManaPercent &&
-                        args.Target.IsValidTarget(W.Range))
-                    {
-                        var target = args.Target as AIHeroClient;
-                        if (W.GetPrediction(target).Hitchance >= HitChance.High)
-                            W.Cast(W.GetPrediction(target).UnitPosition);
-                    }
-                }
-                    break;
                 case OrbwalkerMode.LastHit:
                 {
                     if (!MainMenu.SpellFarm.Active) return;
@@ -413,8 +397,15 @@ namespace StormAIO.Champions
             
         private static void Harass()
         {
-           
-
+            var target = TargetSelector.GetTarget((W.Range));
+            
+            if (W.IsReady() && HarassMenu.WSliderBool.Enabled &&
+                HarassMenu.WSliderBool.ActiveValue < Player.ManaPercent &&
+                target.IsValidTarget(W.Range))
+            {
+                if (W.GetPrediction(target).Hitchance >= HitChance.High)
+                    W.Cast(W.GetPrediction(target).UnitPosition);
+            }
         }
 
         private static void LaneClear()
