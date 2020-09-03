@@ -171,7 +171,7 @@ namespace StormAIO.Champions
             W.SetSkillshot(0.25f, 20f, 1500f, true, SkillshotType.Cone);
             E = new Spell(SpellSlot.E);
             R = new Spell(SpellSlot.R, 4500f);
-            R.SetSkillshot(0.25f, 130f, 1600f, true, SkillshotType.Line);
+            R.SetSkillshot(0.25f, 130f, 1600f, false, SkillshotType.Line);
         }
 
 
@@ -389,7 +389,7 @@ namespace StormAIO.Champions
         private static void SemiR()
         {
             Orbwalker.Move(Game.CursorPos);
-            var target = TargetSelector.GetTarget((R.Range));
+            var target = TargetSelector.SelectedTarget;
             if (target == null || !target.IsValidTarget(R.Range)) return;
             var rPred = R.GetPrediction(target);
             if (rPred.Hitchance >= HitChance.VeryHigh) R.Cast((rPred.CastPosition));
@@ -420,10 +420,12 @@ namespace StormAIO.Champions
 
         private static void LastHit()
         {
-            if (!MainMenu.SpellFarm.Active) return;
+            if (!MainMenu.SpellFarm.Active || !LastHitMenu.WSliderBool.Enabled) return;
             //Minions
             var allMinions = GameObjects.GetMinions(ObjectManager.Player.Position, W.Range);
-            foreach (var minion in allMinions.Where(minion => minion.IsValidTarget(W.Range) && Player.Distance(minion) > Player.GetRealAutoAttackRange() && minion.Health < Player.GetSpellDamage(minion, SpellSlot.W)))
+            foreach (var minion in allMinions.Where(minion =>
+                minion.IsValidTarget(W.Range) && Player.Distance(minion) > Player.GetRealAutoAttackRange() &&
+                minion.Health < Player.GetSpellDamage(minion, SpellSlot.W)))
             {
                 W.Cast(minion);
                 return;
