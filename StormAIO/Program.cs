@@ -105,6 +105,9 @@ namespace StormAIO
                         // ReSharper disable once ObjectCreationAsStatement    
                         new Twitch();
                         break;
+                    case "Twitch" :
+                        var Twitch = new Twitch();
+                        break;
                 }
             }
             catch (Exception error)

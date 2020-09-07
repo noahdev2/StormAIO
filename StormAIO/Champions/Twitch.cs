@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 ﻿﻿using System;
 using System.Linq;
+=======
+﻿using System;
+using System.Linq;
+using System.Windows.Forms;
+>>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
 using EnsoulSharp;
 using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI.Values;
@@ -82,7 +88,11 @@ namespace StormAIO.Champions
 
         #region MenuHelper
 
+<<<<<<< HEAD
         private static class ComboMenu
+=======
+        public static class ComboMenu
+>>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
         {
             public static readonly MenuBool QBool = new MenuBool("comboQ", "Use  after a kill");
             public static readonly MenuBool WBool = new MenuBool("comboW", "Use W");
@@ -90,12 +100,20 @@ namespace StormAIO.Champions
             public static readonly MenuKeyBind StealthBack = new MenuKeyBind("MiscBack", "Stealth Recall", System.Windows.Forms.Keys.B, KeyBindType.Press);
         }
 
+<<<<<<< HEAD
         private static class KillStealMenu
+=======
+        public static class KillStealMenu
+>>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
         {
             public static readonly MenuBool EBool = new MenuBool("killStealE", "Use E");
         }
 
+<<<<<<< HEAD
         private static class JungleClearMenu
+=======
+        public static class JungleClearMenu
+>>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
         {
             public static readonly MenuSliderButton WSliderBool =
                 new MenuSliderButton("jungleClearW", "Use W | If Mana >= x%", 50);
@@ -104,7 +122,11 @@ namespace StormAIO.Champions
                 new MenuSliderButton("jungleClearE", "Use E | If Mana >= x%", 50);
         }
 
+<<<<<<< HEAD
         private static class LaneClearMenu
+=======
+        public static class LaneClearMenu
+>>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
         {
             public static readonly MenuSliderButton WSliderBool =
                 new MenuSliderButton("laneClearW", "Use W | If Mana >= x%", 50);
@@ -116,7 +138,11 @@ namespace StormAIO.Champions
                 new MenuSliderButton("laneClearE", "Use E | If Mana >= x%", 50);
         }
         
+<<<<<<< HEAD
         private static class DrawingMenu
+=======
+        public static class DrawingMenu
+>>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
         {
             public static readonly MenuBool DrawQ = new MenuBool("DrawQ", "Draw Q");
             public static readonly MenuBool DrawW = new MenuBool("DrawW", "Draw W");
@@ -135,7 +161,11 @@ namespace StormAIO.Champions
             W = new Spell(SpellSlot.W, 950f);
             E = new Spell(SpellSlot.E, 1200f);
             
+<<<<<<< HEAD
             W.SetSkillshot(0.25f, 75f, 1400f, false, SkillshotType.Circle);
+=======
+            W.SetSkillshot(0.25f, 100f, 1400f, false, false, SkillshotType.Circle);
+>>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
         }
 
 
@@ -149,7 +179,11 @@ namespace StormAIO.Champions
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Orbwalker.OnAction += OrbwalkerOnOnAction;
+<<<<<<< HEAD
             Drawing.OnEndScene += delegate
+=======
+            Drawing.OnEndScene += delegate(EventArgs args)
+>>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
             {
                 var t = TargetSelector.GetTarget(2000f);
                 if (!Helper.drawIndicator || t == null) return;
@@ -331,7 +365,11 @@ namespace StormAIO.Champions
             var target = TargetSelector.GetTarget(E.Range);
 
             if (target == null || target.IsInvulnerable || !target.IsValidTarget(E.Range) || !E.IsReady()) return;
+<<<<<<< HEAD
             if (target.TrueHealth() < GetRealEDamage(target) - target.HPRegenRate)
+=======
+            if (target.Health < GetRealEDamage(target) - target.HPRegenRate)
+>>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
             {
                 E.Cast();
             }
@@ -434,11 +472,19 @@ namespace StormAIO.Champions
             var buffCount = GetEStackCount(target);
 
             var baseDamage = new[] { 0, 20, 30, 40, 50, 60 }[eLevel];
+<<<<<<< HEAD
             var extraDamage = new[] { 0, 15, 20, 25, 30, 35 }[eLevel] + 0.333f * ObjectManager.Player.TotalMagicalDamage +
                               0.35f * (ObjectManager.Player.TotalAttackDamage - ObjectManager.Player.BaseAttackDamage);
             var resultDamage =
                 Player.CalculateDamage(target, DamageType.Physical, baseDamage + extraDamage * buffCount);
             if (Player.HasBuff("SummonerExhaust"))
+=======
+            var extraDamage = new[] { 0, 15, 20, 25, 30, 35 }[eLevel] + 0.2f * ObjectManager.Player.TotalMagicalDamage +
+                              0.35f * (ObjectManager.Player.TotalAttackDamage - ObjectManager.Player.BaseAttackDamage);
+            var resultDamage =
+                ObjectManager.Player.CalculateDamage(target, DamageType.Physical, baseDamage + extraDamage * buffCount);
+            if (ObjectManager.Player.HasBuff("SummonerExhaust"))
+>>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
             {
                 resultDamage *= 0.6f;
             }
@@ -457,7 +503,31 @@ namespace StormAIO.Champions
         }
         
         
+<<<<<<< HEAD
    
+=======
+        private static float Qdmg(AIBaseClient t)
+        {
+            var damage = 0;
+            return damage;
+        }
+        private static float Wdmg(AIBaseClient t)
+        {
+            var damage = 0;
+            return damage;
+        }
+        private static float Edmg(AIBaseClient t)
+        {
+            var damage = 0;
+            return damage;
+        }
+        private static float Rdmg(AIHeroClient t)
+        {
+            var damage = 0;
+            return damage;
+        }
+        
+>>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
         #endregion
 
         #region Extra functions
@@ -467,7 +537,17 @@ namespace StormAIO.Champions
             float Damage = 0;
             if (target == null)                                 return 0;
             if (target.HasBuffOfType(BuffType.Invulnerability)) return 0;
+<<<<<<< HEAD
             if (E.IsReady()) Damage += (float) GetRealEDamage(target);
+=======
+                             Damage += (float) Player.GetAutoAttackDamage(target);
+            if (Q.IsReady()) Damage += Qdmg(target);
+            if (W.IsReady()) Damage += Wdmg(target);
+            if (E.IsReady()) Damage += Edmg(target);
+            if (Player.GetBuffCount("itemmagicshankcharge") == 100) 
+                Damage += (float)Player.CalculateMagicDamage(target, 100 + 0.1 * Player.TotalMagicalDamage);
+            if (Helper.Ignite) Damage += (float)Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
+>>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
             return Damage;
         }
         #endregion

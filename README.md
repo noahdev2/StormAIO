@@ -1,5 +1,7 @@
 ﻿# Storm AIO
 
+![alt text](https://media.discordapp.net/attachments/719546155058593904/748617356749832192/stormbanner.png)
+
 Storm AIO is an `assembly` that allows `ensoulsharp users` to use script to their hearts content.
 
 Storm AIO is an All in One assembly made for [Ensoulsharp](https://ensoulsharp.com/) and is the product of two developers.

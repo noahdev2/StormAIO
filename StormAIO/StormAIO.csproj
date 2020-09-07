@@ -39,18 +39,32 @@
       <HintPath>C:\Users\Ameen\Downloads\EnsoulSharp\System\EnsoulSharp.Sandbox.dll</HintPath>
     </Reference>
     <Reference Include="EnsoulSharp.SDK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bcecb37b3b5656dd">
+<<<<<<< HEAD
       <HintPath>C:\Users\Ameen\Downloads\EnsoulSharp\System\EnsoulSharp.SDK.dll</HintPath>
     </Reference>
     <Reference Include="EnsoulSharp.Wrapper, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a47cf8ceb3524cd7">
       <HintPath>C:\Users\Ameen\Downloads\EnsoulSharp\System\EnsoulSharp.Wrapper.dll</HintPath>
+=======
+      <HintPath>C:\Users\Max\Desktop\EnsoulSharp\System\EnsoulSharp.SDK.dll</HintPath>
+    </Reference>
+    <Reference Include="EnsoulSharp.Wrapper, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a47cf8ceb3524cd7">
+      <HintPath>C:\Users\Max\Desktop\EnsoulSharp\System\EnsoulSharp.Wrapper.dll</HintPath>
+>>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="mscorlib" />
     <Reference Include="SharpDX, Version=2.6.3.0, Culture=neutral, PublicKeyToken=2306ab36a61019a8">
+<<<<<<< HEAD
       <HintPath>C:\Users\Ameen\Downloads\EnsoulSharp\System\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9, Version=2.6.3.0, Culture=neutral, PublicKeyToken=2306ab36a61019a8">
       <HintPath>C:\Users\Ameen\Downloads\EnsoulSharp\System\SharpDX.Direct3D9.dll</HintPath>
+=======
+      <HintPath>C:\Users\Max\Desktop\EnsoulSharp\System\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D9, Version=2.6.3.0, Culture=neutral, PublicKeyToken=2306ab36a61019a8">
+      <HintPath>C:\Users\Max\Desktop\EnsoulSharp\System\SharpDX.Direct3D9.dll</HintPath>
+>>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
