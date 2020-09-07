@@ -1,7 +1,4 @@
-﻿
-using System;
-using EnsoulSharp;
-using EnsoulSharp.SDK;
+﻿using EnsoulSharp;
 using EnsoulSharp.SDK.MenuUI.Values;
 using static StormAIO.MainMenu;
 
@@ -12,18 +9,14 @@ namespace StormAIO.utilities
         public Emote()
         {
             Game.OnNotify += GameOnOnNotify;
-           
         }
 
         #region Args
 
         private void GameOnOnNotify(GameNotifyEventArgs args)
         {
-            if (args.EventId == GameEventId.OnChampionDie &&  args.NetworkId == ObjectManager.Player.NetworkId && Emotes.GetValue<MenuBool>("Kill"))
-            {
-                RunEmote();
-            }
-            
+            if (args.EventId == GameEventId.OnChampionDie && args.NetworkId == ObjectManager.Player.NetworkId &&
+                Emotes.GetValue<MenuBool>("Kill")) RunEmote();
         }
 
         #endregion

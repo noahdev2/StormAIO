@@ -110,7 +110,7 @@ namespace StormAIO.Champions
 
         #region MenuHelper
 
-        public static class ComboMenu
+        private static class ComboMenu
         {
             public static readonly MenuBool QBool = new MenuBool("comboQ", "Use Q");
             public static readonly MenuBool WBool = new MenuBool("comboW", "Use W");
@@ -119,19 +119,19 @@ namespace StormAIO.Champions
             public static readonly MenuList Prio = new MenuList("Select", "Prioritize", new[] {"Q", "W", "E"});
         }
 
-        public static class HarassMenu
+        private static class HarassMenu
         {
             public static readonly MenuBool QBool = new MenuBool("harassQ", "Use Q ");
             public static readonly MenuBool WBool = new MenuBool("harassW", "Use W ");
             public static readonly MenuBool EBool = new MenuBool("harassE", "Use E ");
         }
 
-        public static class KillStealMenu
+        private static class KillStealMenu
         {
             public static readonly MenuBool EBool = new MenuBool("killStealE", "Use E");
         }
 
-        public static class JungleClearMenu
+        private static class JungleClearMenu
         {
             public static readonly MenuBool QBool =
                 new MenuBool("jungleClearQ", "Use Q ");
@@ -143,7 +143,7 @@ namespace StormAIO.Champions
                 new MenuBool("jungleClearE", "Use E");
         }
 
-        public static class LaneClearMenu
+        private static class LaneClearMenu
         {
             public static readonly MenuBool QBool =
                 new MenuBool("laneClearQ", "Use Q");
@@ -155,7 +155,7 @@ namespace StormAIO.Champions
                 new MenuBool("laneClearE", "Use E");
         }
 
-        public static class StructureClearMenu
+        private static class StructureClearMenu
         {
             public static readonly MenuBool QBool =
                 new MenuBool("structClearQ", "Use Q");
@@ -165,7 +165,7 @@ namespace StormAIO.Champions
         }
 
 
-        public static class DrawingMenu
+        private static class DrawingMenu
         {
             public static readonly MenuBool DrawQ = new MenuBool("DrawQ", "Draw Q");
             public static readonly MenuBool DrawW = new MenuBool("DrawW", "Draw W");

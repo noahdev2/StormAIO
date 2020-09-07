@@ -405,20 +405,7 @@ namespace StormAIO.Champions
             if (Helper.Ignite) Damage += (float)Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
             return Damage;
         }
-        public static float GetWallWidth(Vector3 startPos, Vector3 endPos, float maxRange) {
-            var width = 0f;
-            if (!startPos.IsValid() || !endPos.IsValid()) {
-                return width;
-            }
-    
-            for (var i = 0; i < maxRange; i += 1) {
-                if (startPos.Extend(endPos, i).IsWall()) {
-                    width += 1;
-                }
-            }
-
-            return width;
-        }
+     
 
         private static void Flee() {
           
@@ -436,7 +423,7 @@ namespace StormAIO.Champions
             }
     
             // check about the wall width
-            var wallwidth = GetWallWidth(Player.Position, maxDashPos, 400);
+            var wallwidth = Helper.GetWallWidth(Player.Position, maxDashPos, 400);
     
             // if wall width == 0 or wall width > E Range, cant be dash
             if (wallwidth <= 0f || wallwidth >= 400) { 

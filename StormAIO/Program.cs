@@ -1,76 +1,109 @@
-﻿﻿using System;
- using System.Drawing;
- using System.Threading;
- using System.Threading.Tasks;
- using EnsoulSharp;
- using EnsoulSharp.SDK;
- using EnsoulSharp.SDK.Utility;
- using StormAIO.Champions;
- using StormAIO.utilities;
+﻿using System;
+using System.Drawing;
+using EnsoulSharp;
+using EnsoulSharp.SDK;
+using EnsoulSharp.SDK.Utility;
+using StormAIO.Champions;
+using StormAIO.utilities;
 
- namespace StormAIO
+namespace StormAIO
 {
     internal static class Program
     {
-        
         private static void Main(string[] args)
         {
-         GameEvent.OnGameLoad += GameEventOnOnGameLoad;
+            GameEvent.OnGameLoad += GameEventOnOnGameLoad;
         }
 
         private static void GameEventOnOnGameLoad()
         {
-           var delay = Game.Time > 7 ? 0f : 1750f;
-           DelayAction.Add((int)delay, () => BootStrap());
+            var delay = Game.Time > 7 ? 0f : 1750f;
+            DelayAction.Add((int) delay, BootStrap);
         }
 
         private static void BootStrap()
         {
             try
             {
-              //  if (!Checker.ServerStatus() || !Checker.IsUpdatetoDate()) return; // disable for now We need to add a file location to our checker.cs
-                var LoadMenu      = new MainMenu();
-                var drawBackground = new Drawbackground(); // background Drawer 
+                if (!Checker.ServerStatus() || !Checker.IsUpdatetoDate())
+                    return;
+                // ReSharper disable once ObjectCreationAsStatement
+                new MainMenu();
+                // ReSharper disable once ObjectCreationAsStatement
+                new Drawbackground();
                 switch (ObjectManager.Player.CharacterName)
                 {
                     case "Yone":
-                        var Yone = new Yone();
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new Yone();
                         break;
                     case "Warwick":
-                        var Warwick = new Warwick();
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new Warwick();
                         break;
                     case "Akali":
-                        var Akali = new Akali();
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new Akali();
                         break;
                     case "Yorick":
-                        var Yorick = new Yorick();
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new Yorick();
                         break;
                     case "KogMaw":
-                        var kowmaw = new Kowmaw();
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new Kowmaw();
                         break;
                     case "DrMundo":
-                        var DrMundo = new Drmundo();
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new Drmundo();
                         break;
                     case "Rengar":
-                        var Rengar = new Rengar();
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new Rengar();
                         break;
                     case "Garen":
-                        var Garen = new Garen();
-                        break; 
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new Garen();
+                        break;
                     case "Ashe":
-                        var Ashe = new Ashe();
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new Ashe();
                         break;
                     case "Urgot":
-                        var Urgot = new Urgot();
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new Urgot();
                         break;
                     case "Lucian":
-                        var Lucian = new Lucian();
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new Lucian();
                         break;
                     case "Chogath":
-                        var Chogath = new Chogath();
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new Chogath();
                         break;
-                    case "Zed" :
-                        var Zed = new Zed();
+                    case "Zed":
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new Zed();
+                        break;
+                    case "Maokai":
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new Maokai();
+                        break;
+                    // case "Nunu":
+                    //     // ReSharper disable once ObjectCreationAsStatement    
+                    //     new Nunu();
+                    //     break;
+                    // case "Bard":
+                    //     // ReSharper disable once ObjectCreationAsStatement    
+                    //     new Bard();
+                    //     break;
+                    case "Vladimir":
+                        // ReSharper disable once ObjectCreationAsStatement    
+                        new Vladimir();
+                        break;
+                    case "Twitch":
+                        // ReSharper disable once ObjectCreationAsStatement    
+                        new Twitch();
                         break;
                 }
             }
@@ -79,15 +112,23 @@
                 Game.Print("Failed to load reload or Check ur Console");
                 Console.WriteLine(@"Failed To load: " + error);
             }
-            var LoadEmote     = new Emote();
-            var LoadSkinSeter = new SkinChanger();
-            var LoadAutoLevel = new AutoLeveler();
-            var BuyItem       = new StarterItem();
-            var farmHelper    = new ArrowDrawer();
-            var drawLabel = new DrawText("SpellFarm", MainMenu.Key, MainMenu.SpellFarm,Color.GreenYellow, Color.Red); // Box Drawer with text
-            var testLabel = new DrawText2("Skin index",SkinChanger.SkinMeun,100); // Text Drawer
-            var RunDown = new Rundown();
+            // ReSharper disable once ObjectCreationAsStatement
+            new Emote();
+            // ReSharper disable once ObjectCreationAsStatement
+            new SkinChanger();
+            // ReSharper disable once ObjectCreationAsStatement
+            new AutoLeveler();
+            // ReSharper disable once ObjectCreationAsStatement
+            new StarterItem();
+            // ReSharper disable once ObjectCreationAsStatement
+            new ArrowDrawer();
+            // ReSharper disable once ObjectCreationAsStatement
+                new DrawText("SpellFarm", MainMenu.Key, MainMenu.SpellFarm, Color.GreenYellow,
+                    Color.Red); // Box Drawer with text
+            // ReSharper disable once ObjectCreationAsStatement
+            new DrawText2("Skin index", SkinChanger.SkinMeun, 100); // Text Drawer
+            // ReSharper disable once ObjectCreationAsStatement
+            new Rundown();
         }
-        
     }
 }

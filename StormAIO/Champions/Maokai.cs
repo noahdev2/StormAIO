@@ -21,8 +21,13 @@ namespace StormAIO.Champions
         private static Menu ChampMenu;
         private static AIHeroClient Player => ObjectManager.Player;
         private static Vector3 InsecPos = Vector3.Zero;
+
+        // ReSharper disable once NotAccessedField.Local
         private static Vector3 startPos = Vector3.Zero;
-        private static Vector3 endPos   = Vector3.Zero;
+
+        // ReSharper disable once NotAccessedField.Local
+        private static Vector3 endPos = Vector3.Zero;
+
         #endregion
 
         #region Menu
@@ -30,12 +35,13 @@ namespace StormAIO.Champions
         private static void CreateMenu()
         {
             ChampMenu = new Menu(Player.CharacterName, Player.CharacterName);
-            
+
             var comboMenu = new Menu("combo", "Combo")
             {
                 ComboMenu.QBool,
                 ComboMenu.WBool,
                 ComboMenu.EBool,
+                ComboMenu.EUsage,
                 ComboMenu.RBool
             };
 
@@ -45,7 +51,7 @@ namespace StormAIO.Champions
                 HarassMenu.WSliderBool,
                 HarassMenu.ESliderBool
             };
-            
+
             var killStealMenu = new Menu("killSteal", "KillSteal")
             {
                 KillStealMenu.QBool,
@@ -56,12 +62,10 @@ namespace StormAIO.Champions
             var laneClearMenu = new Menu("LaneClear", "Lane Clear")
             {
                 LaneClearMenu.QSliderBool,
-                LaneClearMenu.WSliderBool,
                 LaneClearMenu.ESliderBool,
                 new Menu("customization", "Customization")
                 {
                     LaneClearMenu.QCountSliderBool,
-                    LaneClearMenu.WCountSliderBool,
                     LaneClearMenu.ECountSliderBool
                 }
             };
@@ -73,26 +77,18 @@ namespace StormAIO.Champions
                 JungleClearMenu.ESliderBool
             };
 
-            var lastHitMenu = new Menu("lastHit", "Last Hit")
+            var MiscHMenu = new Menu("MiscHMenu", "Misc")
             {
-                LastHitMenu.QSliderBool,
-                LastHitMenu.WSliderBool,
-                LastHitMenu.ESliderBool
+                MiscMenu.WGapClose,
+                MiscMenu.Wdash
             };
 
             var drawingMenu = new Menu("Drawing", "Drawing")
             {
-
                 DrawingMenu.DrawQ,
                 DrawingMenu.DrawW,
                 DrawingMenu.DrawE,
                 DrawingMenu.DrawR
-            };
-            var StructureMenu = new Menu("StructureClear","Structure Clear")
-            {
-                StructureClearMenu.QSliderBool,
-                StructureClearMenu.WSliderBool,
-                StructureClearMenu.ESliderBool
             };
             var menuList = new[]
             {
@@ -101,45 +97,47 @@ namespace StormAIO.Champions
                 killStealMenu,
                 laneClearMenu,
                 jungleClearMenu,
-                StructureMenu,
-                lastHitMenu,
+                MiscHMenu,
                 drawingMenu
             };
 
-            foreach (var menu in menuList)
-            {
-                ChampMenu.Add(menu);
-            }
+            foreach (var menu in menuList) ChampMenu.Add(menu);
             MainMenu.Main_Menu.Add(ChampMenu);
         }
+
         #endregion
 
         #region MenuHelper
 
-        public static class ComboMenu
+        private static class ComboMenu
         {
             public static readonly MenuBool QBool = new MenuBool("comboQ", "Use Q");
             public static readonly MenuBool WBool = new MenuBool("comboW", "Use W");
             public static readonly MenuBool EBool = new MenuBool("comboE", "Use E");
+            public static readonly MenuBool EUsage = new MenuBool("comboEUsage", "Use E ^ use only cc target", false);
             public static readonly MenuBool RBool = new MenuBool("comboR", "Use R");
         }
 
-        public static class HarassMenu
+        private static class HarassMenu
         {
-            public static readonly MenuSliderButton QSliderBool = new MenuSliderButton("harassQ", "Use Q | If Mana >= x%", 50);
-            public static readonly MenuSliderButton WSliderBool = new MenuSliderButton("harassW", "Use W | If Mana >= x%", 50);
-            public static readonly MenuSliderButton ESliderBool = new MenuSliderButton("harassE", "Use E | If Mana >= x%", 50);
-            
+            public static readonly MenuSliderButton QSliderBool =
+                new MenuSliderButton("harassQ", "Use Q | If Mana >= x%", 50);
+
+            public static readonly MenuSliderButton WSliderBool =
+                new MenuSliderButton("harassW", "Use W | If Mana >= x%", 50);
+
+            public static readonly MenuSliderButton ESliderBool =
+                new MenuSliderButton("harassE", "Use E | If Mana >= x%", 50);
         }
 
-        public static class KillStealMenu
+        private static class KillStealMenu
         {
             public static readonly MenuBool QBool = new MenuBool("killStealQ", "Use Q");
             public static readonly MenuBool WBool = new MenuBool("killStealW", "Use W");
             public static readonly MenuBool EBool = new MenuBool("killStealE", "Use E");
         }
 
-        public static class JungleClearMenu
+        private static class JungleClearMenu
         {
             public static readonly MenuSliderButton QSliderBool =
                 new MenuSliderButton("jungleClearQ", "Use Q | If Mana >= x%", 50);
@@ -151,7 +149,7 @@ namespace StormAIO.Champions
                 new MenuSliderButton("jungleClearE", "Use E | If Mana >= x%", 50);
         }
 
-        public static class LaneClearMenu
+        private static class LaneClearMenu
         {
             public static readonly MenuSliderButton QSliderBool =
                 new MenuSliderButton("laneClearQ", "Use Q | If Mana >= x%", 50);
@@ -159,11 +157,6 @@ namespace StormAIO.Champions
             public static readonly MenuSlider QCountSliderBool =
                 new MenuSlider("laneClearQCount", "Use Q if hittable minions >= x", 3, 1, 5);
 
-            public static readonly MenuSliderButton WSliderBool =
-                new MenuSliderButton("laneClearW", "Use W | If Mana >= x%", 50);
-
-            public static readonly MenuSlider WCountSliderBool =
-                new MenuSlider("laneClearWCount", "Use W if hittable minions >= x", 3, 1, 5);
 
             public static readonly MenuSliderButton ESliderBool =
                 new MenuSliderButton("laneClearE", "Use E | If Mana >= x%", 50);
@@ -171,39 +164,31 @@ namespace StormAIO.Champions
             public static readonly MenuSlider ECountSliderBool =
                 new MenuSlider("laneClearECount", "Use E if hittable minions >= x", 3, 1, 5);
         }
-        public static class StructureClearMenu
-        {
-            public static readonly MenuSliderButton QSliderBool =
-                new MenuSliderButton("structClearQ", "Use Q | If Mana >= x%", 50);
-            
-            public static readonly MenuSliderButton WSliderBool =
-                new MenuSliderButton("structClearW", "Use W | If Mana >= x%", 50);
 
-            public static readonly MenuSliderButton ESliderBool =
-                new MenuSliderButton("structClearE", "Use E | If Mana >= x%", 50);
-            
+        private static class MiscMenu
+        {
+            public static readonly MenuBool WGapClose =
+                new MenuBool("WGapClose", "Use W on Gapcloser");
+
+            public static readonly MenuBool Wdash =
+                new MenuBool("Wdash", "Use W on Dasher");
+
+            public static readonly MenuKeyBind inseckey =
+                new MenuKeyBind("inseckey", "inseckey", Keys.T, KeyBindType.Press);
         }
 
 
-        public static class LastHitMenu
-        {
-            public static readonly MenuBool QSliderBool = new MenuBool("lastHitQ", "Use Q");
-            public static readonly MenuBool WSliderBool = new MenuBool("lastHitW", "Use W");
-            public static readonly MenuBool ESliderBool = new MenuBool("lastHitE", "Use E");
-        }
-        
-        public static class DrawingMenu
+        private static class DrawingMenu
         {
             public static readonly MenuBool DrawQ = new MenuBool("DrawQ", "Draw Q");
             public static readonly MenuBool DrawW = new MenuBool("DrawW", "Draw W");
             public static readonly MenuBool DrawE = new MenuBool("DrawE", "Draw E");
             public static readonly MenuBool DrawR = new MenuBool("DrawR", "Draw R");
         }
-        
 
         #endregion
 
-        #region Spells 
+        #region Spells
 
         private static void InitSpell()
         {
@@ -212,17 +197,17 @@ namespace StormAIO.Champions
             E = new Spell(SpellSlot.E, 1100f);
             R = new Spell(SpellSlot.R, 3000f);
 
-            Q.SetSkillshot(0.35f, 300f, 1800f, false,SkillshotType.Line);
-            E.SetSkillshot(1.5f, 100f, 1400f,false ,SkillshotType.Circle);
-            
+            Q.SetSkillshot(0.35f, 300f, 1800f, false, SkillshotType.Line);
+            E.SetSkillshot(1.5f, 100f, 1400f, false, SkillshotType.Circle);
+
             R = new Spell(SpellSlot.R);
-            R.Delay = 0.5f;
+            R.SetSkillshot(0.5f, 1500f, 500f, false, SkillshotType.Line);
         }
 
-
         #endregion
+
         #region Gamestart
-      
+
         public Maokai()
         {
             InitSpell();
@@ -230,49 +215,64 @@ namespace StormAIO.Champions
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Orbwalker.OnAction += OrbwalkerOnOnAction;
-            Drawing.OnEndScene += delegate(EventArgs args)
+            Drawing.OnEndScene += delegate
             {
                 var t = TargetSelector.GetTarget(2000f);
                 if (!Helper.drawIndicator || t == null) return;
                 Helper.Indicator(AllDamage(t));
             };
             AIBaseClient.OnProcessSpellCast += AIBaseClientOnOnProcessSpellCast;
-            
+            Gapcloser.OnGapcloser += GapcloserOnOnGapcloser;
+            Dash.OnDash += DashOnOnDash;
+        }
+
+        private void DashOnOnDash(AIBaseClient sender, Dash.DashArgs args)
+        {
+            if (!W.IsReady() ||
+                Player.IsDead || !MiscMenu.Wdash)
+                return;
+
+
+            if (sender == null || !sender.IsValid || !sender.IsEnemy || !sender.IsMelee) return;
+
+            W.CastOnUnit(sender);
+        }
+
+        private void GapcloserOnOnGapcloser(AIHeroClient sender, Gapcloser.GapcloserArgs args)
+        {
+            if (!W.IsReady() ||
+                Player.IsDead || !MiscMenu.WGapClose)
+                return;
+
+
+            if (sender == null || !sender.IsValid || !sender.IsEnemy || !sender.IsMelee) return;
+
+            W.CastOnUnit(sender);
         }
 
         private void AIBaseClientOnOnProcessSpellCast(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
         {
-            if (!sender.IsMe)
-            {
-                return;
-            }
+            if (!sender.IsMe) return;
 
             if (args.Slot == SpellSlot.W)
-            {
                 InsecPos =
-                    GameObjects.AllyHeroes.
-                        FirstOrDefault(x => x.IsValidTarget(1500) &&
-                                            !x.IsMe) !=
+                    GameObjects.AllyHeroes.FirstOrDefault(x => x.IsValidTarget(1500) &&
+                                                               !x.IsMe) !=
                     null
-                        ? GameObjects.AllyHeroes.
-                            FirstOrDefault(x => x.IsValidTarget(1500) &&
-                                                x != Player).
-                            Position
+                        // ReSharper disable once PossibleNullReferenceException
+                        ? GameObjects.AllyHeroes.FirstOrDefault(x => x.IsValidTarget(1500) &&
+                                                                     !x.IsMe && x != null).Position
                         : GameObjects.AllyTurrets.Where(x =>
-                                  x.IsValid &&
-                                  x.DistanceToPlayer() <= 1500
-                              ).
-                              OrderBy(x => x.DistanceToPlayer()).
-                              FirstOrDefault() !=
+                              x.IsValid &&
+                              x.DistanceToPlayer() <= 1500
+                          ).OrderBy(x => x.DistanceToPlayer()).FirstOrDefault() !=
                           null
+                            // ReSharper disable once PossibleNullReferenceException
                             ? GameObjects.AllyTurrets.Where(x =>
                                     x.IsValid &&
-                                    x.DistanceToPlayer() <= 1500).
-                                OrderBy(x => x.DistanceToPlayer()).
-                                FirstOrDefault().
-                                Position
+                                    x.DistanceToPlayer() <= 1500).OrderBy(x => x.DistanceToPlayer()).FirstOrDefault()
+                                .Position
                             : Vector3.Zero;
-            }
         }
 
         #endregion
@@ -281,9 +281,8 @@ namespace StormAIO.Champions
 
         private static void OrbwalkerOnOnAction(object sender, OrbwalkerActionArgs args)
         {
-           
         }
-        
+
         private static void Drawing_OnDraw(EventArgs args)
         {
             if (DrawingMenu.DrawQ && Q.IsReady())
@@ -294,7 +293,6 @@ namespace StormAIO.Champions
                 Drawing.DrawCircle(Player.Position, E.Range, Color.DarkCyan);
             if (DrawingMenu.DrawR && R.IsReady())
                 Drawing.DrawCircle(Player.Position, R.Range, Color.Violet);
-
         }
 
         #endregion
@@ -303,8 +301,8 @@ namespace StormAIO.Champions
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            if (Helper.Checker()) return; 
-            
+            if (Helper.Checker()) return;
+
 
             switch (Orbwalker.ActiveMode)
             {
@@ -315,7 +313,7 @@ namespace StormAIO.Champions
                     Harass();
                     break;
                 case OrbwalkerMode.LaneClear:
-                  if(MainMenu.SpellFarm.Active) LaneClear();
+                    if (MainMenu.SpellFarm.Active) LaneClear();
                     JungleClear();
                     break;
                 case OrbwalkerMode.LastHit:
@@ -324,6 +322,7 @@ namespace StormAIO.Champions
             }
 
             KillSteal();
+            if (MiscMenu.inseckey.Active) ExecuteInsec();
         }
 
         #endregion
@@ -332,83 +331,123 @@ namespace StormAIO.Champions
 
         private static void Combo()
         {
-           
+            if (ComboMenu.QBool) CastQ();
+            if (ComboMenu.WBool) CastW();
+            if (ComboMenu.EBool) CastE(ComboMenu.EUsage ? 1 : 0);
+            if (ComboMenu.RBool) CastR();
         }
 
         private static void Harass()
         {
-           
-
+            if (HarassMenu.QSliderBool.Enabled && Player.ManaPercent > HarassMenu.QSliderBool.ActiveValue) CastQ();
+            if (HarassMenu.WSliderBool.Enabled && Player.ManaPercent > HarassMenu.WSliderBool.ActiveValue) CastW();
+            if (HarassMenu.ESliderBool.Enabled && Player.ManaPercent > HarassMenu.ESliderBool.ActiveValue) CastE();
         }
 
         private static void LaneClear()
         {
-            
+            if (LaneClearMenu.QSliderBool.Enabled && Player.ManaPercent > LaneClearMenu.QSliderBool.ActiveValue)
+            {
+                var minions = GameObjects.GetMinions(Player.Position, Q.Range);
+                if (minions == null) return;
+                var farmline = Q.GetLineFarmLocation(minions, Q.Width);
+                if (farmline.MinionsHit >= LaneClearMenu.QCountSliderBool.Value) Q.Cast(farmline.Position);
+            }
+
+            if (LaneClearMenu.ESliderBool.Enabled && Player.ManaPercent > LaneClearMenu.ESliderBool.ActiveValue)
+            {
+                var minions = GameObjects.GetMinions(Player.Position, E.Range);
+                if (minions == null) return;
+                var farmline = Q.GetCircularFarmLocation(minions, E.Width);
+                if (farmline.MinionsHit >= LaneClearMenu.QCountSliderBool.Value) E.Cast(farmline.Position);
+            }
         }
 
         private static void JungleClear()
         {
-           
+            if (JungleClearMenu.QSliderBool.Enabled && Player.ManaPercent > JungleClearMenu.QSliderBool.ActiveValue)
+            {
+                var Jungle = GameObjects.GetJungles(Player.Position, Q.Range).OrderBy(x => x.DistanceToPlayer())
+                    .FirstOrDefault();
+                if (Jungle == null) return;
+                Q.Cast(Jungle);
+            }
+
+            if (JungleClearMenu.WSliderBool.Enabled && Player.ManaPercent > JungleClearMenu.WSliderBool.ActiveValue)
+            {
+                var Jungle = GameObjects.GetJungles(Player.Position, W.Range).OrderBy(x => x.DistanceToPlayer())
+                    .FirstOrDefault();
+                if (Jungle == null) return;
+                W.CastOnUnit(Jungle);
+            }
+
+            if (JungleClearMenu.ESliderBool.Enabled && Player.ManaPercent > JungleClearMenu.ESliderBool.ActiveValue)
+            {
+                var Jungle = GameObjects.GetJungles(Player.Position, E.Range).OrderBy(x => x.DistanceToPlayer())
+                    .FirstOrDefault();
+                if (Jungle == null) return;
+                E.Cast(Jungle);
+            }
         }
 
         private static void LastHit()
         {
-          
         }
 
         private static void KillSteal()
         {
-           
+            if (KillStealMenu.QBool)
+            {
+                var target = Q.GetTarget();
+                if (target == null) return;
+                if (Q.GetDamage(target) > target.TrueHealth())
+                    Q.GetPrediction(target).CastPosition.Extend(Player.Position, -300);
+            }
 
+            if (KillStealMenu.WBool)
+            {
+                var target = W.GetTarget();
+                if (target == null) return;
+                if (W.GetDamage(target) > target.TrueHealth()) W.CastOnUnit(target);
+            }
+
+            if (KillStealMenu.EBool)
+            {
+                var target = E.GetTarget();
+                if (target == null) return;
+                if (E.GetDamage(target) > target.TrueHealth()) E.Cast(E.GetPrediction(target).CastPosition);
+            }
         }
-        
+
         #endregion
 
         #region Spell Stage
 
-      
         #endregion
+
         #region Spell Functions
 
         private static void CastQ()
         {
-            if (!Q.IsReady())
-            {
-                return;
-            }
+            if (!Q.IsReady()) return;
 
             var target = Q.GetTarget();
-            if (target == null)
-            {
-                return;
-            }
+            if (target == null) return;
 
-            if (target.DistanceToPlayer() <= 10)
-            {
-                return;
-            }
+            if (target.DistanceToPlayer() <= 10) return;
 
-            if (Player.IsDashing())
-            {
-                return;
-            }
+            if (Player.IsDashing()) return;
 
             if (target.DistanceToPlayer() <= 200 && ComboMenu.EBool.Enabled)
             {
                 var pos = Q.GetPrediction(target).CastPosition.Extend(Player.Position, -300);
                 if (target.HaveImmovableBuff())
                 {
-                    if (E.Cast(pos))
-                    {
-                        Q.Cast(pos);
-                    }
+                    if (E.Cast(pos)) Q.Cast(pos);
                 }
                 else
                 {
-                    if (Q.Cast(pos))
-                    {
-                        E.Cast(pos);
-                    }
+                    if (Q.Cast(pos)) E.Cast(pos);
                 }
             }
             else
@@ -416,45 +455,30 @@ namespace StormAIO.Champions
                 Q.Cast(target);
             }
         }
-       
+
         private static void CastW()
         {
-
             var target = W.GetTarget();
-            if (target == null || !W.IsReady())
-            {
-                return;
-            }
+            if (target == null || !W.IsReady()) return;
 
 
             W.CastOnUnit(target);
         }
 
-        private static void CastE()
+        private static void CastE(int index = 0)
         {
             var target = E.GetTarget();
-            if (target == null || !E.IsReady())
+            if (target == null || !E.IsReady()) return;
+
+            if (ComboMenu.EUsage && index == 1)
             {
+                if (!target.HaveImmovableBuff()) return;
+
+                E.Cast(target);
                 return;
             }
 
-
-            // if (HarassMenu.EUsage.Value == 0)
-            // {
-            //     E.Cast(E.GetPrediction(target).CastPosition);
-            // }
-            //
-            // if (HarassMenu.EUsage.Value != 1)
-            // {
-            //     return;
-            // }
-
-            if (!target.HaveImmovableBuff())
-            {
-                return;
-            }
-
-            E.Cast(target);
+            E.Cast(E.GetPrediction(target).CastPosition);
         }
 
         private static void CastR()
@@ -464,62 +488,31 @@ namespace StormAIO.Champions
             if (!target.HaveImmovableBuff() || target.HaveSpellShield()) return;
             R.Cast(target);
         }
-        
-        
+
         #endregion
 
-        #region damage 
+        #region damage
+
         // Use it if some some damages aren't available by the sdk 
-        private static float Qdmg(AIBaseClient t)
-        {
-            var damage = 0;
-            return damage;
-        }
-        private static float Wdmg(AIBaseClient t)
-        {
-            var damage = 0;
-            return damage;
-        }
-        private static float Edmg(AIBaseClient t)
-        {
-            var damage = 0;
-            return damage;
-        }
-        private static float Rdmg(AIHeroClient t)
-        {
-            var damage = 0;
-            return damage;
-        }
-        
+
         #endregion
 
         #region Extra functions
 
-        public static void ExecuteInsec()
+        private static void ExecuteInsec()
         {
             // if (!ComboMenu.Insec.Enabled)
             // {
             //     return;
             // }
+            Orbwalker.Move(Game.CursorPos);
 
-            Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
-
-            if (!Q.IsReady() || Player.Mana < 130)
-            {
-                return;
-            }
-
+            if (!Q.IsReady() || Player.Mana < 130) return;
             var target = W.GetTarget();
-            if (target == null)
-            {
-                return;
-            }
+            if (target == null) return;
 
             W.CastOnUnit(target);
-            if (InsecPos == Vector3.Zero)
-            {
-                return;
-            }
+            if (InsecPos == Vector3.Zero) return;
 
             var pos = target.Position.Extend(InsecPos, 300);
 
@@ -528,39 +521,39 @@ namespace StormAIO.Champions
 
             if (target.DistanceToPlayer() <= 200)
             {
-                Player.IssueOrder(GameObjectOrder.MoveTo, target.Position.Extend(InsecPos, -300));
                 Orbwalker.Move(target.Position.Extend(InsecPos, -300));
                 if (!target.IsDashing())
                 {
                     E.Cast(pos);
                     DelayAction.Add(500, () => RunInsec(InsecPos));
-
                 }
             }
         }
 
         private static void RunInsec(Vector3 insecpos)
         {
-            Q.Cast(InsecPos);
+            Q.Cast(insecpos);
             InsecPos = Vector3.Zero;
             startPos = Vector3.Zero;
             endPos = Vector3.Zero;
         }
+
         private static float AllDamage(AIHeroClient target)
         {
             float Damage = 0;
-            if (target == null)                                 return 0;
+            if (target == null) return 0;
             if (target.HasBuffOfType(BuffType.Invulnerability)) return 0;
-                             Damage += (float) Player.GetAutoAttackDamage(target);
-            if (Q.IsReady()) Damage += Qdmg(target);
-            if (W.IsReady()) Damage += Wdmg(target);
-            if (E.IsReady()) Damage += Edmg(target);
-            if (R.IsReady()) Damage += Rdmg(target);
-            if (Player.GetBuffCount("itemmagicshankcharge") == 100) 
-                Damage += (float)Player.CalculateMagicDamage(target, 100 + 0.1 * Player.TotalMagicalDamage);
-            if (Helper.Ignite) Damage += (float)Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
+            Damage += (float) Player.GetAutoAttackDamage(target);
+            if (Q.IsReady()) Damage += Q.GetDamage(target);
+            if (W.IsReady()) Damage += W.GetDamage(target);
+            if (E.IsReady()) Damage += E.GetDamage(target);
+            if (R.IsReady()) Damage += R.GetDamage(target);
+            if (Player.GetBuffCount("itemmagicshankcharge") == 100)
+                Damage += (float) Player.CalculateMagicDamage(target, 100 + 0.1 * Player.TotalMagicalDamage);
+            if (Helper.Ignite) Damage += (float) Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
             return Damage;
         }
+
         #endregion
     }
 }

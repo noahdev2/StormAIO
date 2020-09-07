@@ -109,7 +109,7 @@ namespace StormAIO.Champions
             R = new Spell(SpellSlot.R, 675);
             R.SetTargetted(0.3f, 1000f);
             R2 = new Spell(SpellSlot.R, 750);
-            R2.SetSkillshot(0.125f, 80f, float.MaxValue, false, SkillshotType.Line);
+            R2.SetSkillshot(0.125f, 60f, float.MaxValue, false, SkillshotType.Line);
         }
 
         #endregion
@@ -217,19 +217,14 @@ namespace StormAIO.Champions
         {
             if (!ChampMenu["LaneClear"].GetValue<MenuBool>("Q").Enabled ||
                 Player.Mana <= ChampMenu["LaneClear"].GetValue<MenuSlider>("QE").Value) return;
-            var minons = GameObjects.GetMinions(Player.Position, Q.Range)
-                .Where(x => x.IsValid && !x.IsDead).ToList();
-            if (minons.Any())
-
-                foreach (var minon in minons)
-                {
-                    var Lane = Q.GetCircularFarmLocation(minons);
-                    if (Lane.Position.IsValid() && Lane.MinionsHit >= 1)
-                    {
-                        Q.Cast(Lane.Position);
-                        return;
-                    }
-                }
+            var minons = GameObjects.GetMinions(Player.Position, Q.Range);
+            if (minons == null) return;
+            var Lane = Q.GetCircularFarmLocation(minons);
+            if (Lane.Position.IsValid() && Lane.MinionsHit >= 1)
+            {
+                Q.Cast(Lane.Position);
+            }
+                
         }
 
         #endregion

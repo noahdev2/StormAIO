@@ -3,12 +3,14 @@ using System.Linq;
 using System.Windows.Forms;
 using EnsoulSharp;
 using EnsoulSharp.SDK;
+using EnsoulSharp.SDK.MenuUI;
 using EnsoulSharp.SDK.MenuUI.Values;
 using EnsoulSharp.SDK.Prediction;
 using EnsoulSharp.SDK.Utility;
 using StormAIO.utilities;
 using Color = System.Drawing.Color;
 using Menu = EnsoulSharp.SDK.MenuUI.Menu;
+using static StormAIO.utilities.SkinChanger;
 
 namespace StormAIO.Champions
 {
@@ -21,7 +23,7 @@ namespace StormAIO.Champions
         private static AIHeroClient Player => ObjectManager.Player;
         private static int lastW;
         private static int lastR;
-        private static int QReducedSqr = 693056; 
+        private static string El = "ASSETS/Perks/Styles/Domination/Electrocute/Electrocute.lua";
         #endregion
 
         #region Menu
@@ -34,8 +36,14 @@ namespace StormAIO.Champions
             {
                 ComboMenu.QBool,
                 ComboMenu.WBool,
+                ComboMenu.WGapB,
+                ComboMenu.Electrocute,
                 ComboMenu.EBool,
-                ComboMenu.RBool
+                ComboMenu.RSliderBool,
+                ComboMenu.OnlyUseR,
+                ComboMenu.Ignite
+                
+                
             };
 
             var harassMenu = new Menu("harass", "Harass")
@@ -86,7 +94,13 @@ namespace StormAIO.Champions
                 DrawingMenu.DrawE,
                 DrawingMenu.DrawR,
             };
-           
+            var Fleemenumenu = new Menu("Flee","Flee")
+            {
+                FleeMenu.Flee,
+                FleeMenu.UseW,
+                FleeMenu.UseWWall
+            };
+         
             var menuList = new[]
             {
                 comboMenu,
@@ -96,6 +110,7 @@ namespace StormAIO.Champions
                 laneClearMenu,
                 jungleClearMenu,
                 lastHitMenu,
+                Fleemenumenu,
                 drawingMenu
             };
 
@@ -113,8 +128,13 @@ namespace StormAIO.Champions
         {
             public static readonly MenuBool QBool = new MenuBool("comboQ", "Use Q");
             public static readonly MenuBool WBool = new MenuBool("comboW", "Use W");
+            public static readonly MenuBool WGapB = new MenuBool("comboG","Use ^ W to gapclose for utl");
+            public static readonly MenuBool Electrocute = new MenuBool("Electrocute","Use ^ W to cast Electrocute proc");
             public static readonly MenuBool EBool = new MenuBool("comboE", "Use E");
-            public static readonly MenuBool RBool = new MenuBool("comboR", "Use R");
+            public static readonly MenuSliderButton RSliderBool = new MenuSliderButton("comboR", "Use R |  If Energy >= x", 130,0,200);
+            public static readonly MenuBool Ignite = new MenuBool("Ignite", "Use Ignite When Utling");
+            public static readonly MenuBool OnlyUseR = new MenuBool("OnlyUseR", "OnlyUseR on selected target",false);
+            
         }
 
         private static class HarassMenu
@@ -171,7 +191,12 @@ namespace StormAIO.Champions
         {
             public static readonly MenuBool QBool = new MenuBool("lastHitQ", "Use Q",false);
         }
-        
+        private static class FleeMenu
+        {
+            public static readonly MenuKeyBind Flee = new MenuKeyBind("Flee", "Flee",Keys.Z,KeyBindType.Press);
+            public static readonly MenuBool UseW = new MenuBool("UseW", "Use W");
+            public static readonly MenuBool UseWWall = new MenuBool("UseWWall", "^ Use W Only Through Walls");
+        }
         private static class DrawingMenu
         {
             public static readonly MenuBool DrawQ = new MenuBool("DrawQ", "Draw Q");
@@ -207,27 +232,85 @@ namespace StormAIO.Champions
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Orbwalker.OnAction += OrbwalkerOnOnAction;
-            Drawing.OnEndScene += delegate(EventArgs args)
+            Drawing.OnEndScene += delegate
             {
                 var t = TargetSelector.GetTarget(2000f);
                 if (!Helper.drawIndicator || t == null) return;
                 Helper.Indicator(AllDamage(t));
             };
             AIBaseClient.OnProcessSpellCast += AIBaseClientOnOnProcessSpellCast;
+            Interrupter.OnInterrupterSpell += InterrupterOnOnInterrupterSpell;
+            GameObject.OnMissileCreate += AIBaseClientOnOnMissileCreate;
+            
+           
+
+        }
+        
+        private void AIBaseClientOnOnMissileCreate(GameObject sender, EventArgs args)
+        {
+            if (sender.Name == "PerkSoulFeastVisualMissile" && sender.IsAlly) 
+                Utlsafespot();
         }
 
-        
+
+        private void InterrupterOnOnInterrupterSpell(AIHeroClient sender, Interrupter.InterruptSpellArgs args)
+        {
+            if (sender.IsEnemy && args.DangerLevel == Interrupter.DangerLevel.High )
+            {
+                if (Evade.RBool && R.IsReady())
+                {
+                    var target = TargetSelector.GetTarget(R.Range);
+                    if (target == null) return;
+                    R.Cast(target);
+                }
+            }
+        }
+
+
         private void AIBaseClientOnOnProcessSpellCast(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
         {
             if (!Evade.R2Bool && !Evade.W2Bool && !Evade.RBool) return;
             var hero = sender is AIHeroClient;
             if (!sender.IsEnemy || args.Target == null || !args.Target.IsMe) return;
             if (!hero) return;
-            if ( args.Slot == SpellSlot.R && Evade.RBool && R.IsReady() && _RStage == RStage.First && args.SData.TargetingType == SpellDataTargetType.Unit)
+            if ( args.Slot == SpellSlot.R && Evade.RBool && R.IsReady() && _RStage == RStage.First && args.SData.TargetingType == SpellDataTargetType.Unit )
             {
                 var target = TargetSelector.GetTarget(R.Range);
                 if (target == null) return;
                 R.Cast(target);
+            }
+
+            if (BlockSpellDataBase.DangerousList.Contains(args.SData.Name) && args.End.DistanceToPlayer() < 100 )
+            {
+                if (Evade.R2Bool && _RStage == RStage.Second)
+                {
+                    if (args.End.Distance(RShadow) > args.SData.CastRadius)
+                    {
+                        R.Cast();
+                    }
+                    
+                }
+
+                if (Evade.W2Bool && _wStage == WStage.Second && ShdowsafeSpot())
+                {
+                    if (args.End.Distance(WShadow) > args.SData.CastRadius)
+                    {
+                        W.Cast();
+                    }
+                  
+                }
+            }
+            if (sender.CharacterName.Equals("Yone") && args.Slot == SpellSlot.R && args.End.DistanceToPlayer() < 100 )
+            {
+                if (Evade.R2Bool && _RStage == RStage.Second)
+                {
+                    R.Cast();
+                }
+
+                if (Evade.W2Bool && _wStage == WStage.Second && ShdowsafeSpot())
+                {
+                    W.Cast();
+                }
             }
             
         }
@@ -262,7 +345,6 @@ namespace StormAIO.Champions
         {
             if (Helper.Checker()) return; 
             
-
             switch (Orbwalker.ActiveMode)
             {
                 case OrbwalkerMode.Combo:
@@ -281,6 +363,43 @@ namespace StormAIO.Champions
             }
 
             KillSteal();
+            if (FleeMenu.Flee.Active)
+            {
+                Orbwalker.Move(Game.CursorPos);
+                if (FleeMenu.UseW && FleeMenu.UseWWall)
+                {
+                    if (!W.IsReady()) { 
+                        return;
+                    }
+
+                    // dash endPos
+                    var maxDashPos = Player.Position.Extend(Game.CursorPos, 650);
+                    if (!maxDashPos.IsValid() || maxDashPos.IsWall()) {
+                        return;
+                    }
+    
+                    // check about the wall width
+                    var wallwidth = Helper.GetWallWidth(Player.Position, maxDashPos, 650);
+    
+                    // if wall width == 0 or wall width > E Range, cant be dash
+                    if (wallwidth <= 0f || wallwidth >= 650) { 
+                        return;
+                    }
+                    if (Game.CursorPos.IsWall()) return;
+                    // can walljump
+                    W.Cast(Game.CursorPos);
+                }
+                if (FleeMenu.UseW && !FleeMenu.UseWWall)
+                {
+                    if (!W.IsReady()) { 
+                        return;
+                    }
+                    
+            
+                    // can walljump
+                    W.Cast(Game.CursorPos);
+                }
+            }
         }
 
         #endregion
@@ -289,35 +408,39 @@ namespace StormAIO.Champions
 
         private static void Combo()
         {
-            if (_RStage == RStage.First && ComboMenu.RBool && Environment.TickCount > lastR)
+            if (!R.IsReady() || _RStage == RStage.Second || !ComboMenu.RSliderBool.Enabled || ComboMenu.OnlyUseR)
             {
+
+                if (ComboMenu.QBool)
+                {
+                    if(!W.IsReady() || _wStage == WStage.Second || !ComboMenu.WBool.Enabled) CastQ(GetEnemy);
+                }
+                if (ComboMenu.EBool) CastE(GetEnemy);
+                if (ComboMenu.WBool && !ComboMenu.Electrocute && ComboMenu.WGapB) CastW();
+                if (ComboMenu.WBool && ComboMenu.Electrocute ) CastW2();
+                if (ComboMenu.WBool && !ComboMenu.WGapB) CastW3();
+            }
+            if (_RStage == RStage.First && ComboMenu.RSliderBool.Enabled  && Environment.TickCount > lastR )
+            {
+                if (!(Player.Mana >= ComboMenu.RSliderBool.ActiveValue)) return; 
+                if (TargetSelector.SelectedTarget == null && ComboMenu.OnlyUseR) return;
                 var target = TargetSelector.GetTarget(R.Range + W.Range);
                 if (target == null) return;
                 lastR = Environment.TickCount + 250;
                 var igniteSlot = Player.GetSpellSlot("SummonerDot");
                 var igniteTarget = TargetSelector.GetTarget(600);
-                if (Helper.Ignite && igniteTarget != null) Player.Spellbook.CastSpell(igniteSlot, igniteTarget);
-                if (W.IsReady())
+                if (Helper.Ignite && igniteTarget != null && ComboMenu.Ignite) Player.Spellbook.CastSpell(igniteSlot, igniteTarget);
+                if (W.IsReady() && ComboMenu.WGapB)
                 {
                     if (!R.IsInRange(target)) W.Cast(target.Position.Extend(Player.Position, -650));
                     DelayAction.Add(150,()=> R.Cast(target));
                     return;
                 }
                 R.Cast(target);
-             
-              
+
             }
 
-            if (!R.IsReady() || _RStage == RStage.Second || !ComboMenu.RBool )
-            {
-
-                if (ComboMenu.QBool)
-                {
-                    if(!W.IsReady() || _wStage == WStage.Second || !ComboMenu.WBool.Enabled)CastQ(GetEnemy);
-                }
-                if (ComboMenu.EBool) CastE(GetEnemy);
-                if (ComboMenu.WBool) CastW();
-            }
+        
             
         }
 
@@ -327,7 +450,7 @@ namespace StormAIO.Champions
             {
                 if(!W.IsReady() || _wStage == WStage.Second || !HarassMenu.WSliderBool.Enabled)   CastQ(GetEnemy);
             }
-            if (HarassMenu.WSliderBool.Enabled && Player.Mana > HarassMenu.WSliderBool.ActiveValue)
+            if (HarassMenu.WSliderBool.Enabled && Player.Mana > HarassMenu.WSliderBool.ActiveValue && Q.IsReady())
             {
                 CastW();
             }
@@ -344,8 +467,14 @@ namespace StormAIO.Champions
             {
                 Q.UpdateSourcePosition(Player.Position,Player.Position);
                 var minions = GameObjects.GetMinions(Player.Position, Q.Range);
+                var minion = GameObjects.GetMinions(Player.Position, Q.Range).FirstOrDefault(x => x.IsValid && x.Health < Q.GetDamage(x));
+                if (minion != null)
+                {
+                    Q.Cast(minion);
+                    return;
+                }
                 if (!minions.Any()) return;
-               var farmline = Q.GetLineFarmLocation(minions, Q.Width);
+               var farmline = Q.GetLineFarmLocation(minions, 50f);
                if (farmline.MinionsHit >= LaneClearMenu.QCountSliderBool.Value)
                {
                    Q.Cast(farmline.Position);
@@ -429,9 +558,9 @@ namespace StormAIO.Champions
             var target = T;
             if (target == null) return;
             if (!Q.IsReady()) return;
-            Q.Width = (Q.Width /2);
+            Q.Width = 35f;
+           ShadowManager(T,Q);
             var qpre = Q.GetPrediction(target);
-            ShadowManager(target,Q);
             if (qpre.Hitchance >= HitChance.High && Q.IsInRange(target))
             {
                 Q.Cast(qpre.CastPosition);
@@ -445,8 +574,31 @@ namespace StormAIO.Champions
             if (target == null) return;
             if (lastW > Environment.TickCount) return;
             if ( _wStage == WStage.Second ) return;
-            lastW = Environment.TickCount + 250;
+            lastW = Environment.TickCount + 250 + Game.Ping;
             W.Cast(target.Position.Extend(Player.Position, -100));
+        }
+        private static void CastW3()
+        {
+            if (!W.IsReady()) return;
+            var target = TargetSelector.GetTarget(W.Range + 100);
+            if (target == null) return;
+            if (lastW > Environment.TickCount) return;
+            if ( _wStage == WStage.Second ) return;
+            lastW = Environment.TickCount + 250 + Game.Ping;
+            W.Cast(Player.Position.Extend(Game.CursorPos, 100));
+        }
+
+        private static void CastW2()
+        {
+            if (!W.IsReady()) return;
+            var target = TargetSelector.GetTarget(W.Range + 100);
+            if (target == null) return;
+            if (!Player.HasBuff(El) || !Q.IsReady() || Player.Mana < 60)
+            {
+                CastW();
+                return;
+            }
+            W.Cast(target.Position.Extend(Player.Position, -25));
         }
 
         private static void CastE(AIBaseClient T)
@@ -465,13 +617,13 @@ namespace StormAIO.Champions
 
         #region damage 
         // Use it if some some damages aren't available by the sdk 
-        private static float passivedmg(AIHeroClient target)
+        public static float passivedmg(AIBaseClient target)
         {
             var dmglevel = 6;
             if (Player.Level >= 7) dmglevel = 8;
             if (Player.Level >= 17) dmglevel = 10;
 
-            return (float) (target.HealthPercent <= 50 && target.HasBuff("") ? Player.CalculateMagicDamage(target, target.MaxHealth / dmglevel) : 0);
+            return (float) (target.HealthPercent <= 50 && !target.HasBuff("zedpassivecd") ? Player.CalculateMagicDamage(target, target.MaxHealth / dmglevel) : 0);
         }
         private static float AllDamage(AIHeroClient target)
         {
@@ -586,6 +738,35 @@ namespace StormAIO.Champions
                 spell.UpdateSourcePosition(Player.Position, Player.Position);
             }
           
+        }
+
+        private static bool ShdowsafeSpot()
+        {
+            if (WShadow != null && _wStage == WStage.Second  && !WShadow.IsUnderEnemyTurret() &&
+                WShadow.CountEnemyHeroesInRange(500) < Player.CountEnemyHeroesInRange(500))
+            {
+                return true;
+            }
+            if (RShadow != null && _RStage == RStage.Second && !RShadow.IsUnderEnemyTurret() &&
+                WShadow.CountEnemyHeroesInRange(500) < Player.CountEnemyHeroesInRange(500))
+            {
+                return true;
+            }
+            return false;
+        }
+        private static void Utlsafespot()
+        {
+            if (WShadow != null && _wStage == WStage.Second && !WShadow.IsUnderEnemyTurret() &&
+                WShadow.CountEnemyHeroesInRange(500) < Player.CountEnemyHeroesInRange(200) && _wStage == WStage.Second)
+            {
+                W.Cast();
+                return;
+            }
+            if (RShadow != null && _RStage == RStage.Second &&!RShadow.IsUnderEnemyTurret() &&
+                RShadow.CountEnemyHeroesInRange(200) < Player.CountEnemyHeroesInRange(500))
+            {
+                R.Cast();
+            }
         }
         #endregion
     }

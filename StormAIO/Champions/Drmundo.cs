@@ -197,7 +197,7 @@ namespace StormAIO.Champions
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Orbwalker.OnAction += OrbwalkerOnOnAction;
-            Drawing.OnEndScene += delegate(EventArgs args)
+            Drawing.OnEndScene += delegate
             {
                 var t = TargetSelector.GetTarget(2000f);
                 if (!Helper.drawIndicator || t == null) return;

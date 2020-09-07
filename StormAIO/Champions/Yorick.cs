@@ -146,7 +146,7 @@ namespace StormAIO.Champions
                     if (args.Buff.Name == "sheen" || args.Buff.Name == "TrinityForce")
                         sheenTimer = Variables.GameTimeTickCount + 1.7f;
             };
-            Drawing.OnEndScene += delegate(EventArgs args)
+            Drawing.OnEndScene += delegate
             {
                 var t = TargetSelector.GetTarget(2000f);
                 if (!Helper.drawIndicator || t == null) return;

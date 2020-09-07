@@ -115,12 +115,13 @@ namespace StormAIO.Champions
             {
                 if (sender.IsEnemy && champMenu["W"].GetValue<MenuBool>("AW") && W.IsInRange(sender)) W.Cast(sender);
             };
-            Drawing.OnEndScene += delegate(EventArgs args)
+            Drawing.OnEndScene += delegate
             {
                 var t = TargetSelector.GetTarget(2000f);
                 if (!Helper.drawIndicator || t == null) return;
                 Helper.Indicator(AllDamage(t));
             };
+            // ReSharper disable once ObjectCreationAsStatement
             new DrawText("Simi R Key", Rhelper.Key.ToString(),Rhelper,Color.GreenYellow,Color.Red,123,132);
             AIBaseClient.OnBuffGain += AIBaseClientOnOnBuffGain;
         }
@@ -191,7 +192,7 @@ namespace StormAIO.Champions
                     Harass();
                     break;
                 case OrbwalkerMode.LaneClear:
-                    LaneClear();
+                    if(MainMenu.SpellFarm.Active) LaneClear();
                     break;
             }
 
@@ -295,7 +296,7 @@ namespace StormAIO.Champions
                 Radius = (Q.Width / 2),
                 Speed = Q.Speed,
                 Range = 950f,
-                Delay = 0.800f,
+                Delay = 0.727f,
                 Aoe = true,
                 AddHitBox = false,
                 From = Player.PreviousPosition,

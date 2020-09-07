@@ -11,7 +11,7 @@ using Menu = EnsoulSharp.SDK.MenuUI.Menu;
 
 namespace StormAIO.Champions
 {
-    internal class Template
+    internal class Nunu
     {
         #region Basics
 
@@ -180,14 +180,14 @@ namespace StormAIO.Champions
         }
 
 
-        private static class LastHitMenu
+        public static class LastHitMenu
         {
             public static readonly MenuBool QSliderBool = new MenuBool("lastHitQ", "Use Q");
             public static readonly MenuBool WSliderBool = new MenuBool("lastHitW", "Use W");
             public static readonly MenuBool ESliderBool = new MenuBool("lastHitE", "Use E");
         }
         
-        private static class DrawingMenu
+        public static class DrawingMenu
         {
             public static readonly MenuBool DrawQ = new MenuBool("DrawQ", "Draw Q");
             public static readonly MenuBool DrawW = new MenuBool("DrawW", "Draw W");
@@ -202,17 +202,21 @@ namespace StormAIO.Champions
 
         private static void InitSpell()
         {
-            Q = new Spell(SpellSlot.Q);
+            Q = new Spell(SpellSlot.Q,125);
+            Q.SetTargetted(0.3f,2000);
             W = new Spell(SpellSlot.W);
-            E = new Spell(SpellSlot.E);
-            R = new Spell(SpellSlot.R);
+            W.SetCharged("NunuW","NunuW",500,2000,4000);
+            E = new Spell(SpellSlot.E,690);
+            E.SetSkillshot(0f,60f,2000f,false,SkillshotType.Line);
+            R = new Spell(SpellSlot.R, 650);
+
         }
 
 
         #endregion
         #region Gamestart
       
-        public Template()
+        public Nunu()
         {
             InitSpell();
             CreateMenu();
@@ -225,7 +229,7 @@ namespace StormAIO.Champions
                 if (!Helper.drawIndicator || t == null) return;
                 Helper.Indicator(AllDamage(t));
             };
-            
+            AIBaseClient.OnBuffGain += delegate(AIBaseClient sender, AIBaseClientBuffGainEventArgs args) { if (sender.IsMe) Game.Print(args.Buff.Name); };
         }
 
         #endregion
@@ -234,7 +238,7 @@ namespace StormAIO.Champions
 
         private static void OrbwalkerOnOnAction(object sender, OrbwalkerActionArgs args)
         {
-           
+            if (args.Type == OrbwalkerType.BeforeAttack && Player.HasBuff("NunuW")) args.Process = false;
         }
         
         private static void Drawing_OnDraw(EventArgs args)
@@ -285,7 +289,9 @@ namespace StormAIO.Champions
 
         private static void Combo()
         {
-           
+           CastQ();
+           CastW();
+           CastE();
         }
 
         private static void Harass()
@@ -325,17 +331,19 @@ namespace StormAIO.Champions
 
         private static void CastQ()
         {
-          
+          if (Q.GetTarget() == null || !Q.IsReady()) return;
+          Q.CastOnBestTarget();
         }
        
         private static void CastW()
         {
-          
+            W.StartCharging();
         }
 
         private static void CastE()
         {
-           
+            if (E.GetTarget() == null || !E.IsReady()) return;
+            E.CastOnBestTarget();
         }
 
         private static void CastR()

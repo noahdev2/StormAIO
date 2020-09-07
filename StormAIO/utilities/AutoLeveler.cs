@@ -10,23 +10,21 @@ namespace StormAIO.utilities
         private static int[] SpellLevels;
         private static AIHeroClient Player => ObjectManager.Player;
         private static bool Urf => Math.Abs(Player.PercentCooldownMod) >= 0.8;
+        private static bool LevelMenu => MainMenu.Level.GetValue<MenuBool>("autolevel");
+
         public AutoLeveler()
         {
-            var LevelMenu = MainMenu.Level.GetValue<MenuBool>("autolevel");
             Champ();
             if (!LevelMenu || Urf || SpellLevels == null) return;
-            DelayAction.Add(1000, () => MyLevelLogic());
-            AIHeroClient.OnLevelUp +=  AIHeroClientOnOnLevelUp;
+            DelayAction.Add(500, MyLevelLogic);
+            AIHeroClient.OnLevelUp += AIHeroClientOnOnLevelUp;
         }
 
         #region Args
 
         private void AIHeroClientOnOnLevelUp(AIHeroClient sender, AIHeroClientLevelUpEventArgs args)
         {
-            if (sender.IsMe )
-            {
-               DelayAction.Add(100,()=> MyLevelLogic()); 
-            }
+            if (sender.IsMe && LevelMenu) DelayAction.Add(100, MyLevelLogic);
         }
 
         #endregion
@@ -40,7 +38,7 @@ namespace StormAIO.utilities
             var eLevel = Player.Spellbook.GetSpell(SpellSlot.E).Level;
             var rLevel = Player.Spellbook.GetSpell(SpellSlot.R).Level;
             if (qLevel + wLevel + eLevel + rLevel >= Player.Level || Player.Level > 18) return;
-            
+
             var level = new[] {0, 0, 0, 0};
             for (var i = 0; i < Player.Level; i++) level[SpellLevels[i] - 1] = level[SpellLevels[i] - 1] + 1;
 
@@ -49,6 +47,7 @@ namespace StormAIO.utilities
             if (eLevel < level[2]) Player.Spellbook.LevelSpell(SpellSlot.E);
             if (rLevel < level[3]) Player.Spellbook.LevelSpell(SpellSlot.R);
         }
+
         private static void Champ()
         {
             var champ = Player.CharacterName;
@@ -70,16 +69,16 @@ namespace StormAIO.utilities
                     SpellLevels = new[] {2, 1, 3, 2, 2, 4, 2, 1, 2, 1, 4, 1, 1, 3, 3, 4, 3, 3};
                     break;
                 case "DrMundo":
-                    SpellLevels = new[] {1, 3,2, 1, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2};
+                    SpellLevels = new[] {1, 3, 2, 1, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2};
                     break;
                 case "Rengar":
-                    SpellLevels = new[] {1, 2,3, 1, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2};
+                    SpellLevels = new[] {1, 2, 3, 1, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2};
                     break;
                 case "Garen":
-                    SpellLevels = new[] {1, 3,2, 3, 3, 4, 3, 1, 3, 1, 4, 1, 1, 2, 2, 4, 2, 2};
+                    SpellLevels = new[] {1, 3, 2, 3, 3, 4, 3, 1, 3, 1, 4, 1, 1, 2, 2, 4, 2, 2};
                     break;
                 case "Urgot":
-                    SpellLevels = new[] {1, 3,2, 2, 2, 4, 2, 3, 2, 3, 4, 3, 3, 1, 1, 4, 1, 1};
+                    SpellLevels = new[] {1, 3, 2, 2, 2, 4, 2, 3, 2, 3, 4, 3, 3, 1, 1, 4, 1, 1};
                     break;
                 case "Lucian":
                     SpellLevels = new[] {1, 3, 2, 1, 1, 4, 1, 2, 1, 3, 4, 3, 3, 3, 2, 4, 2, 2};
@@ -88,10 +87,11 @@ namespace StormAIO.utilities
                     SpellLevels = new[] {1, 3, 1, 2, 1, 4, 1, 2, 1, 2, 4, 2, 2, 3, 3, 4, 3, 3};
                     break;
                 case "Zed":
-                    SpellLevels = new[] {1, 3, 2, 1, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2};
+                    SpellLevels = new[] {1, 2, 3, 1, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2};
                     break;
             }
         }
+
         #endregion
     }
 }

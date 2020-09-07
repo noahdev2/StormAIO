@@ -7,7 +7,6 @@ using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI.Values;
 using EnsoulSharp.SDK.Prediction;
 using SharpDX;
-using SharpDX.Direct3D9;
 using StormAIO.utilities;
 using Color = System.Drawing.Color;
 using Menu = EnsoulSharp.SDK.MenuUI.Menu;
@@ -22,6 +21,7 @@ namespace StormAIO.Champions
 
         private static Menu champMenu;
         private static AIHeroClient Player => ObjectManager.Player;
+
         private static bool HasPassiveBuff =>
             CanLosePassive || Player.Buffs.Any(x =>
                 x.Name.Equals("lucianpassivebuff", StringComparison.CurrentCultureIgnoreCase));
@@ -46,6 +46,7 @@ namespace StormAIO.Champions
         private static bool HasAnyOrbwalkerFlags => Orbwalker.ActiveMode != 0;
 
 
+        // ReSharper disable once NotAccessedField.Local
         private static float LastETime;
 
         private static int QMana => Q.State != SpellState.NotLearned ? 50 + 10 * (Q.Level - 1) : 0;
@@ -125,7 +126,7 @@ namespace StormAIO.Champions
             {
                 new MenuBool("DrawQ", "Draw Q"),
                 new MenuBool("DrawW", "Draw W"),
-                new MenuBool("DrawE", "Draw E"),
+                new MenuBool("DrawE", "Draw E")
             };
 
             champMenu.Add(drawMenu);
@@ -143,7 +144,6 @@ namespace StormAIO.Champions
         private static bool UseQmaxRange => champMenu["Q"].GetValue<MenuBool>("QE");
         private static bool UseWC => champMenu["W"].GetValue<MenuBool>("WC");
         private static bool UseR => champMenu["R"].GetValue<MenuBool>("RC");
-        private static bool SpellFarm => champMenu["laneclear"].GetValue<MenuKeyBind>("Key").Active;
         private static MenuKeyBind RKeyActive => champMenu["R"].GetValue<MenuKeyBind>("RS");
         private static int LaneMana => champMenu["laneclear"].GetValue<MenuSlider>("Mana").Value;
         private static bool QLaneClear => champMenu["laneclear"].GetValue<MenuBool>("Q");
@@ -172,13 +172,13 @@ namespace StormAIO.Champions
             E.SetSkillshot(0f, 65f, 2000, false, SkillshotType.Line);
             R = new Spell(SpellSlot.R, 1200);
             R.SetSkillshot(0.25f, 110f, 2000, false, SkillshotType.Line);
-            
+
             AIHeroClient.OnLevelUp += AIHeroClientOnOnLevelUp;
             Orbwalker.OnAction += OrbwalkerOnOnAction;
             GameObject.OnCreate += GameObject_OnCreate;
             Game.OnUpdate += GameOnOnUpdate;
             Drawing.OnDraw += DrawingOnOnDraw;
-            Drawing.OnEndScene += delegate(EventArgs args)
+            Drawing.OnEndScene += delegate
             {
                 var t = TargetSelector.GetTarget(2000f);
                 if (!Helper.drawIndicator || t == null) return;
@@ -212,7 +212,8 @@ namespace StormAIO.Champions
 
                 LastSpellCastTime = Variables.GameTimeTickCount;
             };
-            new DrawText("Simi R Key", RKeyActive.Key.ToString(),RKeyActive,Color.GreenYellow,Color.Red,123,132);
+            // ReSharper disable once ObjectCreationAsStatement
+            new DrawText("Simi R Key", RKeyActive.Key.ToString(), RKeyActive, Color.GreenYellow, Color.Red, 123, 132);
         }
 
         #endregion
@@ -239,22 +240,17 @@ namespace StormAIO.Champions
             var drawQ = champMenu["Drawing"].GetValue<MenuBool>("DrawQ");
             var drawW = champMenu["Drawing"].GetValue<MenuBool>("DrawW");
             var drawE = champMenu["Drawing"].GetValue<MenuBool>("DrawE");
-            
+
             var p = Player.Position;
 
-            if (drawQ &&Q.IsReady())
+            if (drawQ && Q.IsReady())
                 Drawing.DrawCircle(p, Player.GetRealAutoAttackRange(), Color.Purple);
             if (drawE && E.IsReady()) Drawing.DrawCircle(p, E.Range, Color.Red);
             if (drawW && W.IsReady()) Drawing.DrawCircle(p, W.Range, Color.DarkCyan);
-
-        
         }
 
         private static void GameOnOnUpdate(EventArgs args)
         {
-            
-            
-            
             switch (Orbwalker.ActiveMode)
             {
                 case OrbwalkerMode.Combo:
@@ -272,22 +268,16 @@ namespace StormAIO.Champions
                 case OrbwalkerMode.None:
                     break;
             }
-            
+
             KillSteal();
             if (RKeyActive.Active) CastR();
         }
 
         private static void OrbwalkerOnOnAction(object sender, OrbwalkerActionArgs args)
         {
-            if (args.Type == OrbwalkerType.AfterAttack)
-            {
-                IsPreAttack = false;
-            }
-            
-            if (args.Type == OrbwalkerType.BeforeAttack && IsCastingR)
-            {
-                args.Process = false;
-            } 
+            if (args.Type == OrbwalkerType.AfterAttack) IsPreAttack = false;
+
+            if (args.Type == OrbwalkerType.BeforeAttack && IsCastingR) args.Process = false;
         }
 
         private static void GameObject_OnCreate(GameObject sender, EventArgs args)
@@ -392,8 +382,8 @@ namespace StormAIO.Champions
 
                 if (target != null && (Player.Mana - WMana > (R.IsReady() ? RMana : 0) && !Player.IsDashing() ||
                                        Player.GetSpellDamage(target, SpellSlot.W) > target.Health + target.AllShield))
-                 
-                        W.Cast(target);
+
+                    W.Cast(target);
             }
 
             if (!R.IsReady() || Player.IsUnderEnemyTurret() || !UseR)
@@ -439,27 +429,21 @@ namespace StormAIO.Champions
         {
             if (!MainMenu.SpellFarm.Active || Player.ManaPercent < LaneMana) return;
             var Minions = GameObjects.GetMinions(Player.Position, Q.Range)
-                .Where(x => x.IsValidTarget(Player.GetRealAutoAttackRange()) && x.IsEnemy).OrderBy(x => x.DistanceToPlayer())
+                .Where(x => x.IsValidTarget(Player.GetRealAutoAttackRange()) && x.IsEnemy)
+                .OrderBy(x => x.DistanceToPlayer())
                 .ToList();
 
             if (!Minions.Any())
                 return;
 
-            if (HasPassiveBuff || HasSheenBuff  || Minions.Count() <= 1 )
+            if (HasPassiveBuff || HasSheenBuff || Minions.Count() <= 1)
                 return;
 
             foreach (var target in Minions)
             {
-                    
-                if (Q.IsReady() && QLaneClear)
-                {
-                    Q.CastOnUnit(target);
-                }
+                if (Q.IsReady() && QLaneClear) Q.CastOnUnit(target);
 
-                if (W.IsReady() && WLaneClear)
-                {
-                    W.CastOnUnit(target);
-                }
+                if (W.IsReady() && WLaneClear) W.CastOnUnit(target);
 
                 if (!E.IsReady() || !ELaneClear)
                     return;
@@ -467,8 +451,6 @@ namespace StormAIO.Champions
                 var shortEPosition = Player.Position.Extend(Game.CursorPos, 85);
                 E.Cast(shortEPosition);
             }
-
-       
         }
 
         private static void JunglClear()
@@ -511,7 +493,7 @@ namespace StormAIO.Champions
         {
             if (!UseQH || Player.ManaPercent < UseQHM)
                 return;
-            
+
             CastQ();
         }
 
@@ -559,9 +541,6 @@ namespace StormAIO.Champions
                         Player.Spellbook.GetSpell(SpellSlot.R).Name != "LucianR")
                         return;
 
-                    var health = target.Health + target.AllShield;
-
-
                     R.CastIfHitchanceMinimum(target, HitChance.High);
                 }
             }
@@ -574,15 +553,7 @@ namespace StormAIO.Champions
             if (rTarget == null || rTarget.HasBuffOfType(BuffType.Invulnerability))
                 return;
             var rPrediciton = R.GetPrediction(rTarget);
-            if (rPrediciton.Hitchance >= HitChance.Medium)
-            {
-                R.Cast(rPrediciton.UnitPosition);
-            }
-        }
-
-        private static void DrawText(Font aFont, string aText, int aPosX, int aPosY, ColorBGRA aColor)
-        {
-            aFont.DrawText(null, aText, aPosX, aPosY, aColor);
+            if (rPrediciton.Hitchance >= HitChance.Medium) R.Cast(rPrediciton.UnitPosition);
         }
 
         private static void ELogics()
@@ -609,7 +580,7 @@ namespace StormAIO.Champions
 
             if (Helper.CanAttackAnyHero && castTime > 0)
                 return;
-            
+
             var shortEPosition = Player.Position.Extend(Game.CursorPos, 70);
 
             if (Q.IsReady() && Helper.CanAttackAnyHero && shortEPosition.IsUnderEnemyTurret())
@@ -633,7 +604,8 @@ namespace StormAIO.Champions
                 : Game.CursorPos;
             var enemiesInPosition = pos.CountEnemyHeroesInRange(335);
 
-            if (Helper.CanAttackAnyHero && (damage < heroClient.Health + heroClient.AllShield || !PossibleEqCombo(heroClient) ||
+            if (Helper.CanAttackAnyHero && (damage < heroClient.Health + heroClient.AllShield ||
+                                            !PossibleEqCombo(heroClient) ||
                                             enemiesInPosition <= 0 || enemiesInPosition >= 3))
                 return;
 
@@ -691,14 +663,14 @@ namespace StormAIO.Champions
             var closest = GameObjects.EnemyHeroes.Where(x => x.IsValidTarget(1300)).OrderBy(x => x.Distance(Player))
                 .FirstOrDefault();
             var paths = GameObjects.EnemyHeroes.Where(x => x.IsValidTarget(1300))
-                .Count(x => x.IsFacing( Player));
+                .Count(x => x.IsFacing(Player));
             var validEscapeDash = pos.Distance(closest) > Player.Distance(closest) && pos.Distance(Player) >= 450;
 
             if (closest != null && Player.CountEnemyHeroesInRange(350) >= 1 && paths >= 1 && validEscapeDash)
                 E.Cast(pos);
         }
 
-     
+
         private static bool PossibleToInterruptQ(AIHeroClient target)
         {
             if (target == null)
@@ -761,25 +733,25 @@ namespace StormAIO.Champions
                             Player.Position.Extend(minion.Position, Q2.Range), Q2.Width)
                     where qPloygon.IsInside(qPred.UnitPosition.ToVector2()) && minion.IsValidTarget(Q.Range)
                     select minion)
-                    Q.Cast(minion);
+                    Q.CastOnUnit(minion);
             }
         }
+
         private static float AllDamage(AIHeroClient target)
         {
             float Damage = 0;
-            if (target == null)                                 return 0;
+            if (target == null) return 0;
             if (target.HasBuffOfType(BuffType.Invulnerability)) return 0;
             Damage += (float) Player.GetAutoAttackDamage(target);
             if (Q.IsReady()) Damage += Q.GetDamage(target);
             if (W.IsReady()) Damage += W.GetDamage(target);
             if (R.IsReady()) Damage += Rdamage(target);
-            if (Player.GetBuffCount("itemmagicshankcharge") == 100) 
-                Damage += (float)Player.CalculateMagicDamage(target, 100 + 0.1 * Player.TotalMagicalDamage);
-            if (Helper.Ignite) Damage += (float)Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
+            if (Player.GetBuffCount("itemmagicshankcharge") == 100)
+                Damage += (float) Player.CalculateMagicDamage(target, 100 + 0.1 * Player.TotalMagicalDamage);
+            if (Helper.Ignite) Damage += (float) Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
             return Damage;
         }
 
-     
 
         private static float Rdamage(AIHeroClient target)
         {

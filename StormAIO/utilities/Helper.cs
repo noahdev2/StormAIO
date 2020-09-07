@@ -180,5 +180,23 @@ namespace StormAIO.utilities
         public static bool CanAttackTurret
             => Orbwalker.CanAttack() &&
                GameObjects.EnemyTurrets.Any(x => x.IsValidTarget(Player.GetRealAutoAttackRange()));
+        /// <summary>
+        ///     Gets wall Width
+        /// </summary>
+        /// <returns></returns>
+        public static float GetWallWidth(Vector3 startPos, Vector3 endPos, float maxRange) {
+            var width = 0f;
+            if (!startPos.IsValid() || !endPos.IsValid()) {
+                return width;
+            }
+    
+            for (var i = 0; i < maxRange; i += 1) {
+                if (startPos.Extend(endPos, i).IsWall()) {
+                    width += 1;
+                }
+            }
+
+            return width;
+        }
     }
 }

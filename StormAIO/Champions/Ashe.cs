@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Linq;
 using System.Windows.Forms;
 using EnsoulSharp;
@@ -171,7 +171,7 @@ namespace StormAIO.Champions
             W.SetSkillshot(0.25f, 20f, 1500f, true, SkillshotType.Cone);
             E = new Spell(SpellSlot.E);
             R = new Spell(SpellSlot.R, 4500f);
-            R.SetSkillshot(0.25f, 130f, 1600f, true, SkillshotType.Line);
+            R.SetSkillshot(0.25f, 130f, 1600f, false, SkillshotType.Line);
         }
 
 
@@ -314,22 +314,6 @@ namespace StormAIO.Champions
                     }
                 }
                     break;
-
-                case OrbwalkerMode.Harass:
-                {
-                    if (args.Target == null ||
-                        args.Target.Type != GameObjectType.AIHeroClient) return;
-
-                    if (W.IsReady() && HarassMenu.WSliderBool.Enabled &&
-                        HarassMenu.WSliderBool.ActiveValue < Player.ManaPercent &&
-                        args.Target.IsValidTarget(W.Range))
-                    {
-                        var target = args.Target as AIHeroClient;
-                        if (W.GetPrediction(target).Hitchance >= HitChance.High)
-                            W.Cast(W.GetPrediction(target).UnitPosition);
-                    }
-                }
-                    break;
                 case OrbwalkerMode.LastHit:
                 {
                     if (!MainMenu.SpellFarm.Active) return;
@@ -405,7 +389,7 @@ namespace StormAIO.Champions
         private static void SemiR()
         {
             Orbwalker.Move(Game.CursorPos);
-            var target = TargetSelector.GetTarget((R.Range));
+            var target = TargetSelector.SelectedTarget;
             if (target == null || !target.IsValidTarget(R.Range)) return;
             var rPred = R.GetPrediction(target);
             if (rPred.Hitchance >= HitChance.VeryHigh) R.Cast((rPred.CastPosition));
@@ -413,8 +397,15 @@ namespace StormAIO.Champions
             
         private static void Harass()
         {
-           
-
+            var target = TargetSelector.GetTarget((W.Range));
+            
+            if (W.IsReady() && HarassMenu.WSliderBool.Enabled &&
+                HarassMenu.WSliderBool.ActiveValue < Player.ManaPercent &&
+                target.IsValidTarget(W.Range))
+            {
+                if (W.GetPrediction(target).Hitchance >= HitChance.High)
+                    W.Cast(W.GetPrediction(target).UnitPosition);
+            }
         }
 
         private static void LaneClear()
@@ -429,10 +420,12 @@ namespace StormAIO.Champions
 
         private static void LastHit()
         {
-            if (!MainMenu.SpellFarm.Active) return;
+            if (!MainMenu.SpellFarm.Active || !LastHitMenu.WSliderBool.Enabled) return;
             //Minions
             var allMinions = GameObjects.GetMinions(ObjectManager.Player.Position, W.Range);
-            foreach (var minion in allMinions.Where(minion => minion.IsValidTarget(W.Range) && Player.Distance(minion) > Player.GetRealAutoAttackRange() && minion.Health < Player.GetSpellDamage(minion, SpellSlot.W)))
+            foreach (var minion in allMinions.Where(minion =>
+                minion.IsValidTarget(W.Range) && Player.Distance(minion) > Player.GetRealAutoAttackRange() &&
+                minion.Health < Player.GetSpellDamage(minion, SpellSlot.W)))
             {
                 W.Cast(minion);
                 return;
@@ -510,10 +503,10 @@ namespace StormAIO.Champions
             if (target == null)                                 return 0;
             if (target.HasBuffOfType(BuffType.Invulnerability)) return 0;
                              Damage += (float) Player.GetAutoAttackDamage(target);
-            if (Q.IsReady()) Damage += Qdmg(target);
-            if (W.IsReady()) Damage += Wdmg(target);
+            if (Q.IsReady()) Damage += Q.GetDamage(target);
+            if (W.IsReady()) Damage += W.GetDamage(target);
             if (E.IsReady()) Damage += Edmg(target);
-            if (R.IsReady()) Damage += Rdmg(target);
+            if (R.IsReady()) Damage += R.GetDamage(target);
             if (Player.GetBuffCount("itemmagicshankcharge") == 100) 
                 Damage += (float)Player.CalculateMagicDamage(target, 100 + 0.1 * Player.TotalMagicalDamage);
             if (Ignite) Damage += (float)Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);

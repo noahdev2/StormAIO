@@ -5,7 +5,6 @@ using EnsoulSharp;
 using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI.Values;
 using EnsoulSharp.SDK.Prediction;
-using SharpDX;
 using StormAIO.utilities;
 using Color = System.Drawing.Color;
 using Menu = EnsoulSharp.SDK.MenuUI.Menu;
@@ -20,11 +19,12 @@ namespace StormAIO.Champions
         private static Menu Menu;
         private static AIHeroClient Player => ObjectManager.Player;
         private static float sheenTimer;
+
         #endregion
 
         #region Menu
 
-        private static void CreateMenu()
+        private  void CreateMenu()
         {
             Menu = new Menu("Yone", "Yone");
             var qMenu = new Menu("Q", "Q")
@@ -47,6 +47,7 @@ namespace StormAIO.Champions
             {
                 new MenuBool("EC", "Use E in Combo"),
                 new MenuBool("ED", "Use E to remove debuffs", false),
+                new MenuBool("ET", "Use E under Tower"),
                 new MenuSlider("EDR", "Remove debuff when my health is below < ", 20),
                 new MenuSlider("ER", "E range +", 250, 50, 500)
             };
@@ -94,6 +95,7 @@ namespace StormAIO.Champions
                 new MenuBool("R", "Use R", false)
             };
             Menu.Add(killSteal);
+            
             var drawMenu = new Menu("Drawing", "Draw")
             {
                 new MenuBool("DrawQ", "Draw Q"),
@@ -120,6 +122,7 @@ namespace StormAIO.Champions
         private static bool UseHarassW => Menu["W"].GetValue<MenuBool>("WH");
 
         private static bool UseE => Menu["E"].GetValue<MenuBool>("EC");
+        private static bool ETOWER => Menu["E"].GetValue<MenuBool>("ET");
         private static bool RemoveDebuff => Menu["E"].GetValue<MenuBool>("ED");
         private static int RemoveDebuffHealth => Menu["E"].GetValue<MenuSlider>("EDR").Value;
         private static int ERPlus => Menu["E"].GetValue<MenuSlider>("ER").Value;
@@ -136,9 +139,7 @@ namespace StormAIO.Champions
         private static bool Q3KS => Menu["KS"].GetValue<MenuBool>("Q3");
         private static bool WKS => Menu["KS"].GetValue<MenuBool>("W");
         private static bool RKS => Menu["KS"].GetValue<MenuBool>("R");
-        
         private static MenuKeyBind SimiR => Menu["R"].GetValue<MenuKeyBind>("RT");
-        
 
         #endregion
 
@@ -160,7 +161,6 @@ namespace StormAIO.Champions
         public Yone()
         {
             InitSpell();
-            test1();
             CreateMenu();
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
@@ -171,12 +171,13 @@ namespace StormAIO.Champions
                     if (args.Buff.Name == "sheen" || args.Buff.Name == "TrinityForce")
                         sheenTimer = Variables.GameTimeTickCount + 1.7f;
             };
-            Drawing.OnEndScene += delegate(EventArgs args)
+            Drawing.OnEndScene += delegate
             {
                 var t = TargetSelector.GetTarget(2000f);
                 if (!Helper.drawIndicator || t == null) return;
                 Helper.Indicator(AllDamage(t));
             };
+            // ReSharper disable once ObjectCreationAsStatement
             new DrawText("Simi R Key",SimiR.Key.ToString(),SimiR,Color.GreenYellow,Color.Red,123,132);
         }
 
@@ -186,7 +187,6 @@ namespace StormAIO.Champions
 
         private static void OrbwalkerOnOnAction(object sender, OrbwalkerActionArgs args)
         {
-            if (args.Type == OrbwalkerType.AfterAttack && Orbwalker.ActiveMode == OrbwalkerMode.Combo) CastQ2();
         }
         
 
@@ -221,17 +221,16 @@ namespace StormAIO.Champions
                     Harass();
                     break;
                 case OrbwalkerMode.LaneClear:
-                 if (MainMenu.SpellFarm.Active)   LaneClear();
+                    LaneClear();
                     JungleClear();
                     break;
                 case OrbwalkerMode.LastHit:
                     LastHit();
                     break;
-                  
             }
-            
+
             KillSteal();
-            if (Menu["R"].GetValue<MenuKeyBind>("RT").Active) CastR2();
+            if (SimiR.Active) CastR2();
             if (Player.HaveImmovableBuff() && _EStage == EStage.Recast && RemoveDebuff &&
                 Player.Health < RemoveDebuffHealth) E.Cast();
            if (FeelAtive) Flee();
@@ -254,7 +253,7 @@ namespace StormAIO.Champions
 
         private static void Harass()
         {
-            if (UseHarassQ) CastQ2();
+            if (UseHarassQ) CastQ();
             if (UseHarassQ3) CastQ3();
             if (UseHarassW) CastW();
             var minons = GameObjects.GetMinions(Player.Position, Q.Range).Where(x => x.Health <= Qdmg(x))
@@ -270,42 +269,54 @@ namespace StormAIO.Champions
             var target = TargetSelector.GetTarget(2000);
             if (FarmLogic && target != null && target.IsVisibleOnScreen)
             {
-                var Q1minons = GameObjects.GetMinions(Player.Position, Q.Range);
-                var W1minons = GameObjects.GetMinions(Player.Position, W.Range);
-                if (Q1minons == null || W1minons== null) return;
-                if (Qdmg(Q1minons.OrderBy(x=> x.Health).First()) > Q1minons.OrderBy(x=> x.Health).First().Health && _QStage == QStage.First)
+                var Q1minons = GameObjects.GetMinions(Player.Position, Q.Range).ToList();
+                var W1minons = GameObjects.GetMinions(Player.Position, W.Range).ToList();
+                if (Q1minons.Any() || W1minons.Any())
                 {
-                    Q.Cast(Q1minons.First().Position);
-                    return;
+                    foreach (var minion in Q1minons)
+                    {
+                        if (Qdmg(minion) > minion.Health && _QStage == QStage.First)
+                        {
+                            Q.Cast(minion);
+                            break;
+                        }
+                        var QLine = Q.GetLineFarmLocation(Q1minons,Q.Width);
+                        var WCone = W.GetCircularFarmLocation(W1minons,W.Width);
+                        if (Menu["LaneClear"].GetValue<MenuBool>("Q") && _QStage == QStage.First)
+                        {
+                            if (QLine.MinionsHit >= 1) Q.Cast(QLine.Position);
+                        }
+                        if (Menu["LaneClear"].GetValue<MenuBool>("W") && W.IsReady())
+                        {
+                            if (WCone.MinionsHit >= 1) W.Cast(WCone.Position);
+                        }
+                    }
                 }
+            
               
-                var QLine = Q.GetLineFarmLocation(Q1minons,Q.Width);
-                var WCone = W.GetCircularFarmLocation(W1minons,W.Width);
-                if (Menu["LaneClear"].GetValue<MenuBool>("Q") && _QStage == QStage.First)
-                {
-                    if (QLine.MinionsHit >= 1) Q.Cast(QLine.Position);
-                }
-                if (Menu["LaneClear"].GetValue<MenuBool>("W") && W.IsReady())
-                {
-                    if (WCone.MinionsHit >= 1) W.Cast(WCone.Position);
-                }
-                return;
+               
             }
             var Qminons = GameObjects.GetMinions(Player.Position,_QStage == QStage.First ? Q.Range:Q3.Range);
             var Wminons = GameObjects.GetMinions(Player.Position, W.Range);
-          
-            if (Qminons != null || Wminons != null)
+            if (Qminons.Any() || Wminons.Any())
             {
-                var QLine = Q.GetLineFarmLocation(Qminons, _QStage == QStage.First ? Q.Width: Q3.Width);
-                var WCone = W.GetCircularFarmLocation(Wminons,W.Width);
-                if (Menu["LaneClear"].GetValue<MenuBool>("Q") && Q.IsReady())
+                foreach (var minion in Qminons)
                 {
-                    if (QLine.MinionsHit >= 1) Q3.Cast(QLine.Position);
-                }
-
-                if (Menu["LaneClear"].GetValue<MenuBool>("W") && W.IsReady())
-                {
-                    if (WCone.MinionsHit >= 1) W.Cast(WCone.Position);
+                    if (Qdmg(minion) > minion.Health && _QStage == QStage.First)
+                    {
+                        Q.Cast(minion);
+                        break;
+                    }
+                    var QLine = Q.GetLineFarmLocation(Qminons, _QStage == QStage.First ? Q.Width: Q3.Width);
+                    var WCone = W.GetCircularFarmLocation(Wminons,W.Width);
+                    if (Menu["LaneClear"].GetValue<MenuBool>("Q") && Q.IsReady())
+                    {
+                        if (QLine.MinionsHit >= 1) Q.Cast(QLine.Position);
+                    }
+                    if (Menu["LaneClear"].GetValue<MenuBool>("W") && W.IsReady())
+                    {
+                        if (WCone.MinionsHit >= 1) W.Cast(WCone.Position);
+                    }
                 }
             }
         }
@@ -334,12 +345,12 @@ namespace StormAIO.Champions
             var Q3target = TargetSelector.GetTarget(Q3.Range);
             var Wtarget = TargetSelector.GetTarget(W.Range);
             var Rtarget = TargetSelector.GetTarget(R.Range);
-            if (Qtarget != null && Qtarget.TrueHealth() < Qdmg(Qtarget) && QKS && _QStage == QStage.First)
+            if (Qtarget != null && Qtarget.Health + Qtarget.AllShield < Qdmg(Qtarget) && QKS && _QStage == QStage.First)
                 Q.Cast(Qtarget);
-            if (Q3target != null && Q3target.TrueHealth() < Qdmg(Q3target) && Q3KS &&
+            if (Q3target != null && Q3target.Health + Q3target.AllShield < Qdmg(Q3target) && Q3KS &&
                 _QStage == QStage.Second) Q3.Cast(Qtarget);
-            if (Wtarget != null && Wtarget.TrueHealth() < Wdmg(Wtarget) && WKS) W.Cast(Wtarget);
-            if (Rtarget != null && Rtarget.TrueHealth() < Rdmg(Rtarget) && RKS)
+            if (Wtarget != null && Wtarget.Health + Wtarget.AllShield < Wdmg(Wtarget) && WKS) W.Cast(Wtarget);
+            if (Rtarget != null && Rtarget.Health + Rtarget.AllShield < Rdmg(Rtarget) && RKS)
             {
                 if (!R.IsReady()) return;
                 var rpre = R.GetPrediction(Rtarget);
@@ -398,19 +409,12 @@ namespace StormAIO.Champions
 
         private static void CastQ()
         {
-            var target = TargetSelector.GetTarget(Q.Range);
+            var target = Q.GetTarget();
             if (target == null || _QStage != QStage.First) return;
             var truedelay = 0.4f * (1 - Math.Min((Player.AttackSpeedMod - 1) * 0.58f, 0.67f));
             if (Q.Delay > truedelay) Q.Delay = truedelay;
-            if (target.DistanceToPlayer() > Player.GetRealAutoAttackRange()) Q.Cast(target); 
-        }
-        private static void CastQ2()
-        {
-            var target = TargetSelector.GetTarget(Q.Range);
-            if (target == null || _QStage != QStage.First) return;
-            var truedelay = 0.4f * (1 - Math.Min((Player.AttackSpeedMod - 1) * 0.58f, 0.67f));
-            if (Q.Delay > truedelay) Q.Delay = truedelay;
-            Q.Cast(target); 
+
+            Q.Cast(target.Position);
         }
         private static void CastQ3()
         {
@@ -425,19 +429,20 @@ namespace StormAIO.Champions
         }
         private static void CastW()
         {
+            if (_QStage == QStage.Second) return;
             var target = TargetSelector.GetTarget(W.Range - 20);
             var truedelay = 0.5f * (1 - Math.Min((Player.AttackSpeedMod - 1) * 0.58f, 0.68f));
             if (W.Delay > truedelay) W.Delay = truedelay;
             if (target == null) return;
             if (!W.IsReady()) return;
-            W.Cast(target);
+            W.Cast(target.Position);
         }
 
         private static void CastE()
         {
             var target = TargetSelector.GetTarget(E.Range + ERPlus);
             if (target == null || _EStage != EStage.Cast) return;
-            if (!E.IsReady()) return;
+            if (!E.IsReady() || (!ETOWER && target.IsUnderEnemyTurret())) return;
             E.Cast(target.Position);
         }
 
@@ -463,7 +468,7 @@ namespace StormAIO.Champions
             if (!R.IsReady() || target == null || !Rmulti) return;
             R.Cast(target, false, false, true, Rnumber - 1 );
         }
-       
+        private static bool Ignite => Player.Spellbook.CanUseSpell(Player.GetSpellSlot("SummonerDot")) == SpellState.Ready;
 
         private static void AutoStack()
         {
@@ -481,6 +486,7 @@ namespace StormAIO.Champions
         private static float Autodamage(AIBaseClient t)
         {
             var total = Player.TotalAttackDamage;
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (Player.Crit == 0) return (float) Player.CalculatePhysicalDamage(t, total) + Sheen(t);
             var critdamage = Player.HasItem(ItemId.Infinity_Edge) ? Player.TotalAttackDamage * 1.025 : Player.TotalAttackDamage * 0.8; 
             return (float) Player.CalculatePhysicalDamage(t, total + critdamage) + Sheen(t);
@@ -488,8 +494,9 @@ namespace StormAIO.Champions
         private static float Qdmg(AIBaseClient t)
         {
             if (Yone.Q.Level == 0) return 0;
-            var Q = 20 + 25 * (Yone.Q.Level - 1);
-            var total = Q + Player.TotalAttackDamage;
+            var qLevel = 20 + 20 * (Yone.Q.Level - 1);
+            var total = qLevel + Player.TotalAttackDamage;
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (Player.Crit == 0) return (float) Player.CalculatePhysicalDamage(t, total) + Sheen(t);
             var critdamage = Player.HasItem(ItemId.Infinity_Edge) ? Player.TotalAttackDamage * 0.8 : Player.TotalAttackDamage * 0.6; 
             return (float) Player.CalculatePhysicalDamage(t, total + critdamage) + Sheen(t);
@@ -531,12 +538,7 @@ namespace StormAIO.Champions
         #endregion
 
         #region Extra functions
-
-        private static void test1()
-        {
-           
-            
-        }
+        
         private static float AllDamage(AIHeroClient target)
         {
             float Damage = 0;
@@ -548,7 +550,7 @@ namespace StormAIO.Champions
             if (R.IsReady()) Damage += Rdmg(target);
             if (Player.GetBuffCount("itemmagicshankcharge") == 100) 
                 Damage += (float)Player.CalculateMagicDamage(target, 100 + 0.1 * Player.TotalMagicalDamage);
-            if (Helper.Ignite) Damage += (float)Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
+            if (Ignite) Damage += (float)Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
             return Damage;
         }
         #endregion

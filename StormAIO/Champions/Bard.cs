@@ -11,7 +11,7 @@ using Menu = EnsoulSharp.SDK.MenuUI.Menu;
 
 namespace StormAIO.Champions
 {
-    internal class Template
+    internal class Bard
     {
         #region Basics
 
@@ -37,6 +37,7 @@ namespace StormAIO.Champions
             var harassMenu = new Menu("harass", "Harass")
             {
                 HarassMenu.QSliderBool,
+                HarassMenu.QBool,
                 HarassMenu.WSliderBool,
                 HarassMenu.ESliderBool
             };
@@ -122,6 +123,7 @@ namespace StormAIO.Champions
         private static class HarassMenu
         {
             public static readonly MenuSliderButton QSliderBool = new MenuSliderButton("harassQ", "Use Q | If Mana >= x%", 50);
+            public static readonly MenuBool QBool = new MenuBool("harassQStun", "Use Q ^ | Only if target is stunable");
             public static readonly MenuSliderButton WSliderBool = new MenuSliderButton("harassW", "Use W | If Mana >= x%", 50);
             public static readonly MenuSliderButton ESliderBool = new MenuSliderButton("harassE", "Use E | If Mana >= x%", 50);
             
@@ -202,17 +204,19 @@ namespace StormAIO.Champions
 
         private static void InitSpell()
         {
-            Q = new Spell(SpellSlot.Q);
-            W = new Spell(SpellSlot.W);
-            E = new Spell(SpellSlot.E);
-            R = new Spell(SpellSlot.R);
+            Q = new Spell(SpellSlot.Q, 850);
+            W = new Spell(SpellSlot.W, 800);
+            E = new Spell(SpellSlot.E, 900);
+            R = new Spell(SpellSlot.R,3400);
+            R.SetSkillshot(0.5f,200f,float.MaxValue,false,SkillshotType.Circle);
+            Q.SetSkillshot(0.25f, 90f, 1500f,false ,SkillshotType.Line);
         }
 
 
         #endregion
         #region Gamestart
       
-        public Template()
+        public Bard()
         {
             InitSpell();
             CreateMenu();
@@ -290,7 +294,11 @@ namespace StormAIO.Champions
 
         private static void Harass()
         {
-           
+            if (HarassMenu.QSliderBool.Enabled)
+            {
+                if (Q.GetTarget() == null) return;
+                QStun(Q.GetTarget(),HarassMenu.QBool);
+            }
 
         }
 
@@ -388,6 +396,74 @@ namespace StormAIO.Champions
             if (Helper.Ignite) Damage += (float)Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
             return Damage;
         }
+
+        private static void QStun(AIBaseClient target, bool nonStun)
+        {
+            if (!Q.IsReady()) return;
+
+            if (!nonStun)
+            {
+                Q.Cast(target);
+                return;
+            }
+
+           
+            var collisions =
+                GameObjects.EnemyHeroes.Where(x => Q.IsInRange(x) && x.IsValid)
+                    .ToList();
+
+            if (!collisions.Any()) return;
+            foreach (var vailds in collisions)
+            {
+                var qPred = Q.GetPrediction(target);
+                var Line = new Geometry.Rectangle(Player.PreviousPosition,
+                    Player.PreviousPosition.Extend(vailds.Position, Q.Range), Q.Width);
+                if (Line.IsInside(qPred.UnitPosition.ToVector2()) && Q.IsInRange(vailds) )
+                {
+                    Q.Cast(target);
+                    break;
+                }
+            }
+            var collisions2 =
+                GameObjects.EnemyMinions.Where(x => Q.IsInRange(x) && x.IsValid)
+                    .ToList();
+
+            if (!collisions.Any()) return;
+            foreach (var vailds in collisions)
+            {
+                var qPred = Q.GetPrediction(target);
+                var Line = new Geometry.Rectangle(Player.PreviousPosition,
+                    Player.PreviousPosition.Extend(vailds.Position, Q.Range), Q.Width);
+                if (Line.IsInside(qPred.UnitPosition.ToVector2()) && Q.IsInRange(vailds) )
+                {
+                    Q.CastOnUnit(target);
+                    break;
+                }
+            }
+            var from = Player.PreviousPosition.ToVector2();
+            var to = target.PreviousPosition.ToVector2();
+            var direction = (from - to).Normalized();
+            var distance = from.Distance(to);
+
+            for (var d = 0; d < distance; d = d + 20)
+            {
+                var point = from + d * direction;
+                var flags = NavMesh.GetCollisionFlags(point.ToVector3());
+
+                if (!flags.HasFlag(CollisionFlags.Building) || !flags.HasFlag(CollisionFlags.Wall))
+                {
+                    return;
+                }
+            }
+
+            var qPred3 = Q.GetPrediction(target);
+            if (qPred3.Hitchance >= HitChance.High)
+            {
+                Q.Cast(target);
+            }
+
+        }
+
         #endregion
     }
 }

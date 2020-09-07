@@ -5,6 +5,7 @@ using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI;
 using EnsoulSharp.SDK.MenuUI.Values;
 using SharpDX;
+using StormAIO.Champions;
 using Color = System.Drawing.Color;
 
 namespace StormAIO.utilities
@@ -56,11 +57,11 @@ namespace StormAIO.utilities
             {
                 new Menu("Heros", "Heros")
                 {
-                    new MenuBool("DrawPlayer", "Draw On Me",false),
+                    new MenuBool("DrawPlayer", "Draw On Me", false),
                     new MenuColor("PlayerColor", "My Arrow Color", new ColorBGRA(255, 255, 255, 198)),
-                    new MenuBool("DrawAlly", "Draw On Ally",false),
+                    new MenuBool("DrawAlly", "Draw On Ally", false),
                     new MenuColor("AllyColor", "Ally Arrow Color", new ColorBGRA(255, 255, 255, 198)),
-                    new MenuBool("DrawEnemy", "Draw On Enemy",false),
+                    new MenuBool("DrawEnemy", "Draw On Enemy", false),
                     new MenuColor("EnemyColor", "Enemy Arrow Color", new ColorBGRA(255, 255, 255, 198)),
                     new MenuBool("DrawTarget", "Draw On Selected Target"),
                     new MenuColor("TargetColor", "Target Arrow Color", new ColorBGRA(255, 255, 255, 198)),
@@ -146,7 +147,7 @@ namespace StormAIO.utilities
         private static void DrawEnemyArrow()
         {
             var hpBars = TargetSelector.GetTargets(2000);
-           
+
             foreach (var hpBar in hpBars)
             {
                 if (!hpBar.IsVisibleOnScreen || hpBar.IsDead) break;
@@ -163,8 +164,31 @@ namespace StormAIO.utilities
 
         private static void DrawMinionArrow()
         {
+            if (Player.CharacterName.Equals("Zed"))
+            {
+                var lane = GameObjects.GetMinions(Player.Position, 2000)
+                    .OrderBy(x => x.DistanceToPlayer())
+                    .FirstOrDefault();
+                if (lane == null) return;
+                var dmg = Zed.passivedmg(lane);
+                if (lane.IsVisibleOnScreen && dmg + Player.GetAutoAttackDamage(lane) > lane.Health)
+                {
+                    var hpBar1 = lane.HPBarPosition;
+
+
+                    var mstartPoint = new Vector2(hpBar1.X + MinionSP1, hpBar1.Y + MinionSP2);
+                    var mendPoint = new Vector2(hpBar1.X + MinionEP1, hpBar1.Y + MinionEP2);
+                    var mstartPoint12 = new Vector2(hpBar1.X - MinionSP1, hpBar1.Y + MinionSP2);
+                    var mendPoint2 = new Vector2(hpBar1.X - MinionEP1, hpBar1.Y + MinionEP2);
+                    Drawing.DrawLine(mstartPoint, mendPoint, MinionLine, Color.FromArgb(MinionColor.ColorA,
+                        MinionColor.ColorR, MinionColor.ColorG, MinionColor.ColorB));
+                    Drawing.DrawLine(mstartPoint12, mendPoint2, MinionLine, Color.FromArgb(MinionColor.ColorA,
+                        MinionColor.ColorR, MinionColor.ColorG, MinionColor.ColorB));
+                }
+            }
+
             var minioms = GameObjects.GetMinions(Player.Position, 2000)
-                .Where(x => Player.GetAutoAttackDamage(x)  >= x.Health).OrderBy(x => x.DistanceToPlayer())
+                .Where(x => Player.GetAutoAttackDamage(x) >= x.Health).OrderBy(x => x.DistanceToPlayer())
                 .FirstOrDefault();
             if (minioms != null)
                 if (minioms.IsVisibleOnScreen)
@@ -176,7 +200,7 @@ namespace StormAIO.utilities
                     var mendPoint = new Vector2(hpBar1.X + MinionEP1, hpBar1.Y + MinionEP2);
                     var mstartPoint12 = new Vector2(hpBar1.X - MinionSP1, hpBar1.Y + MinionSP2);
                     var mendPoint2 = new Vector2(hpBar1.X - MinionEP1, hpBar1.Y + MinionEP2);
-                    Drawing.DrawLine(mstartPoint, mendPoint, MinionLine,Color.FromArgb(MinionColor.ColorA,
+                    Drawing.DrawLine(mstartPoint, mendPoint, MinionLine, Color.FromArgb(MinionColor.ColorA,
                         MinionColor.ColorR, MinionColor.ColorG, MinionColor.ColorB));
                     Drawing.DrawLine(mstartPoint12, mendPoint2, MinionLine, Color.FromArgb(MinionColor.ColorA,
                         MinionColor.ColorR, MinionColor.ColorG, MinionColor.ColorB));
