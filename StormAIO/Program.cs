@@ -105,8 +105,9 @@ namespace StormAIO
                         // ReSharper disable once ObjectCreationAsStatement    
                         new Twitch();
                         break;
-                    case "Twitch" :
-                        var Twitch = new Twitch();
+                    case "Katarina":
+                        // ReSharper disable once ObjectCreationAsStatement    
+                        new Katarina();
                         break;
                 }
             }

@@ -22,6 +22,8 @@ namespace StormAIO.utilities
 
         #endregion
 
+        #region Main
+
         public Rundown()
         {
             RundownMenu = new Menu("rundownMenu", "Rundown™")
@@ -46,9 +48,11 @@ namespace StormAIO.utilities
             InitSpell();
         }
 
+        #endregion
+
         #region Other
 
-        private static Spell Q, W;
+        private static Spell Q, W, E;
         private static readonly Vector3 Bot = new Vector3(12743.6f, 2305.73f, 51.5507f);
         private static readonly Vector3 Top = new Vector3(2076, 12356, 52.8381f);
 
@@ -58,10 +62,8 @@ namespace StormAIO.utilities
             Q.SetSkillshot(0.25f, 20f, 1500f, false, SkillshotType.Line);
             W = new Spell(SpellSlot.W, 1000f);
             W.SetSkillshot(0.25f, 20f, 1500f, false, SkillshotType.Line);
-<<<<<<< HEAD
-=======
-            E = new Spell(SpellSlot.E, 600f);
->>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
+            E = new Spell(SpellSlot.E, 1000f);
+            E.SetSkillshot(0.25f, 20f, 1500f, false, SkillshotType.Circle);
         }
 
         private static bool TopSpotArrived { get; set; }
@@ -134,8 +136,7 @@ namespace StormAIO.utilities
             }
         }
 
-<<<<<<< HEAD
-=======
+        // Use for testing purposes
         private void AiHeroClientOnOnBuffGain(AIBaseClient sender, AIBaseClientBuffGainEventArgs args)
         {
             if (args.Buff.Name.Contains("ASSETS"))
@@ -156,7 +157,6 @@ namespace StormAIO.utilities
             Game.Print("Enemy Buff Type: " + args.Buff.Type);
         }
 
->>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
         #endregion
 
         #region Functions
@@ -183,43 +183,27 @@ namespace StormAIO.utilities
 
         private static void Troll()
         {
-<<<<<<< HEAD
-            if (!Player.CharacterName.Equals("Anivia") && !Player.CharacterName.Equals("Trundle")) return;
             var validAllies = GameObjects.AllyHeroes.Where(x => x != null && x.IsValid && !x.IsMe);
 
             foreach (var ally in validAllies.Where(x => x.HasBuff("recall") || x.HasBuff("SummonerTeleport")))
                 if (ally.Position.Distance(Player) < 2000)
-=======
-            if (Player.CharacterName.Equals("Anivia"))
-            {
-                var validAllies = GameObjects.AllyHeroes.Where(x => x != null && x.IsValid && !x.IsMe);
 
-                foreach (var ally in validAllies.Where(x => (x.HasBuff("recall") || x.HasBuff("SummonerTeleport"))))
-                {
-                    if (!(ally.Position.Distance(Player) < 2000)) continue;
->>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
-                    if (W.IsReady())
-                        W.Cast(ally.Position);
-<<<<<<< HEAD
-=======
-                    }
-                }
-            }
-
-            if (!Player.CharacterName.Equals("Trundle")) return;
-            {
-                var validAllies = GameObjects.AllyHeroes.Where(x => x != null && x.IsValid && !x.IsMe);
-
-                foreach (var ally in validAllies.Where(x => (x.HasBuff("recall") || x.HasBuff("SummonerTeleport"))))
-                {
-                    if (!(ally.Position.Distance(Player) < 2000)) continue;
-                    if (E.IsReady())
+                    switch (Player.CharacterName)
                     {
-                        E.Cast(ally.Position);
+                        case "Anivia":
+                        {
+                            if (!(ally.Position.Distance(Player) < 2000)) continue;
+                            if (W.IsReady()) W.Cast(ally.Position);
+                        }
+                            break;
+
+                        case "Trundle":
+                        {
+                            if (!(ally.Position.Distance(Player) < 2000)) continue;
+                            if (E.IsReady()) E.Cast(ally.Position);
+                        }
+                            break;
                     }
-                }
-            }
->>>>>>> 3cc65602375cf7fead78666ab64ead3bf138610a
         }
 
         private static void Inting()
